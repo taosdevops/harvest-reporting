@@ -5,7 +5,6 @@ import json
 import math
 import fileinput
 import urllib.request
-from decimal import *
 from datetime import date
 from datetime import time
 
@@ -38,14 +37,6 @@ for items in timeEntries:
       #print(m)
         total = items["hours"]
         hours_used += total
-      #total = (items["hours"])
-      #total = sum(add)
-      # print(total)
-      #print(json.dumps(items["spent_date"], sort_keys=True, indent=4))
-      
-      #total = sum(add)
-      #print (total)
-
 
 result = strftime("%H:%M:%S", gmtime(hours_used * 60))
 

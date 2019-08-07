@@ -26,10 +26,9 @@ timeEntries = jsonResponse["time_entries"]
 regex = re.compile('([0-9]{4})-([0-9]{2})-([0-9]{2})')
 today = date.today().strftime('%Y-%m-%d')
 currentMonth = regex.search(today).group(2)
-#print(currentMonth)
 
 hours_used = 0.0
-
+total_hours = 80.0
 
 for items in timeEntries:
     m = regex.search(items["spent_date"]).group(2)
@@ -37,9 +36,13 @@ for items in timeEntries:
       #print(m)
         total = items["hours"]
         hours_used += total
+        left = total_hours - hours_used
 
-result = strftime("%H:%M:%S", gmtime(hours_used * 60))
+used = strftime("%H:%M:%S", gmtime(hours_used *60))
+#left = strftime("%M:%S", gmtime(total_hours *60 ))
 
-print(result, "Hours Used")
+#print(hours_used, "Hours Used")
+print(used, "Hours Used")
+print(left, "Hours Left")
 
 

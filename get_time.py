@@ -7,8 +7,9 @@ import fileinput
 import urllib.request
 from datetime import date
 from datetime import time
-
 from time import gmtime, strftime
+
+DSC = 'client_id=8102048'
 
 url = "https://api.harvestapp.com/v2/time_entries?client_id=8102048"
 headers = {
@@ -27,8 +28,12 @@ regex = re.compile('([0-9]{4})-([0-9]{2})-([0-9]{2})')
 today = date.today().strftime('%Y-%m-%d')
 currentMonth = regex.search(today).group(2)
 
-hours_used = 0.0
-total_hours = 80.0
+hours_used = 0.00
+total_hours = 80.00
+
+def truncate(n, decimals=0):
+    multiplier = 10 ** decimals
+    return int(n * multiplier) / multiplier
 
 for items in timeEntries:
     m = regex.search(items["spent_date"]).group(2)
@@ -38,11 +43,11 @@ for items in timeEntries:
         hours_used += total
         left = total_hours - hours_used
 
-used = strftime("%H:%M:%S", gmtime(hours_used *60))
-#left = strftime("%M:%S", gmtime(total_hours *60 ))
+#used = strftime("%M:%S", gmtime(hours_used *60))
+#left = strftime("%M:%S", gmtime(left *60))
 
-#print(hours_used, "Hours Used")
-print(used, "Hours Used")
-print(left, "Hours Left")
+print  ("DSC ", truncate(hours_used, 2),"/80 Hours Used\t", truncate(left, 2),"/80 Hours Remaining")
+#print(used, "Hours Used")
+#print (truncate(left, 2), "Hours Left")
 
 

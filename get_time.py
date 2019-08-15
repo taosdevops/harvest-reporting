@@ -7,47 +7,78 @@ import fileinput
 import urllib.request
 from datetime import date
 from datetime import time
-from time import gmtime, strftime
 
-DSC = 'client_id=8102048'
-
-url = "https://api.harvestapp.com/v2/time_entries?client_id=8102048"
+# Build headers
 headers = {
-    "User-Agent": "Python Harvest API Sample",
-    "Authorization": "Bearer 1958933.pt.AQdIixLiVPwHPcd0qwPxL0qYh3bKGanbkPBm3yraWoDHA9BNReJODWQfeWnAQZDC9KBmEws1gwDOpVdJB4LIrw",
-    "Harvest-Account-ID": "1121001"
+    'Authorization': 'Bearer 1958933.pt.AQdIixLiVPwHPcd0qwPxL0qYh3bKGanbkPBm3yraWoDHA9BNReJODWQfeWnAQZDC9KBmEws1gwDOpVdJB4LIrw',
+    'Harvest-Account-ID': '1121001'
 }
 
-request = urllib.request.Request(url=url, headers=headers)
-response = urllib.request.urlopen(request, timeout=5)
-responseBody = response.read().decode("utf-8")
+# Define uri's
+api = 'https://api.harvestapp.com/v2/'
+clientUri = 'clients'
+timeEntriesUri = 'time_entries?client_id=' 
+
+# Build url to get clients
+getClient = api+clientUri
+
+# Get client name and id
+clientRequest = urllib.request.Request(url=getClient, headers=headers)
+clientResponse = urllib.request.urlopen(clientRequest, timeout=5)
+responseBody = clientResponse.read().decode('utf-8')
 jsonResponse = json.loads(responseBody)
-timeEntries = jsonResponse["time_entries"]
+clientList = jsonResponse['clients']
 
-regex = re.compile('([0-9]{4})-([0-9]{2})-([0-9]{2})')
-today = date.today().strftime('%Y-%m-%d')
-currentMonth = regex.search(today).group(2)
+for client in clientList:
+    clientId = client['id']
+    clientName = client['name']
 
-hours_used = 0.00
-total_hours = 80.00
+    # Build url to get time
+    getTime = str(api) + str(timeEntriesUri) + str(clientId)
 
-def truncate(n, decimals=0):
-    multiplier = 10 ** decimals
-    return int(n * multiplier) / multiplier
+    # Get client time entries
+    timeRequest = urllib.request.Request(url=getTime, headers=headers)
+    timeResponse = urllib.request.urlopen(timeRequest, timeout=5)
+    responseBody = timeResponse.read().decode('utf-8')
+    jsonResponse = json.loads(responseBody)
+    timeEntries = jsonResponse['time_entries']
 
-for items in timeEntries:
-    m = regex.search(items["spent_date"]).group(2)
-    if str(m) == str(currentMonth):
-      #print(m)
-        total = items["hours"]
-        hours_used += total
-        left = total_hours - hours_used
+    # Define regex pattern based on todays date, match month
+    regex = re.compile('([0-9]{4})-([0-9]{2})-([0-9]{2})')
+    today = date.today().strftime('%Y-%m-%d')
+    currentMonth = regex.search(today).group(2)
+    
+    # Define hours
+    hours_used = 0.00
+    total_hours = 80.00
+   
+    # Get time entries based on regex month match
+    for item in timeEntries:
+        m = regex.search(item['spent_date']).group(2)
+        if str(m) == str(currentMonth):
+           #print(m)
+           total = item['hours']
+           hours_used += total
+           left = total_hours - hours_used
+    
+    # Define decimal place to truncate
+    def truncate(n, decimals=0):
+        multiplier = 10 ** decimals
+        return int(n * multiplier) / multiplier
 
-#used = strftime("%M:%S", gmtime(hours_used *60))
-#left = strftime("%M:%S", gmtime(left *60))
+    # Only keep 2 decimal places
+    used = truncate(hours_used, 2)
+    left = truncate(left, 2)
 
-print  ("DSC ", truncate(hours_used, 2),"/80 Hours Used\t", truncate(left, 2),"/80 Hours Remaining")
-#print(used, "Hours Used")
-#print (truncate(left, 2), "Hours Left")
+    Hour_Report_Template = '''
+    Client:           {clientName}
+    Used Hours:       {used}
+    Remaining Hours:  {left}
+    '''
 
-
+    print (str.format(
+    Hour_Report_Template,
+    clientName = clientName,
+    used = used,
+    left = left,
+    ))

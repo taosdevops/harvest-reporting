@@ -84,7 +84,6 @@ for client in clientList:
        slack_data = { 
            "attachments": [
                {
-                   "fallback": "Client hours report.",
                    "color": "#2eb886",
                    "text": clientName,
                    "fields": [

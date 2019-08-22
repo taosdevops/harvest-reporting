@@ -59,7 +59,7 @@ for client in clientList:
            #print(m)
            total = item['hours']
            hours_used += total
-           left = total_hours - hours_used
+    hours_left = total_hours - hours_used
     
     # Define decimal place to truncate
     def truncate(n, decimals=0):
@@ -68,7 +68,7 @@ for client in clientList:
 
     # Only keep 2 decimal places
     used = truncate(hours_used, 2)
-    left = truncate(left, 2)
+    left = truncate(hours_left, 2)
 
     Hour_Report_Template = '''
     Client:           {clientName}

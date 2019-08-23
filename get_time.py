@@ -73,45 +73,75 @@ for client in clientList:
        # Only keep 2 decimal places
        used = truncate(hours_used, 2)
        left = truncate(hours_left, 2)
+           
+       green  = '#49E20E'
+       yellow = '#FFA812'
+       orange = '#FF3300'
+       red    = '#FF0000'
+       black  = '#0F0F0F'
+         
+       regGreen  = re.compile('^[0-9].[0-9][0-9]|[1-4][0-9].[0-9][0-9]')
+       regYellow = re.compile('5[0-9].[0-9][0-9]')
+       regOrange = re.compile('6[0-9].[0-9][0-9]')
+       regRed    = re.compile('7[0-9].[0-9][0-9]')
+       regBlack  = re.compile('[8-9][0-9].[0-9][0-9]|[1-3][0-9][0-9].[0-9][0-9]')
+       
+       colors = (regGreen,regYellow,regOrange,regRed,regBlack)
+       
+       for reg in colors:
+           match = reg.search(str(left))
+           if str(match) == str(regGreen):
+              color = green
+           elif str(match) == str(regYellow):
+              color = yellow
+           elif str(match) == str(regOrange):
+              color = orange
+           elif str(match) == str(regRed):
+              color = red
+           else:
+               str(match) == str(regBlack)
+               color = black
 
-       Hour_Report_Template = '''
-       Client:           {clientName}
-       Used Hours:       {used}
-       Remaining Hours:  {left}
-       '''
-       # Post to slack
-       webhook_url = '***REMOVED***'
-       slack_data = { 
-           "attachments": [
-               {
-                   "color": "#2eb886",
-                   "text": clientName,
-                   "fields": [
-                        {
-                            "title": "Hours Used",
-                            "value": used,
-                            "short": "true"
-                        },    
-                        {
-                            "title": "Hours Remaining",
-                            "value": left,
-                            "short": "true"
-                        }    
-                   ]
-               }
-           ]
-       }
-    
-    response = requests.post(
-    webhook_url, data=json.dumps(slack_data),
-    headers={'Content-Type': 'application/json'}
-    )
-    print('Response: ' + str(response.text))
-    print('Response code: ' + str(response.status_code))
-
+#       # Post to slack
+#       webhook_url = '***REMOVED***'
+#       slack_data = { 
+#           "attachments": [
+#               {
+#                   "color": color,
+#                   "text": clientName,
+#                   "fields": [
+#                        {
+#                            "title": "Hours Used",
+#                            "value": used,
+#                            "short": "true"
+#                        },    
+#                        {
+#                            "title": "Hours Remaining",
+#                            "value": left,
+#                            "short": "true"
+#                        }    
+#                   ]
+#               }
+#           ]
+#       }
+#    
+#    response = requests.post(
+#    webhook_url, data=json.dumps(slack_data),
+#    headers={'Content-Type': 'application/json'}
+#    )
+#    print('Response: ' + str(response.text))
+#    print('Response code: ' + str(response.status_code))
+#
+    Hour_Report_Template = '''
+    Client:           {clientName}
+    Used Hours:       {used}
+    Remaining Hours:  {left}
+    Color:            {color}
+    '''
     print (str.format(
     Hour_Report_Template,
     clientName = clientName,
-    used = used,
-    left = left,
+    used       = used,
+    left       = left,
+    color      = color,
     ))

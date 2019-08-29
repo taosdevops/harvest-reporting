@@ -23,16 +23,16 @@ def getColorForHoursUsed(used):
     red    = '#FF0000'
     black  = '#0F0F0F'
       
-    if (used >= 0 and used <= 49):
+    if (used >= 0 and used <= 49.99):
         return green
 
-    if (used >= 50 and used <= 59):
+    if (used >= 50.00 and used <= 59.99):
         return yellow
 
-    if (used >= 60 and used <= 69):
+    if (used >= 60.00 and used <= 69.99):
         return orange
 
-    if (used >= 70 and used <= 79):
+    if (used >= 70.00 and used <= 79.99):
         return red
 
     return black

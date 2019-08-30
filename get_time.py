@@ -6,6 +6,8 @@ import math
 import fileinput
 import urllib.request
 import requests
+import colorama
+from colorama import Fore, Style
 from datetime import date
 from datetime import time
 
@@ -17,25 +19,25 @@ def truncate(n, decimals=0):
 def getColorForHoursUsed(used):
 # Only keep 2 decimal places
         
-    green  = '#49E20E'
-    yellow = '#FFA812'
-    orange = '#FF3300'
-    red    = '#FF0000'
-    black  = '#0F0F0F'
+    blue   = '#0000ff'
+    green  = '#33cc00'
+    yellow = '#ffcc00'
+    orange = '#cc3300'
+    red    = '#ff0000'
       
-    if (used >= 0 and used <= 49.99):
+    if (used >= 0 and used <= 29.99):
+        return blue
+
+    if (used >= 30.00 and used <= 49.99):
         return green
 
-    if (used >= 50.00 and used <= 59.99):
+    if (used >= 60.00 and used <= 69.99):
         return yellow
 
-    if (used >= 60.00 and used <= 69.99):
+    if (used >= 70.00 and used <= 79.99):
         return orange
 
-    if (used >= 70.00 and used <= 79.99):
-        return red
-
-    return black
+    return red
 
 def mainMethod():
 # Build headers
@@ -127,7 +129,7 @@ def mainMethod():
            print('Response: ' + str(response.text))
            print('Response code: ' + str(response.status_code))
 
-           # Print to terminal for verification 
+          # Print to terminal for verification 
            Hour_Report_Template = '''
            Client:           {clientName}
            Used Hours:       {used}

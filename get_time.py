@@ -97,51 +97,57 @@ def mainMethod():
 
            used = truncate(hours_used, 2)
            left = truncate(hours_left, 2)
+           percent = used / total_hours * 100
+           percentUsed = ("%d%%" % (percent))
 
-           # Post to slack channel
-           webhook_url = '***REMOVED***'
-           slack_data = { 
-               "attachments": [
-                   {
-                       "color": getColorForHoursUsed(used),
-                       "text": clientName,
-                       "fields": [
-                            {
-                                "title": "Hours Used",
-                                "value": used,
-                                "short": "true"
-                            },    
-                            {
-                                "title": "Hours Remaining",
-                                "value": left,
-                                "short": "true"
-                            }    
-                       ]
-                   }
-               ]
-           }
-           
-           response = requests.post(
-               webhook_url,
-               data=json.dumps(slack_data),
-               headers={'Content-Type': 'application/json'}
-           )
-           print('Response: ' + str(response.text))
-           print('Response code: ' + str(response.status_code))
+          # # Post to slack channel
+          # webhook_url = '***REMOVED***'
+          # slack_data = { 
+          #     "attachments": [
+          #         {
+          #             "color": getColorForHoursUsed(used),
+          #             "title": clientName,
+          #             "text": percentUsed,
+          #             "fields": [
+          #                  {
+          #                      "title": "Hours Used",
+          #                      "value": used,
+          #                      "short": "true"
+          #                  },    
+          #                  {
+          #                      "title": "Hours Remaining",
+          #                      "value": left,
+          #                      "short": "true"
+          #                  }    
+          #             ]
+          #         }
+          #     ]
+          # }
+          # 
+          # response = requests.post(
+          #     webhook_url,
+          #     data=json.dumps(slack_data),
+          #     headers={'Content-Type': 'application/json'}
+          # )
+          # print('Response: ' + str(response.text))
+          # print('Response code: ' + str(response.status_code))
 
-          # Print to terminal for verification 
+          ## Print to terminal for verification 
            Hour_Report_Template = '''
            Client:           {clientName}
            Used Hours:       {used}
            Remaining Hours:  {left}
            Color:            {color}
+           Percent:          {percentUsed}
+
            '''
            print (str.format(
            Hour_Report_Template,
-           clientName = clientName,
-           used       = used,
-           left       = left,
-           color      = getColorForHoursUsed(used),
+           clientName  = clientName,
+           used        = used,
+           left        = left,
+           color       = getColorForHoursUsed(used),
+           percentUsed = percentUsed,
            ))
 
 # This will call the entire operation

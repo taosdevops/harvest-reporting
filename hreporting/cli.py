@@ -1,15 +1,24 @@
 import click
 from hreporting.harvest_client import HarvestClient
-from hreporting.utils import truncate, print_verify
+from hreporting.utils import truncate, print_verify, load_yaml
 
 
 @click.group()
 @click.option("-b", "--bearer-token", envvar="BEARER_TOKEN", required=True)
 @click.option("--account-id", envvar="HARVEST_ACCOUNT_ID", required=True)
-# @click.option("--config-path", envvar="HARVEST_ACCOUNT_ID", required=True)
+@click.option("--config-path", envvar="HARVEST_CONFIG", default=None)
 @click.pass_context
-def main(ctx, bearer_token, account_id):
-    ctx.obj = HarvestClient(bearer_token, account_id)
+def main(ctx, bearer_token, account_id, config_path):
+    if config_path:
+        try:
+            config = load_yaml(config_path)
+        except Exception as e:
+            click.echo(e, err=True)
+            config = {}
+    else:
+        config = {}
+
+    ctx.obj = HarvestClient(bearer_token, account_id, config)
 
 
 @main.command()

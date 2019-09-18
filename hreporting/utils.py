@@ -29,7 +29,7 @@ def truncate(n, decimals=0):
     return int(n * multiplier) / multiplier
 
 
-load_yaml = lambda file_handle: yaml.load(open(file_handle))
+load_yaml = lambda file_handle: yaml.load(open(file_handle), Loader=yaml.Loader)
 
 
 def get_color_code_for_utilization(percent):

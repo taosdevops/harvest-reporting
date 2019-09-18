@@ -17,7 +17,7 @@ class HarvestClient:
         try:
             return [
                 client_entry
-                for client_entry in self.config["clients"]
+                for client_entry in self.config.get("clients", [])
                 if client_entry["name"] == client_name
             ][0]
         except IndexError:
@@ -28,7 +28,7 @@ class HarvestClient:
             "Authorization": f"Bearer {bearer_token}",
             "Harvest-Account-ID": account_id,
         }
-        self.config = config
+        self.config = config or {}
 
     def list_clients(self) -> list:
         """ Returns array of harvest Clients"""
@@ -36,6 +36,13 @@ class HarvestClient:
         response = requests.get(uri, headers=self.headers)
         json_response = response.json()
         return json_response["clients"]
+
+    def get_client_by_id(self, client_id) -> list:
+        """ Returns array of harvest Clients"""
+        uri = self.base_url + self.client_endpoint + f"/{client_id}"
+        response = requests.get(uri, headers=self.headers)
+        json_response = response.json()
+        return json_response
 
     def get_client_time(self, client_id: str):
         """ Returns Time entries for Harvest Clients """

@@ -1,0 +1,93 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - Bearer btoken
+      Connection:
+      - keep-alive
+      Harvest-Account-ID:
+      - '1121001'
+      User-Agent:
+      - python-requests/2.22.0
+    method: GET
+    uri: https://api.harvestapp.com/v2/clients
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA6XWS2/cNhAA4L8i8FC0wG7M4UMiCQQFmrRoDjl520OLwBjxYQuWJYHSbhsY/u8Z
+        ef2KHe027lHEcMhvZzjYa+bbJnbTyNzf16wJzBmtVCXMinV4FZljp03b+L4r/sS2jZ+LX7C7ZCvW
+        jGfop2ZHEVPexhXDEHIcKU23bdsVGyec4hUlPruMnymLNBxCVWHNEySsQihrgyFabkzUoQ6U0udI
+        e8IZThQvONg1N2uwGyidFE7qvyhmO4SjMX6bc+z8fOofp+/ZzeqJCx5dv28nf1F86KaYmz6PrzAJ
+        K0wyihsA66NCARCNlIi2UjaAOmLiTqtjpvuYJRNYpUA+mDbYj3tSh+0rRHTpIHTyUlnPrUqmRFlL
+        qhTEEnhpvy3Sa1AbME6DA7EgehGzKOJaGf4oyriL7TtqwWddl7Adj4PKUgtrNPcA6HlQPPqaClYn
+        kTjWsNB2es2rDVSOg9PlAsishZhBUjmwx0CVfgD92p3jefxt8xpNXUIEGb3nGoWqMFjBoxImEAZV
+        WGi4JxowyxozNxyB1BENVedpw13GQuxb7s7y/V1X6wRB2Upq9DJYFZPgmFIqsfSpFuUhlnKaO84X
+        WC9illmCa3hgfejOM14VHxuf++LH4vSiGf5pcix+Oqhj7KVNWl+jSFDFVHmoeU2V0sgjVlQ4OnPR
+        Vm7E/PiduC3HN2zlGvhsU5J68JhNPc69933bYiYTPaziXbutv9vkEz0dYXVFAyL6JLWIvEaDqbIc
+        jZwTHjJJp2DBVK0lzG1IYVIeM4nHen3s6fLNsxn+395UBF5XAqKCMiEQC+mVybpUoUxSCnkYo7ST
+        BybE7Zuah/gt+Dnm04oNMZ8NNA+YA05Db+onbG8X6L5w/02Xzc28Ygkc/53uduw9Q467pt+OXy/u
+        U65Y23SXtPGapSaP89UupmkY3ckJDs2bC8y7SL/HMLzx/dXJTpzc/Rf4ed7/Fn64v91buhzbn/38
+        2PvvFv9n+pubL9UV8WKLCAAA
+    headers:
+      Cache-Control:
+      - no-cache, no-store
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Security-Policy:
+      - 'report-uri /csp_reports; default-src *; img-src * data:; font-src data: cache.harvestapp.com
+        https://js.intercomcdn.com https://fonts.gstatic.com; script-src ''self''
+        ''unsafe-inline'' ''unsafe-eval'' https://*.google-analytics.com https://*.nr-data.net
+        https://ajax.googleapis.com cache.harvestapp.com https://js-agent.newrelic.com
+        https://platform.twitter.com https://www.google.com https://www.googleadservices.com
+        https://www.googletagmanager.com https://connect.facebook.net https://googleads.g.doubleclick.net
+        https://app.intercom.io https://widget.intercom.io https://js.intercomcdn.com
+        https://cdn.plaid.com https://tagmanager.google.com https://bat.bing.com https://ct.capterra.com;
+        style-src ''self'' ''unsafe-inline'' cache.harvestapp.com https://www.google.com
+        https://tagmanager.google.com https://fonts.googleapis.com'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Wed, 18 Sep 2019 00:14:07 GMT
+      Referrer-Policy:
+      - strict-origin-when-cross-origin
+      Server:
+      - nginx
+      Status:
+      - 200 OK
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      X-App-Server:
+      - app11
+      X-Content-Type-Options:
+      - nosniff
+      X-Download-Options:
+      - noopen
+      X-Frame-Options:
+      - SAMEORIGIN
+      X-Permitted-Cross-Domain-Policies:
+      - none
+      X-Request-Id:
+      - b2c359f119dc6b70fd2301d7a30db7d8
+      X-Robots-Tag:
+      - noindex, nofollow
+      X-Runtime:
+      - '0.089019'
+      X-Server:
+      - lb1
+      X-XSS-Protection:
+      - 1; mode=block
+      p3p:
+      - 'CP="Our privacy policy is available online: https://www.getharvest.com/services/privacy-policy"'
+    status:
+      code: 200
+      message: OK
+version: 1

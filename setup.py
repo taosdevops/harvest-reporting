@@ -8,7 +8,7 @@ setup(
     long_description=open("README.md").read(),
     packages=find_packages(exclude=["contrib", "docs", "tests"]),
     version="0.1.0",
-    url="https://github.com/",
+    url="https://github.com/taosmountain/harvest-reporting",
     install_requires=[
         "Click==7.0",
         "colorama==0.4.1",

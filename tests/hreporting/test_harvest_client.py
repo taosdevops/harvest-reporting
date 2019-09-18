@@ -28,3 +28,32 @@ class TestHarvestClient(VCRTestCase):
         )
         self.assertEqual(time_used, 16.03)
 
+    def test_get_client_hooks_gets_named_hook(self):
+        hook_url = "http://123.com"
+        config = {"clients": [{"name": "dsc", "hooks": [hook_url]}]}
+        client = HarvestClient(btoken, account, config)
+        hooks = client.get_client_hooks("dsc")
+        self.assertEqual(hooks, [hook_url])
+
+    def test_get_client_hooks_compiles_global_hooks(self):
+        hook_url = "http://123.com"
+        global_hook = "http://456.com"
+        config = {
+            "clients": [{"name": "dsc", "hooks": [hook_url]}],
+            "globalHooks": [global_hook],
+        }
+        client = HarvestClient(btoken, account, config)
+        hooks = client.get_client_hooks("dsc")
+        self.assertEqual(hooks, [hook_url, global_hook])
+
+    def test_get_time_alloted(self):
+        config = {"clients": [{"name": "dsc", "hours": 60}]}
+        client = HarvestClient(btoken, account, config)
+        allotment = client.get_client_time_allotment("dsc")
+        self.assertEqual(allotment, 60)
+
+    def test_get_time_alloted_defaults_to_80(self):
+        config = {"clients": [{"name": "dsc"}]}
+        client = HarvestClient(btoken, account, config)
+        allotment = client.get_client_time_allotment("dsc")
+        self.assertEqual(allotment, 80)

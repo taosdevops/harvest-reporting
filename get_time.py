@@ -10,16 +10,12 @@ from colorama import Fore, Style
 from datetime import date
 from datetime import time
 from hreporting.harvest_client import HarvestClient
-from hreporting.utils import truncate, load_yaml, print_verify
+from hreporting.utils import truncate, load_yaml, print_verify, slackPost
 
 
-bearer_token = "1958933.pt.AQdIixLiVPwHPcd0qwPxL0qYh3bKGanbkPBm3yraWoDHA9BNReJODWQfeWnAQZDC9KBmEws1gwDOpVdJB4LIrw"
-harvest_account = "1121001"
-
-
-def mainMethod():
+def main_method(bearer_token, harvest_account, config_path):
     harvest_client = HarvestClient(
-        bearer_token, harvest_account, load_yaml("config/clients.yaml")
+        bearer_token, harvest_account, load_yaml(config_path)
     )
 
     active_clients = [
@@ -48,4 +44,7 @@ def mainMethod():
 
 
 if __name__ == "__main__":
-    mainMethod()
+    bearer_token = os.getenv("BEARER_TOKEN")
+    harvest_account = os.getenv("HARVEST_ACCOUNT_ID", "1121001")
+    config_path = os.getenv("CONFIG_PATJ", "config/clients.yaml")
+    main_method(bearer_token, harvest_account, config_path)

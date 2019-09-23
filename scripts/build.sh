@@ -10,6 +10,7 @@ echo "Creating new Python env"
 source $PYENV_HOME/bin/activate
 
 echo "Copy Project"
+mkdir -p ~/Builds
 mkdir -p $CODE_HOME
 cp -a . $CODE_HOME
 cd $CODE_HOME

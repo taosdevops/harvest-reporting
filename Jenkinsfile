@@ -7,6 +7,7 @@ pipeline {
     stage('test') {
       steps {
           withEnv(["HOME=${env.WORKSPACE}"]) {
+              sh 'apt-get install gcc -y'
               sh 'pip install --user -r devrequirements.txt'
               sh 'python -m unittest discover'
           }

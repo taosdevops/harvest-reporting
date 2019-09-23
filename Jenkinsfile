@@ -1,17 +1,24 @@
 pipeline {
   // agent { docker { image 'python:3.7.2' } }
-  agent { dockerfile: true }
+  // agent { dockerfile: true }
   stages {
-    stage('build') {
-      steps {
-        sh 'chmod +x scripts/build.sh'
-        sh 'scripts/build.sh'
-      }
-    }
+    agent { docker { image 'python:3-alpine' } }
     stage('test') {
       steps {
-        sh 'python unittest discover'
+          withEnv(["HOME=${env.WORKSPACE}"]) {
+              sh 'pip install --user -r requirements.txt'
+              sh 'python WebChecker.py'
+              sh 'python unittest discover'
+          }
       }
+        // sh 'chmod +x scripts/build.sh'
+        // sh 'scripts/build.sh'
+      // }
     }
+    // stage('test') {
+    //   steps {
+        
+    //   }
+    // }
   }
 }

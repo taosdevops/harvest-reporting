@@ -1,3 +1,4 @@
 python --version
-echo User `whoami`
+su -
+# echo User `whoami`
 pip install -r devrequirements.txt --pre --user

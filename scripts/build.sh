@@ -1,4 +1,4 @@
 python --version
 echo CurrentDir `pwd`
 ls
-pip install -r devrequirements.txt
+sudo pip install -r devrequirements.txt

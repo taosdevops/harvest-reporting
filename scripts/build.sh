@@ -1,2 +1,2 @@
 python --version
-pip install -r devrequirements.txt --user
+pip install -r devrequirements.txt --pre --user

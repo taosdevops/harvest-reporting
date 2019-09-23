@@ -1,5 +1,4 @@
 python --version
-python -m venv .env
+echo CurrentDir `pwd`
 ls
-source .env/bin/activate
 pip install -r devrequirements.txt

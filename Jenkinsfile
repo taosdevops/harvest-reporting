@@ -8,7 +8,7 @@ pipeline {
       steps {
           withEnv(["HOME=${env.WORKSPACE}"]) {
               sh 'pip install --user -r requirements.txt'
-              sh 'python unittest discover'
+              sh 'python -m unittest discover'
           }
       }
         // sh 'chmod +x scripts/build.sh'

@@ -1,9 +1,9 @@
 pipeline {
-  agent none
+  agent { docker { image 'python:3-alpine' } }
   // agent { docker { image 'python:3.7.2' } }
   // agent { dockerfile: true }
   stages {
-    agent { docker { image 'python:3-alpine' } }
+    // agent { docker { image 'python:3-alpine' } }
     stage('test') {
       steps {
           withEnv(["HOME=${env.WORKSPACE}"]) {

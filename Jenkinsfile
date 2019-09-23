@@ -7,7 +7,7 @@ pipeline {
     stage('test') {
       steps {
           withEnv(["HOME=${env.WORKSPACE}"]) {
-              sh 'pip install --user -r requirements.txt'
+              sh 'pip install --user -r devrequirements.txt'
               sh 'python -m unittest discover'
           }
       }

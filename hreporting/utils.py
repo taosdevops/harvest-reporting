@@ -19,7 +19,7 @@ def print_verify(used, clientName, percent, left):
             used=used,
             left=left,
             percent="%d%%" % (percent),
-            color=get_color_code_for_utilization(used),
+            color=get_color_code_for_utilization(percent),
         )
     )
 
@@ -60,7 +60,7 @@ def slackPost(webhook_url: str, used, clientName, percent, left):
     slack_data = {
         "attachments": [
             {
-                "color": get_color_code_for_utilization(used),
+                "color": get_color_code_for_utilization(percent),
                 "title": clientName,
                 "text": "%d%%" % (percent),
                 "fields": [

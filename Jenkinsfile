@@ -16,6 +16,7 @@ pipeline {
           string(credentialsId: 'harvest-bearer-token', variable: 'BEARER_TOKEN')
         ]) {
           sh 'gcloud functions deploy harvest_reports --runtime python37 --trigger-http'
+        }
       }
     }
   }

@@ -22,7 +22,7 @@ pipeline {
           string(credentialsId: 'devops-now-gcp-harvestconfigpath', variable: 'CONFIG_PATH')
         ]) {
           withEnv(["HOME=${env.WORKSPACE}"]) {
-            sh 'sudo gcloud auth activate-service-account --key-file=${GCP_KEY}'
+            sh 'gcloud auth activate-service-account --key-file=${GCP_KEY}'
             sh 'gcloud config set project ${PROJECT}'
             sh '''
               gcloud functions deploy harvest_reports --runtime python37 --trigger-http \

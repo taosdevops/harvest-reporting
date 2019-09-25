@@ -15,7 +15,7 @@ pipeline {
       steps{
         withCredentials([
           string(credentialsId: 'harvest-bearer-token', variable: 'BEARER_TOKEN'),
-          file(credentialsId: 'dev-ops-now', variable: 'GCP_KEY')
+          file(credentialsId: 'devops-gcp-serviceaccount', variable: 'GCP_KEY')
         ]) {
           sh 'gcloud auth activate-service-account --key-file=${GCP_KEY}'
           // sh 'gcloud config set project '

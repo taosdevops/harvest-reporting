@@ -37,7 +37,7 @@ def get_color_code_for_utilization(percent):
     blue = "#0000ff"
     green = "#33cc00"
     yellow = "#ffcc00"
-    orange = "#cc3300"
+    orange = "#ff6600"
     red = "#ff0000"
 
     if percent < 40:

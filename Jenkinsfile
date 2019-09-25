@@ -14,8 +14,8 @@ pipeline {
       agent { docker { image 'nsnow/opsbot-pipeline-env' }} 
       steps{
         withCredentials([
-          string(credentialsId: 'harvest-bearer-token', variable: 'BEARER_TOKEN')
-          [file(credentialsId: 'dev-ops-now', variable: 'GCP_KEY')]
+          string(credentialsId: 'harvest-bearer-token', variable: 'BEARER_TOKEN'),
+          file(credentialsId: 'dev-ops-now', variable: 'GCP_KEY')
         ]) {
           sh 'gcloud auth activate-service-account --key-file=${GCP_KEY}'
           // sh 'gcloud config set project '

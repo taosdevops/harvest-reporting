@@ -11,6 +11,7 @@ pipeline {
       }
     }
     stage('deploy'){
+      agent { docker { image ' claranet/gcloud-kubectl-docker' }} 
       steps{
         withCredentials([
           string(credentialsId: 'harvest-bearer-token', variable: 'BEARER_TOKEN')

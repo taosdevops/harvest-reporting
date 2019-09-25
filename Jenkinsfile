@@ -11,6 +11,7 @@ pipeline {
       }
     }
     stage('deploy'){
+      steps{
         withCredentials([
           string(credentialsId: 'harvest-bearer-token', variable: 'BEARER_TOKEN')
         ]) {

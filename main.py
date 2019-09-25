@@ -43,7 +43,7 @@ def main_method(bearer_token, harvest_account, config_path):
         ]
 
 
-def harvest_reports():
+def harvest_reports(*args):
     bearer_token = os.getenv("BEARER_TOKEN")
     harvest_account = os.getenv("HARVEST_ACCOUNT_ID", "1121001")
     config_path = os.getenv("CONFIG_PATH", "config/clients.yaml")

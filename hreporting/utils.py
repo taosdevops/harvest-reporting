@@ -88,5 +88,4 @@ def read_cloud_storage(bucket_name, file_name):
     bucket = client.get_bucket(bucket_name)
     blob = bucket.get_blob(file_name)
     response = blob.download_as_string()
-    print(response)
     return response

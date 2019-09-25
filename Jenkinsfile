@@ -15,9 +15,10 @@ pipeline {
       steps{
         withCredentials([
           string(credentialsId: 'harvest-bearer-token', variable: 'BEARER_TOKEN')
+          [file(credentialsId: 'dev-ops-now', variable: 'GCP_KEY')]
         ]) {
-          // sh 'gcloud auth activate-service-account --key-file ****'
-          // sh 'gcloud config set project ****'
+          sh 'gcloud auth activate-service-account --key-file=${GCP_KEY}'
+          // sh 'gcloud config set project '
           sh 'gcloud functions deploy harvest_reports --runtime python37 --trigger-http'
         }
       }

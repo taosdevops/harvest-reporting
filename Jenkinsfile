@@ -11,11 +11,13 @@ pipeline {
       }
     }
     stage('deploy'){
-      agent { docker { image ' claranet/gcloud-kubectl-docker' }} 
+      agent { docker { image 'nsnow/opsbot-pipeline-env' }} 
       steps{
         withCredentials([
           string(credentialsId: 'harvest-bearer-token', variable: 'BEARER_TOKEN')
         ]) {
+          // sh 'gcloud auth activate-service-account --key-file ****'
+          // sh 'gcloud config set project ****'
           sh 'gcloud functions deploy harvest_reports --runtime python37 --trigger-http'
         }
       }

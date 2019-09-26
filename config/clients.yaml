@@ -16,6 +16,6 @@ clients:
     hours: 240
 
 globalHooks:
-- ***REMOVED***
+***REMOVED***
 
 default_hours: 80

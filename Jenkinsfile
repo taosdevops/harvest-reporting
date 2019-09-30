@@ -19,7 +19,7 @@ pipeline {
           string(credentialsId: 'devops-harvest-accountid', variable: 'HARVEST_ID'),
           string(credentialsId: 'devops-now-gcp-project', variable: 'PROJECT'),
           string(credentialsId: 'devops-now-gcp-configbucket', variable: 'BUCKET'),
-          string(credentialsId: 'devops-now-gcp-harvestconfigpath', variable: 'CONFIG_PATH')
+          string(credentialsId: 'devops-now-gcp-harvestconfigpath', variable: 'CONFIG_PATH'),
           string(credentialsId: 'devops-now-slack-bot-token', variable: 'BOT_TOKEN')
         ]) {
           withEnv(["HOME=${env.WORKSPACE}"]) {

@@ -1,6 +1,7 @@
 import yaml
 import requests
 import json
+from google.cloud import storage
 
 
 def print_verify(used, clientName, percent, left):
@@ -19,7 +20,7 @@ def print_verify(used, clientName, percent, left):
             used=used,
             left=left,
             percent="%d%%" % (percent),
-            color=get_color_code_for_utilization(used),
+            color=get_color_code_for_utilization(percent),
         )
     )
 
@@ -30,14 +31,15 @@ def truncate(n, decimals=0):
     return int(n * multiplier) / multiplier
 
 
-load_yaml = lambda file_handle: yaml.load(open(file_handle), Loader=yaml.Loader)
+load_yaml_file = lambda file_handle: yaml.load(open(file_handle), Loader=yaml.Loader)
+load_yaml = lambda yaml_string: yaml.load(yaml_string, Loader=yaml.Loader)
 
 
 def get_color_code_for_utilization(percent):
     blue = "#0000ff"
     green = "#33cc00"
     yellow = "#ffcc00"
-    orange = "#cc3300"
+    orange = "#ff6600"
     red = "#ff0000"
 
     if percent < 40:
@@ -60,7 +62,7 @@ def slackPost(webhook_url: str, used, clientName, percent, left):
     slack_data = {
         "attachments": [
             {
-                "color": get_color_code_for_utilization(used),
+                "color": get_color_code_for_utilization(percent),
                 "title": clientName,
                 "text": "%d%%" % (percent),
                 "fields": [
@@ -78,4 +80,12 @@ def slackPost(webhook_url: str, used, clientName, percent, left):
     )
     print("Response: " + str(response.text))
     print("Response code: " + str(response.status_code))
+    return response
+
+
+def read_cloud_storage(bucket_name, file_name):
+    client = storage.Client()
+    bucket = client.get_bucket(bucket_name)
+    blob = bucket.get_blob(file_name)
+    response = blob.download_as_string()
     return response

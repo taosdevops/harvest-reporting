@@ -10,13 +10,18 @@ from colorama import Fore, Style
 from datetime import date
 from datetime import time
 from hreporting.harvest_client import HarvestClient
-from hreporting.utils import truncate, load_yaml, print_verify, slackPost
+from hreporting.utils import (
+    truncate,
+    load_yaml,
+    print_verify,
+    slackPost,
+    load_yaml_file,
+    read_cloud_storage,
+)
 
 
-def main_method(bearer_token, harvest_account, config_path):
-    harvest_client = HarvestClient(
-        bearer_token, harvest_account, load_yaml(config_path)
-    )
+def main_method(bearer_token, harvest_account, config):
+    harvest_client = HarvestClient(bearer_token, harvest_account, config)
 
     active_clients = [
         client for client in harvest_client.list_clients() if client["is_active"]
@@ -43,8 +48,18 @@ def main_method(bearer_token, harvest_account, config_path):
         ]
 
 
-if __name__ == "__main__":
+def harvest_reports(*args):
     bearer_token = os.getenv("BEARER_TOKEN")
     harvest_account = os.getenv("HARVEST_ACCOUNT_ID", "1121001")
-    config_path = os.getenv("CONFIG_PATJ", "config/clients.yaml")
-    main_method(bearer_token, harvest_account, config_path)
+    config_path = os.getenv("CONFIG_PATH", "config/clients.yaml")
+    bucket = os.getenv("BUCKET")
+    config = (
+        load_yaml_file(config_path)
+        if not bucket
+        else load_yaml(read_cloud_storage(bucket, config_path))
+    )
+    return main_method(bearer_token, harvest_account, config)
+
+
+if __name__ == "__main__":
+    harvest_reports()

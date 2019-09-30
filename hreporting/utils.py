@@ -2,6 +2,11 @@ import yaml
 import requests
 import json
 from google.cloud import storage
+from taosdevopsutils.slack import Slack
+
+# In the future if we need to auth with multiple workspaces we might need
+# to move this to a factory method and pull a specific client for each token
+slack_client = Slack()
 
 
 def print_verify(used, clientName, percent, left):
@@ -72,14 +77,8 @@ def slackPost(webhook_url: str, used, clientName, percent, left):
             }
         ]
     }
-
-    response = requests.post(
-        webhook_url,
-        data=json.dumps(slack_data),
-        headers={"Content-Type": "application/json"},
-    )
-    print("Response: " + str(response.text))
-    print("Response code: " + str(response.status_code))
+    response = slack_client.post_slack_message(webhook_url, slack_data)
+    print(response)
     return response
 
 

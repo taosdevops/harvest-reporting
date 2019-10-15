@@ -12,6 +12,9 @@ pipeline {
     }
     stage('deploy'){
       agent { docker { image 'nsnow/opsbot-pipeline-env' }}
+      when{
+        branch 'master'
+      }
       steps{
         withCredentials([
           file(credentialsId: 'devops-gcp-serviceaccount', variable: 'GCP_KEY'),

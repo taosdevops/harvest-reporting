@@ -9,6 +9,14 @@ from taosdevopsutils.slack import Slack
 slack_client = Slack()
 
 
+
+def get_payload(used, clientName, percent, left, _format,):
+    if _format == "slack":
+        return
+    if _format == "teams":
+        return
+    raise("Invalid Type")
+
 def print_verify(used, clientName, percent, left):
     """ Print Details for verification """
     Hour_Report_Template = """
@@ -81,6 +89,29 @@ def slackPost(webhook_url: str, used, clientName, percent, left):
     print(response)
     return response
 
+# Post to teamschannel
+def teamsPost(webhook_url: str, used, clientName, percent, left):
+    teams_data = {
+        "@type": "MessageCard",
+        "@context": "https://schema.org/extensions",
+        "themeColor": getColorForHoursUsed(used),
+        "title": "DevOps Time Reports",
+        "text": clientName,
+        "sections": [
+            {"text": "%d%%" % (percent) },
+            {"activityTitle": "Hours Used", "activitSubtitle": used },
+            {"activityTitle": "Hours Remaining", "activitSubtitle": left },
+        ]
+    }
+
+    response = requests.post(
+        webhook_url,
+        data=json.dumps(teams_data),
+        headers={"Content-Type": "application/json"},
+    )
+    print("Response: " + str(response.text))
+    print("Response code: " + str(response.status_code))
+    return response
 
 def read_cloud_storage(bucket_name, file_name):
     client = storage.Client()

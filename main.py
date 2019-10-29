@@ -17,6 +17,7 @@ from hreporting.utils import (
     slackPost,
     load_yaml_file,
     read_cloud_storage,
+    get_payload,
 )
 
 

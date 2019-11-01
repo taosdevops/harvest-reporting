@@ -61,11 +61,10 @@ def get_color_code_for_utilization(percent):
 
     return red
 
-# Define if teams or slack 
-def get_payload(webhook_url: str, used, clientName, percent, left):
-    _format = "teams" if webhook_url.startswit("https://outlook.office.com") else "slack"
+# Define if teams or slack
+def get_payload(used, clientName, percent, left, *args, _format="slack"):
     if _format == "slack":
-        post_data = {
+        return {
             "attachments": [
                 {
                     "color": get_color_code_for_utilization(percent),
@@ -79,7 +78,7 @@ def get_payload(webhook_url: str, used, clientName, percent, left):
             ]
         }
     if _format == "teams":
-        post_data = {
+        return {
             "@type": "MessageCard",
             "@context": "https://schema.org/extensions",
             "themeColor": getColorForHoursUsed(used),
@@ -91,12 +90,13 @@ def get_payload(webhook_url: str, used, clientName, percent, left):
                 {"activityTitle": "Hours Remaining", "activitSubtitle": left },
             ]
         }
-    raise("Invalid Type")
-    
+    raise Exception(f"Invalid Payload format {_format}")
+
 
 # Post to channel/workspace
-def channelPost(webhook_url: str, used, clientName, percent, left):
-    data = get_payload(post_data)
+def channel_post(webhook_url: str, used, clientName, percent, left):
+    post_format = "teams" if webhook_url.startswith("https://outlook.office.com") else "slack"
+    data = get_payload(used, clientName, percent, left, _format=post_format)
     response = slack_client.post_slack_message(webhook_url, data)
     print(response)
     return response

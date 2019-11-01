@@ -10,11 +10,11 @@ class TestUtilsColorCode(TestCase):
 
 class TestGetPayload(TestCase):
     def test_returns_slack_payload(self):
-        hook = "https://hooks.slack.com/webhook/blah/blah"
-        slack_payload_expectation = hook.startswith("https://hooks.slack.com")
-        self.assertEqual(get_payload(slack_payload_expectation)
+        payload_under_test = get_payload(50, "SVB", 4, 5)
+        expectation = "slack"
+        self.assertEqual(payload_under_test, expectation)
 
     def test_returns_teams_payload(self):
-        hook = "https://outlook.office.com/webhook/blah/blah"
-        teams_payload_expectation = hook.startswith("https://outlook.office.com")
-        self.assertEqual(get_payload(teams_payload_expectation)
+        payload_under_test = get_payload(50, "SVB", 4, 5, _format="teams")
+        expectation = "teams"
+        self.assertEqual(payload_under_test, expectation)

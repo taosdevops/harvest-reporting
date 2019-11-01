@@ -9,14 +9,6 @@ from taosdevopsutils.slack import Slack
 slack_client = Slack()
 
 
-
-def get_payload(used, clientName, percent, left, _format,):
-    if _format == "slack":
-        return
-    if _format == "teams":
-        return
-    raise("Invalid Type")
-
 def print_verify(used, clientName, percent, left):
     """ Print Details for verification """
     Hour_Report_Template = """
@@ -69,48 +61,44 @@ def get_color_code_for_utilization(percent):
 
     return red
 
+# Define if teams or slack 
+def get_payload(webhook_url: str, used, clientName, percent, left):
+    _format = "teams" if webhook_url.startswit("https://outlook.office.com") else "slack"
+    if _format == "slack":
+        post_data = {
+            "attachments": [
+                {
+                    "color": get_color_code_for_utilization(percent),
+                    "title": clientName,
+                    "text": "%d%%" % (percent),
+                    "fields": [
+                        {"title": "Hours Used", "value": used, "short": "true"},
+                        {"title": "Hours Remaining", "value": left, "short": "true"},
+                    ],
+                }
+            ]
+        }
+    if _format == "teams":
+        post_data = {
+            "@type": "MessageCard",
+            "@context": "https://schema.org/extensions",
+            "themeColor": getColorForHoursUsed(used),
+            "title": "DevOps Time Reports",
+            "text": clientName,
+            "sections": [
+                {"text": "%d%%" % (percent) },
+                {"activityTitle": "Hours Used", "activitSubtitle": used },
+                {"activityTitle": "Hours Remaining", "activitSubtitle": left },
+            ]
+        }
+    raise("Invalid Type")
+    
 
-# Post to slackchannel
-def slackPost(webhook_url: str, used, clientName, percent, left):
-    slack_data = {
-        "attachments": [
-            {
-                "color": get_color_code_for_utilization(percent),
-                "title": clientName,
-                "text": "%d%%" % (percent),
-                "fields": [
-                    {"title": "Hours Used", "value": used, "short": "true"},
-                    {"title": "Hours Remaining", "value": left, "short": "true"},
-                ],
-            }
-        ]
-    }
-    response = slack_client.post_slack_message(webhook_url, slack_data)
+# Post to channel/workspace
+def channelPost(webhook_url: str, used, clientName, percent, left):
+    data = get_payload(post_data)
+    response = slack_client.post_slack_message(webhook_url, data)
     print(response)
-    return response
-
-# Post to teamschannel
-def teamsPost(webhook_url: str, used, clientName, percent, left):
-    teams_data = {
-        "@type": "MessageCard",
-        "@context": "https://schema.org/extensions",
-        "themeColor": getColorForHoursUsed(used),
-        "title": "DevOps Time Reports",
-        "text": clientName,
-        "sections": [
-            {"text": "%d%%" % (percent) },
-            {"activityTitle": "Hours Used", "activitSubtitle": used },
-            {"activityTitle": "Hours Remaining", "activitSubtitle": left },
-        ]
-    }
-
-    response = requests.post(
-        webhook_url,
-        data=json.dumps(teams_data),
-        headers={"Content-Type": "application/json"},
-    )
-    print("Response: " + str(response.text))
-    print("Response code: " + str(response.status_code))
     return response
 
 def read_cloud_storage(bucket_name, file_name):

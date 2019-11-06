@@ -14,7 +14,7 @@ from hreporting.utils import (
     truncate,
     load_yaml,
     print_verify,
-    channelPost,
+    channel_post,
     load_yaml_file,
     read_cloud_storage,
     get_payload,
@@ -44,7 +44,7 @@ def main_method(bearer_token, harvest_account, config):
         print_verify(used, clientName, percent, left)
 
         [
-            channelPost(hook, used, clientName, percent, left)
+            channel_post(hook, used, clientName, percent, left)
             for hook in harvest_client.get_client_hooks(clientName)
         ]
 

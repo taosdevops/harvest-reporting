@@ -1,4 +1,4 @@
-import yaml
+import yaml 
 import requests
 import json
 from google.cloud import storage
@@ -62,7 +62,7 @@ def get_color_code_for_utilization(percent):
     return red
 
 # Define if teams or slack
-def get_payload(used, clientName, percent, left, _format="slack"):
+def get_payload(used, clientName, percent, left, *args, _format="slack"):
     if _format == "slack":
         return {
             "attachments": [
@@ -81,7 +81,7 @@ def get_payload(used, clientName, percent, left, _format="slack"):
         return {
             "@type": "MessageCard",
             "@context": "https://schema.org/extensions",
-            "themeColor": get_color_code_for_utilization(percent),
+            "themeColor": getColorForHoursUsed(used),
             "title": "DevOps Time Reports",
             "text": clientName,
             "sections": [

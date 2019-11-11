@@ -1,10 +1,12 @@
 black==19.3b0
 Click==7.0
 colorama==0.4.1
+google-cloud-storage>=1.19.1
 pylint==2.3.1
 PyYAML==5.1.2
 requests==2.22.0
+Sphinx==2.2.1
+sphinx-rtd-theme==0.4.3
+taosdevopsutils==1.1.0
 vcrpy==2.1.0
 vcrpy-unittest==0.1.7
-google-cloud-storage>=1.19.1
-taosdevopsutils==1.1.0

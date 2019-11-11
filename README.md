@@ -24,3 +24,24 @@ providing the input via command line flags.
 | HARVEST_ACCOUNT_ID | --account-id |
 | HARVEST_CONFIG | --config-path |
 
+### Local Development
+
+Create virtual env
+
+ `pipenv shell`
+
+Install Dev dependencies
+
+ `pipenv install --dev --skip-lock`
+
+#### Generate Docs
+
+Install the devrequirements to install sphinx and its dependencies then run
+
+`sphinx-build .docs docs`
+
+#### Hosting the docs
+
+`cd docs && python -m http.server`
+
+This will host the docs locally at http://localhost:8000

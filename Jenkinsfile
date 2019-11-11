@@ -36,5 +36,26 @@ pipeline {
         }
       }
     }
+    stage('mkdocs'){
+      agent { docker { image 'nsnow/opsbot-pipeline-env' }}
+      when{
+        branch 'master'
+      }
+      steps{
+        withCredentials([
+          file(credentialsId: 'devops-gcp-serviceaccount', variable: 'GCP_KEY'),
+          string(credentialsId: 'harvest-bearer-token', variable: 'BEARER_TOKEN')
+        ]) {
+          withEnv(["HOME=${env.WORKSPACE}"]) {
+            sh 'pip install -r devrequirements.txt'   // Install dependencies
+            sh 'git checkout master'                  // Ensure Master is checked out
+            sh 'sphinx-build .docs build'             // build docs in
+            sh 'git add docs'
+            sh 'git commit -m "generating docs with sphinx"'
+            sh 'git push'
+          }
+        }
+      }
+    }
   }
 }

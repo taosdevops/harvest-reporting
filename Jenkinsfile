@@ -10,6 +10,27 @@ pipeline {
         }
       }
     }
+    stage('mkdocs'){
+      agent { docker { image 'python:3.7' }}
+      when{
+        branch 'master'
+      }
+      steps{
+        withCredentials([
+          file(credentialsId: 'devops-gcp-serviceaccount', variable: 'GCP_KEY'),
+          string(credentialsId: 'harvest-bearer-token', variable: 'BEARER_TOKEN')
+        ]) {
+          withEnv(["HOME=${env.WORKSPACE}"]) {
+            sh 'pip install -r devrequirements.txt'   // Install dependencies
+            sh 'git checkout master'                  // Ensure Master is checked out
+            sh 'sphinx-build .docs build'             // build docs in
+            sh 'git add docs'
+            sh 'git commit -m "generating docs with sphinx"'
+            sh 'git push'
+          }
+        }
+      }
+    }
     stage('deploy'){
       agent { docker { image 'nsnow/opsbot-pipeline-env' }}
       when{
@@ -32,27 +53,6 @@ pipeline {
               gcloud functions deploy harvest_reports --runtime python37 --trigger-topic dailyReport \
                 --set-env-vars=BEARER_TOKEN=${BEARER_TOKEN},HARVEST_ACCOUNT_ID=${HARVEST_ID},BUCKET=${BUCKET},CONFIG_PATH=${CONFIG_PATH},SLACK_API_TOKEN=${BOT_TOKEN}
             '''
-          }
-        }
-      }
-    }
-    stage('mkdocs'){
-      agent { docker { image 'nsnow/opsbot-pipeline-env' }}
-      when{
-        branch 'master'
-      }
-      steps{
-        withCredentials([
-          file(credentialsId: 'devops-gcp-serviceaccount', variable: 'GCP_KEY'),
-          string(credentialsId: 'harvest-bearer-token', variable: 'BEARER_TOKEN')
-        ]) {
-          withEnv(["HOME=${env.WORKSPACE}"]) {
-            sh 'pip install -r devrequirements.txt'   // Install dependencies
-            sh 'git checkout master'                  // Ensure Master is checked out
-            sh 'sphinx-build .docs build'             // build docs in
-            sh 'git add docs'
-            sh 'git commit -m "generating docs with sphinx"'
-            sh 'git push'
           }
         }
       }

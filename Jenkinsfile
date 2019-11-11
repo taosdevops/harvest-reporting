@@ -27,8 +27,8 @@ pipeline {
             // setting key to id internal to container for git ssh auth
             sh 'mkdir ~/.ssh'
             sh 'cp $GIT_SSH_KEY ~/.ssh/id_rsa'
-            sh 'pip install -r devrequirements.txt'
             sh 'git checkout $GIT_BRANCH'
+            sh 'pip install -r devrequirements.txt'
             sh 'python -m sphinx .docs docs'
             sh 'git add docs'
             sh 'git commit -m "generating docs with sphinx"'

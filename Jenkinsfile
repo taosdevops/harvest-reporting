@@ -18,12 +18,13 @@ pipeline {
       }
       steps{
         withCredentials([
-          file(credentialsId: 'devops-gcp-serviceaccount', variable: 'GCP_KEY'),
-          string(credentialsId: 'harvest-bearer-token', variable: 'BEARER_TOKEN')
+          file(credentialsId: 'jenkins-harvestreporting-build', variable: 'GIT_SSH_KEY')
         ]) {
           withEnv(["HOME=${env.WORKSPACE}"]) {
+            // setting key to id internal to container for git ssh auth
+            sh 'cp $GIT_SSH_KEY ~/.ssh/id_rsa'
             sh 'pip install -r devrequirements.txt'
-            // sh 'git checkout master'
+            sh 'git checkout $GIT_BRANCH'
             sh 'python -m sphinx .docs docs'
             sh 'git add docs'
             sh 'git commit -m "generating docs with sphinx"'

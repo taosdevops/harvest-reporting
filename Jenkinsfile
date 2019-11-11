@@ -11,7 +11,12 @@ pipeline {
       }
     }
     stage('mkdocs'){
-      agent { docker { image 'python:3.7' }}
+      agent {
+        docker {
+          image 'python:3.7'
+          args "-u root"
+        }
+      }
       when{
         branch 'master'
       }

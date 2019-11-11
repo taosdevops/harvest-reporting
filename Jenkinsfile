@@ -17,9 +17,6 @@ pipeline {
           args "-u root"
         }
       }
-      when{
-        branch 'master'
-      }
       steps{
         withCredentials([
           file(credentialsId: 'devops-gcp-serviceaccount', variable: 'GCP_KEY'),

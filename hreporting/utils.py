@@ -1,4 +1,4 @@
-import yaml
+import yaml 
 import requests
 import json
 from google.cloud import storage
@@ -61,26 +61,45 @@ def get_color_code_for_utilization(percent):
 
     return red
 
+# Define if teams or slack
+def get_payload(used, clientName, percent, left, *args, _format="slack"):
+    if _format == "slack":
+        return {
+            "attachments": [
+                {
+                    "color": get_color_code_for_utilization(percent),
+                    "title": clientName,
+                    "text": "%d%%" % (percent),
+                    "fields": [
+                        {"title": "Hours Used", "value": used, "short": "true"},
+                        {"title": "Hours Remaining", "value": left, "short": "true"},
+                    ],
+                }
+            ]
+        }
+    if _format == "teams":
+        return {
+            "@type": "MessageCard",
+            "@context": "https://schema.org/extensions",
+            "themeColor": get_color_code_for_utilization(used),
+            "title": "DevOps Time Reports",
+            "text": clientName,
+            "sections": [
+                {"text": "%d%%" % (percent) },
+                {"activityTitle": "Hours Used", "activitSubtitle": used },
+                {"activityTitle": "Hours Remaining", "activitSubtitle": left },
+            ]
+        }
+    raise Exception(f"Invalid Payload format {_format}")
 
-# Post to slackchannel
-def slackPost(webhook_url: str, used, clientName, percent, left):
-    slack_data = {
-        "attachments": [
-            {
-                "color": get_color_code_for_utilization(percent),
-                "title": clientName,
-                "text": "%d%%" % (percent),
-                "fields": [
-                    {"title": "Hours Used", "value": used, "short": "true"},
-                    {"title": "Hours Remaining", "value": left, "short": "true"},
-                ],
-            }
-        ]
-    }
-    response = slack_client.post_slack_message(webhook_url, slack_data)
+
+# Post to channel/workspace
+def channel_post(webhook_url: str, used, clientName, percent, left):
+    post_format = "teams" if webhook_url.startswith("https://outlook.office.com") else "slack"
+    data = get_payload(used, clientName, percent, left, _format=post_format)
+    response = slack_client.post_slack_message(webhook_url, data)
     print(response)
     return response
-
 
 def read_cloud_storage(bucket_name, file_name):
     client = storage.Client()

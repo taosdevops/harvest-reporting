@@ -22,7 +22,7 @@ pipeline {
           file(credentialsId: 'jenkins-harvestreporting-buildkey', variable: 'GIT_SSH_KEY')
         ]) {
           withEnv([
-            "HOME=${env.WORKSPACE}"
+            // "HOME=${env.WORKSPACE}"
           ]) {
             // setting key to id internal to container for git ssh auth
             sh 'cp $GIT_SSH_KEY ~/.ssh/id_rsa'

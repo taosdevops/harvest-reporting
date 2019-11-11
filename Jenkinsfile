@@ -18,7 +18,7 @@ pipeline {
       }
       steps{
         withCredentials([
-          file(credentialsId: 'jenkins-harvestreporting-build', variable: 'GIT_SSH_KEY')
+          file(credentialsId: 'jenkins-harvestreporting-buildkey', variable: 'GIT_SSH_KEY')
         ]) {
           withEnv(["HOME=${env.WORKSPACE}"]) {
             // setting key to id internal to container for git ssh auth

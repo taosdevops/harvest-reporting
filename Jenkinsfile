@@ -24,6 +24,8 @@ pipeline {
           withEnv(["HOME=${env.WORKSPACE}"]) {
             sh 'pip install -r devrequirements.txt'
             sh 'git checkout master'
+            sh 'git config user.name "JenkinsCI"'
+            sh 'git config user.email "DevOpsNow@taos.com"'
             sh 'python -m sphinx .docs docs'
             sh 'git add docs'
             sh 'git commit -m "generating docs with sphinx"'

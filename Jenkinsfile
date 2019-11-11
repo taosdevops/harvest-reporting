@@ -21,9 +21,10 @@ pipeline {
           string(credentialsId: 'harvest-bearer-token', variable: 'BEARER_TOKEN')
         ]) {
           withEnv(["HOME=${env.WORKSPACE}"]) {
-            sh 'pip install -r devrequirements.txt'   // Install dependencies
-            sh 'git checkout master'                  // Ensure Master is checked out
-            sh 'sphinx-build .docs build'             // build docs in
+            sh 'apt-get update && apt-get install python-sphinx -y'
+            sh 'pip install -r devrequirements.txt'
+            sh 'git checkout master'
+            sh 'sphinx-build .docs build'
             sh 'git add docs'
             sh 'git commit -m "generating docs with sphinx"'
             sh 'git push'

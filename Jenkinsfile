@@ -14,7 +14,6 @@ pipeline {
       agent {
         docker {
           image 'python:3.7'
-          args "-u root"
         }
       }
       steps{
@@ -23,10 +22,9 @@ pipeline {
           string(credentialsId: 'harvest-bearer-token', variable: 'BEARER_TOKEN')
         ]) {
           withEnv(["HOME=${env.WORKSPACE}"]) {
-            sh 'apt-get update && apt-get install python-sphinx -y'
             sh 'pip install -r devrequirements.txt'
             sh 'git checkout master'
-            sh 'sphinx-build .docs build'
+            sh 'python -m sphinx .docs docs'
             sh 'git add docs'
             sh 'git commit -m "generating docs with sphinx"'
             sh 'git push'

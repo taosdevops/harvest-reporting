@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.abspath(".."))
 # -- Project information -----------------------------------------------------
 project = "Harvest Reporting"
 author = "Austin and Adam"
-copyright = f"2019, {author}"
+copyright = "2019, Austin and Adam"
 
 # The full version, including alpha/beta/rc tags
 release = "0.0.1"

@@ -1,0 +1,297 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>hreporting.utils &mdash; Harvest Reporting 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> Harvest Reporting
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">hreporting</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Harvest Reporting</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>hreporting.utils</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for hreporting.utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">yaml</span> 
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">google.cloud</span> <span class="k">import</span> <span class="n">storage</span>
+<span class="kn">from</span> <span class="nn">taosdevopsutils.slack</span> <span class="k">import</span> <span class="n">Slack</span>
+
+<span class="c1"># In the future if we need to auth with multiple workspaces we might need</span>
+<span class="c1"># to move this to a factory method and pull a specific client for each token</span>
+<span class="n">slack_client</span> <span class="o">=</span> <span class="n">Slack</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="print_verify"><a class="viewcode-back" href="../../hreporting.html#hreporting.utils.print_verify">[docs]</a><span class="k">def</span> <span class="nf">print_verify</span><span class="p">(</span><span class="n">used</span><span class="p">,</span> <span class="n">clientName</span><span class="p">,</span> <span class="n">percent</span><span class="p">,</span> <span class="n">left</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Print Details for verification &quot;&quot;&quot;</span>
+    <span class="n">Hour_Report_Template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    Client:           </span><span class="si">{name}</span><span class="s2"></span>
+<span class="s2">    Used Hours:       </span><span class="si">{used}</span><span class="s2"></span>
+<span class="s2">    Remaining Hours:  </span><span class="si">{left}</span><span class="s2"></span>
+<span class="s2">    Color:            </span><span class="si">{color}</span><span class="s2"></span>
+<span class="s2">    Percent:          </span><span class="si">{percent}</span><span class="s2"></span>
+<span class="s2">    &quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="nb">str</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">Hour_Report_Template</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">clientName</span><span class="p">,</span>
+            <span class="n">used</span><span class="o">=</span><span class="n">used</span><span class="p">,</span>
+            <span class="n">left</span><span class="o">=</span><span class="n">left</span><span class="p">,</span>
+            <span class="n">percent</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%d%%</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">percent</span><span class="p">),</span>
+            <span class="n">color</span><span class="o">=</span><span class="n">get_color_code_for_utilization</span><span class="p">(</span><span class="n">percent</span><span class="p">),</span>
+        <span class="p">)</span>
+    <span class="p">)</span></div>
+
+
+<span class="c1"># Define decimal place to truncate</span>
+<div class="viewcode-block" id="truncate"><a class="viewcode-back" href="../../hreporting.html#hreporting.utils.truncate">[docs]</a><span class="k">def</span> <span class="nf">truncate</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="n">multiplier</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">**</span> <span class="n">decimals</span>
+    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">n</span> <span class="o">*</span> <span class="n">multiplier</span><span class="p">)</span> <span class="o">/</span> <span class="n">multiplier</span></div>
+
+
+<span class="n">load_yaml_file</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">file_handle</span><span class="p">:</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">file_handle</span><span class="p">),</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">Loader</span><span class="p">)</span>
+<span class="n">load_yaml</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">yaml_string</span><span class="p">:</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">yaml_string</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">Loader</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="get_color_code_for_utilization"><a class="viewcode-back" href="../../hreporting.html#hreporting.utils.get_color_code_for_utilization">[docs]</a><span class="k">def</span> <span class="nf">get_color_code_for_utilization</span><span class="p">(</span><span class="n">percent</span><span class="p">):</span>
+    <span class="n">blue</span> <span class="o">=</span> <span class="s2">&quot;#0000ff&quot;</span>
+    <span class="n">green</span> <span class="o">=</span> <span class="s2">&quot;#33cc00&quot;</span>
+    <span class="n">yellow</span> <span class="o">=</span> <span class="s2">&quot;#ffcc00&quot;</span>
+    <span class="n">orange</span> <span class="o">=</span> <span class="s2">&quot;#ff6600&quot;</span>
+    <span class="n">red</span> <span class="o">=</span> <span class="s2">&quot;#ff0000&quot;</span>
+
+    <span class="k">if</span> <span class="n">percent</span> <span class="o">&lt;</span> <span class="mi">40</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">blue</span>
+
+    <span class="k">if</span> <span class="n">percent</span> <span class="o">&lt;</span> <span class="mi">65</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">green</span>
+
+    <span class="k">if</span> <span class="n">percent</span> <span class="o">&lt;</span> <span class="mi">87</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">yellow</span>
+
+    <span class="k">if</span> <span class="n">percent</span> <span class="o">&lt;</span> <span class="mi">95</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">orange</span>
+
+    <span class="k">return</span> <span class="n">red</span></div>
+
+<span class="c1"># Define if teams or slack</span>
+<div class="viewcode-block" id="get_payload"><a class="viewcode-back" href="../../hreporting.html#hreporting.utils.get_payload">[docs]</a><span class="k">def</span> <span class="nf">get_payload</span><span class="p">(</span><span class="n">used</span><span class="p">,</span> <span class="n">clientName</span><span class="p">,</span> <span class="n">percent</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">_format</span><span class="o">=</span><span class="s2">&quot;slack&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">_format</span> <span class="o">==</span> <span class="s2">&quot;slack&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;attachments&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="n">get_color_code_for_utilization</span><span class="p">(</span><span class="n">percent</span><span class="p">),</span>
+                    <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="n">clientName</span><span class="p">,</span>
+                    <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">%d%%</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">percent</span><span class="p">),</span>
+                    <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span>
+                        <span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Hours Used&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">used</span><span class="p">,</span> <span class="s2">&quot;short&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">},</span>
+                        <span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Hours Remaining&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">left</span><span class="p">,</span> <span class="s2">&quot;short&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">},</span>
+                    <span class="p">],</span>
+                <span class="p">}</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+    <span class="k">if</span> <span class="n">_format</span> <span class="o">==</span> <span class="s2">&quot;teams&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;@type&quot;</span><span class="p">:</span> <span class="s2">&quot;MessageCard&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;@context&quot;</span><span class="p">:</span> <span class="s2">&quot;https://schema.org/extensions&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;themeColor&quot;</span><span class="p">:</span> <span class="n">get_color_code_for_utilization</span><span class="p">(</span><span class="n">used</span><span class="p">),</span>
+            <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;DevOps Time Reports&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">clientName</span><span class="p">,</span>
+            <span class="s2">&quot;sections&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">%d%%</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">percent</span><span class="p">)</span> <span class="p">},</span>
+                <span class="p">{</span><span class="s2">&quot;activityTitle&quot;</span><span class="p">:</span> <span class="s2">&quot;Hours Used&quot;</span><span class="p">,</span> <span class="s2">&quot;activitSubtitle&quot;</span><span class="p">:</span> <span class="n">used</span> <span class="p">},</span>
+                <span class="p">{</span><span class="s2">&quot;activityTitle&quot;</span><span class="p">:</span> <span class="s2">&quot;Hours Remaining&quot;</span><span class="p">,</span> <span class="s2">&quot;activitSubtitle&quot;</span><span class="p">:</span> <span class="n">left</span> <span class="p">},</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Invalid Payload format </span><span class="si">{_format}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<span class="c1"># Post to channel/workspace</span>
+<div class="viewcode-block" id="channel_post"><a class="viewcode-back" href="../../hreporting.html#hreporting.utils.channel_post">[docs]</a><span class="k">def</span> <span class="nf">channel_post</span><span class="p">(</span><span class="n">webhook_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">used</span><span class="p">,</span> <span class="n">clientName</span><span class="p">,</span> <span class="n">percent</span><span class="p">,</span> <span class="n">left</span><span class="p">):</span>
+    <span class="n">post_format</span> <span class="o">=</span> <span class="s2">&quot;teams&quot;</span> <span class="k">if</span> <span class="n">webhook_url</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;https://outlook.office.com&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;slack&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">get_payload</span><span class="p">(</span><span class="n">used</span><span class="p">,</span> <span class="n">clientName</span><span class="p">,</span> <span class="n">percent</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">_format</span><span class="o">=</span><span class="n">post_format</span><span class="p">)</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">slack_client</span><span class="o">.</span><span class="n">post_slack_message</span><span class="p">(</span><span class="n">webhook_url</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">response</span></div>
+
+<div class="viewcode-block" id="read_cloud_storage"><a class="viewcode-back" href="../../hreporting.html#hreporting.utils.read_cloud_storage">[docs]</a><span class="k">def</span> <span class="nf">read_cloud_storage</span><span class="p">(</span><span class="n">bucket_name</span><span class="p">,</span> <span class="n">file_name</span><span class="p">):</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">storage</span><span class="o">.</span><span class="n">Client</span><span class="p">()</span>
+    <span class="n">bucket</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_bucket</span><span class="p">(</span><span class="n">bucket_name</span><span class="p">)</span>
+    <span class="n">blob</span> <span class="o">=</span> <span class="n">bucket</span><span class="o">.</span><span class="n">get_blob</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">blob</span><span class="o">.</span><span class="n">download_as_string</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">response</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Austin and Adam
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

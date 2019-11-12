@@ -41,7 +41,7 @@ pipeline {
             sh 'git commit -m "generating docs with sphinx"'
             sh 'git push'
             //  Try to cleanup to not trigger Jenkins build error
-            sh 'rm docs .git -rf'
+            sh 'rm hreporting docs .git -rf'
           }
         }
       }

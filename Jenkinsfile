@@ -17,6 +17,9 @@ pipeline {
           args  '-u root'
         }
       }
+      when{
+        branch 'master'
+      }
       steps{
         withCredentials([
           file(credentialsId: 'jenkins-harvestreporting-buildkey', variable: 'GIT_SSH_KEY')

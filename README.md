@@ -1,6 +1,8 @@
 # harvest-reporting
 Harvest Time tracking and reporting API implementation
 
+Docs: https://taosdevops.github.io/harvest-reporting/
+
 ## CLI
 
 ### Installing as CLI

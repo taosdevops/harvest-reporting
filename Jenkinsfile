@@ -26,6 +26,8 @@ pipeline {
           ]) {
             // setting key to id internal to container for git ssh auth
             sh 'mkdir ~/.ssh'
+            // Setting test
+            sh "git config core.sshCommand 'ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'"
             sh 'cp $GIT_SSH_KEY ~/.ssh/id_rsa'
             sh 'git checkout $GIT_BRANCH --force'
             sh 'pip install -r devrequirements.txt'

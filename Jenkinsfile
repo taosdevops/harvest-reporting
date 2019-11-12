@@ -24,17 +24,24 @@ pipeline {
           withEnv([
             // "HOME=${env.WORKSPACE}"
           ]) {
-            // setting key to id internal to container for git ssh auth
+            // Setup Git
             sh 'mkdir ~/.ssh'
-            // Setting test
             sh "git config core.sshCommand 'ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'"
+            sh 'git config user.name "JenkinsCI"'
+            sh 'git config user.email "DevOpsNow@taos.com"'
             sh 'cp $GIT_SSH_KEY ~/.ssh/id_rsa'
             sh 'git checkout $GIT_BRANCH --force'
+
+            // Generate Docs
             sh 'pip install -r devrequirements.txt'
             sh 'python -m sphinx .docs docs'
+
+            // Commit them to repository
             sh 'git add docs'
             sh 'git commit -m "generating docs with sphinx"'
             sh 'git push'
+            //  Try to cleanup to not trigger Jenkins build error
+            sh 'rm docs .git -rf'
           }
         }
       }

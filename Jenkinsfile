@@ -14,7 +14,7 @@ pipeline {
       agent {
         docker {
           image 'python:3.7'
-          args "-u root"
+          args  '-u root'
         }
       }
       when{
@@ -22,17 +22,29 @@ pipeline {
       }
       steps{
         withCredentials([
-          file(credentialsId: 'devops-gcp-serviceaccount', variable: 'GCP_KEY'),
-          string(credentialsId: 'harvest-bearer-token', variable: 'BEARER_TOKEN')
+          file(credentialsId: 'jenkins-harvestreporting-buildkey', variable: 'GIT_SSH_KEY')
         ]) {
-          withEnv(["HOME=${env.WORKSPACE}"]) {
-            sh 'apt-get update && apt-get install python-sphinx -y'
+          withEnv([
+            // "HOME=${env.WORKSPACE}"
+          ]) {
+            // Setup Git
+            sh 'mkdir ~/.ssh'
+            sh "git config core.sshCommand 'ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'"
+            sh 'git config user.name "JenkinsCI"'
+            sh 'git config user.email "DevOpsNow@taos.com"'
+            sh 'cp $GIT_SSH_KEY ~/.ssh/id_rsa'
+            sh 'git checkout $GIT_BRANCH --force'
+
+            // Generate Docs
             sh 'pip install -r devrequirements.txt'
-            sh 'git checkout master'
-            sh 'sphinx-build .docs build'
+            sh 'python -m sphinx .docs docs'
+
+            // Commit them to repository
             sh 'git add docs'
             sh 'git commit -m "generating docs with sphinx"'
             sh 'git push'
+            //  Try to cleanup to not trigger Jenkins build error
+            sh 'rm hreporting docs .git -rf'
           }
         }
       }

@@ -17,9 +17,9 @@ pipeline {
           args  '-u root'
         }
       }
-      when{
-        branch 'master'
-      }
+      // when{
+      //   branch 'master'
+      // }
       steps{
         withCredentials([
           file(credentialsId: 'jenkins-harvestreporting-buildkey', variable: 'GIT_SSH_KEY')
@@ -40,6 +40,7 @@ pipeline {
             sh 'python -m sphinx .docs docs'
 
             // Commit them to repository
+            sh 'git config --global user.email' // print email for debugging
             sh 'git add docs'
             sh 'git commit -m "generating docs with sphinx"'
             sh 'git push'

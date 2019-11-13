@@ -1,6 +1,7 @@
 import requests
 import datetime
 import re
+from typing import List
 
 
 def _get_current_month():  # Maybe move ??
@@ -9,9 +10,18 @@ def _get_current_month():  # Maybe move ??
 
 
 class HarvestClient:
-    base_url = "https://api.harvestapp.com/v2/"
-    client_endpoint = "clients"
-    client_time_endpoint = "time_entries?client_id="
+    """ Harvest Client """
+
+    _base_url = "https://api.harvestapp.com/v2/"
+    _client_endpoint = "clients"
+    _client_time_endpoint = "time_entries?client_id="
+
+    def __init__(self, bearer_token: str, account_id: str, config=None):
+        self.headers = {
+            "Authorization": f"Bearer {bearer_token}",
+            "Harvest-Account-ID": account_id,
+        }
+        self.config = config or {}
 
     def _get_client_config(self, client_name: str):
         try:
@@ -23,35 +33,31 @@ class HarvestClient:
         except IndexError:
             return {}
 
-    def __init__(self, bearer_token: str, account_id: str, config=None):
-        self.headers = {
-            "Authorization": f"Bearer {bearer_token}",
-            "Harvest-Account-ID": account_id,
-        }
-        self.config = config or {}
-
-    def list_clients(self) -> list:
+    def list_clients(self) -> List[dict]:
         """ Returns array of harvest Clients"""
-        uri = self.base_url + self.client_endpoint
+        uri = self._base_url + self._client_endpoint
         response = requests.get(uri, headers=self.headers)
         json_response = response.json()
         return json_response["clients"]
 
-    def get_client_by_id(self, client_id) -> list:
+    def get_client_by_id(self, client_id: str) -> list:
         """ Returns array of harvest Clients"""
-        uri = self.base_url + self.client_endpoint + f"/{client_id}"
+        uri = self._base_url + self._client_endpoint + f"/{client_id}"
         response = requests.get(uri, headers=self.headers)
         json_response = response.json()
         return json_response
 
-    def get_client_time(self, client_id: str):
+    def get_client_time(self, client_id: str) -> List[dict]:
         """ Returns Time entries for Harvest Clients """
-        uri = self.base_url + self.client_time_endpoint + str(client_id)
+        uri = self._base_url + self._client_time_endpoint + str(client_id)
         response = requests.get(uri, headers=self.headers)
         json_response = response.json()
         return json_response["time_entries"]
 
-    def get_client_time_used(self, client_id: str, month=_get_current_month()):
+    def get_client_time_used(
+        self, client_id: str, month: str = _get_current_month()
+    ) -> float:
+        """ returns sum of client time used for the given month """
         regex = re.compile("([0-9]{4})-([0-9]{2})-([0-9]{2})")
         return sum(
             [
@@ -61,11 +67,13 @@ class HarvestClient:
             ]
         )
 
-    def get_client_time_allotment(self, client_name):
+    def get_client_time_allotment(self, client_name: str) -> float:
+        """ returns client allotment provided in class.config. *default=60* """
         client_config = self._get_client_config(client_name)
         return client_config.get("hours", self.config.get("default_hours", 80))
 
-    def get_client_hooks(self, client_name):
+    def get_client_hooks(self, client_name) -> List[str]:
+        """ Returns list of webhooks registered for client. """
         client_config = self._get_client_config(client_name)
         return [*client_config.get("hooks", []), *self.config.get("globalHooks", [])]
         # client_config.get('hours',self.config.get('default_hours'),80)

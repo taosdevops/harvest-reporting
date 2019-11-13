@@ -1,12 +1,29 @@
 import click
 from hreporting.harvest_client import HarvestClient
 from hreporting.utils import truncate, print_verify, load_yaml
+from hreporting import config
 
 
 @click.group()
-@click.option("-b", "--bearer-token", envvar="BEARER_TOKEN", required=True)
-@click.option("--account-id", envvar="HARVEST_ACCOUNT_ID", required=True)
-@click.option("--config-path", envvar="HARVEST_CONFIG", default=None)
+@click.option(
+    "-b",
+    "--bearer-token",
+    envvar="BEARER_TOKEN",
+    required=True,
+    help=config.strings.bearer_token_help,
+)
+@click.option(
+    "--account-id",
+    envvar="HARVEST_ACCOUNT_ID",
+    required=True,
+    help=config.strings.config_path_help,
+)
+@click.option(
+    "--config-path",
+    envvar="HARVEST_CONFIG",
+    default=None,
+    help=config.strings.account_id_help,
+)
 @click.pass_context
 def main(ctx, bearer_token, account_id, config_path):
     if config_path:
@@ -24,6 +41,7 @@ def main(ctx, bearer_token, account_id, config_path):
 @main.command()
 @click.pass_obj
 def list_clients(client: HarvestClient):
+    """ Returns a list of clients in table format """
     template = "{id:<9} {name}"
     click.echo("ID      | Name")
     # print(clients)
@@ -35,6 +53,7 @@ def list_clients(client: HarvestClient):
 @click.argument("client_id")
 @click.pass_obj
 def get_client(harvest_client: HarvestClient, client_id):
+    """ Returns data regarding client """
     client = harvest_client.get_client_by_id(client_id)
     clientName = client["name"]
 

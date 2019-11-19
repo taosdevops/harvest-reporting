@@ -86,10 +86,10 @@ def get_payload(used, clientName, percent, left, *args, _format="slack") -> dict
             "title": "DevOps Time Reports",
             "text": clientName,
             "sections": [
-                {"text": "%d%%" % (percent)},
-                {"activityTitle": "Hours Used", "activitSubtitle": used},
-                {"activityTitle": "Hours Remaining", "activitSubtitle": left},
-            ],
+                {"text": "%d%%" % (percent) },
+                {"activityTitle": "Hours Used", "activitySubtitle": used },
+                {"activityTitle": "Hours Remaining", "activitySubtitle": left },
+            ]
         }
     raise Exception(f"Invalid Payload format {_format}")
 

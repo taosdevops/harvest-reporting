@@ -37,6 +37,7 @@ extensions = [
     "sphinx.ext.githubpages",
     "sphinx_rtd_theme",
     "recommonmark",
+    "sphinx_click.ext",
 ]
 
 # List of patterns, relative to source directory, that match files and

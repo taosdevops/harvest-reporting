@@ -11,3 +11,4 @@ sphinx-rtd-theme==0.4.3
 taosdevopsutils==1.1.0
 vcrpy==2.1.0
 vcrpy-unittest==0.1.7
+sphinx-click==2.3.0

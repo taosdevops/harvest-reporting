@@ -1,18 +1,19 @@
-.. Harvest Reporting documentation master file, created by
-   sphinx-quickstart on Tue Oct 29 12:08:36 2019.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
 
-Welcome to Harvest Reporting's documentation!
-=============================================
+Harvest Reporting
+=================
+
+This project is to increase the integration of Harvest
+as a time management solution with other applications.
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-   modules.rst
-
-
+   cloudfunction
+   cli
+   client
+   config
+   utils
 
 Indices and tables
 ==================
@@ -21,8 +22,3 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
-
-README
-======
-
-.. include:: ../README.md

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Welcome to Harvest Reporting’s documentation! &mdash; Harvest Reporting 0.0.1 documentation</title>
+  <title>Harvest Reporting &mdash; Harvest Reporting 0.0.1 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="hreporting" href="modules.html" /> 
+    <link rel="next" title="Harvest Messenger" href="cloudfunction.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -81,7 +81,11 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">hreporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cloudfunction.html">Harvest Messenger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">CLI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="client.html">Harvest Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config.html">Harvest Reporting Config</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utility Functions</a></li>
 </ul>
 
             
@@ -127,7 +131,7 @@
     
       <li><a href="#">Docs</a> &raquo;</li>
         
-      <li>Welcome to Harvest Reporting’s documentation!</li>
+      <li>Harvest Reporting</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -146,15 +150,22 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="welcome-to-harvest-reporting-s-documentation">
-<h1>Welcome to Harvest Reporting’s documentation!<a class="headerlink" href="#welcome-to-harvest-reporting-s-documentation" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="harvest-reporting">
+<h1>Harvest Reporting<a class="headerlink" href="#harvest-reporting" title="Permalink to this headline">¶</a></h1>
+<p>This project is to increase the integration of Harvest
+as a time management solution with other applications.</p>
 <div class="toctree-wrapper compound">
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">hreporting</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="hreporting.html">hreporting package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cloudfunction.html">Harvest Messenger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">CLI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cli.html#getting-started">Getting started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli.html#cli-module">CLI Module</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="client.html">Harvest Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config.html">Harvest Reporting Config</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utility Functions</a></li>
 </ul>
 </div>
 </div>
@@ -166,43 +177,6 @@
 <li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
 </div>
-<div class="section" id="readme">
-<h1>README<a class="headerlink" href="#readme" title="Permalink to this headline">¶</a></h1>
-<p># harvest-reporting
-Harvest Time tracking and reporting API implementation</p>
-<p>Docs: <a class="reference external" href="https://taosdevops.github.io/harvest-reporting/">https://taosdevops.github.io/harvest-reporting/</a></p>
-<p>## CLI</p>
-<p>### Installing as CLI</p>
-<p>you can install this package off of pypi</p>
-<p>` pip install harvestcli `</p>
-<p>or you can clone the project install the project from that directory.</p>
-<p>` pip install .`</p>
-<p>### Environment Variables</p>
-<p>When using the cli Environment Variables can be used as an alternative to
-providing the input via command line flags.</p>
-<div class="line-block">
-<div class="line">Variable | Option |</div>
-<div class="line">——– | —— |</div>
-<div class="line">BEARER_TOKEN | -b, –bearer-token |</div>
-<div class="line">HARVEST_ACCOUNT_ID | –account-id |</div>
-<div class="line">HARVEST_CONFIG | –config-path |</div>
-</div>
-<p>### Local Development</p>
-<p>Create virtual env</p>
-<blockquote>
-<div><p><cite>pipenv shell</cite></p>
-</div></blockquote>
-<p>Install Dev dependencies</p>
-<blockquote>
-<div><p><cite>pipenv install –dev –skip-lock</cite></p>
-</div></blockquote>
-<p>#### Generate Docs</p>
-<p>Install the devrequirements to install sphinx and its dependencies then run</p>
-<p><cite>sphinx-build .docs docs</cite></p>
-<p>#### Hosting the docs</p>
-<p><cite>cd docs &amp;&amp; python -m http.server</cite></p>
-<p>This will host the docs locally at <a class="reference external" href="http://localhost:8000">http://localhost:8000</a></p>
-</div>
 
 
            </div>
@@ -212,7 +186,7 @@ providing the input via command line flags.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="modules.html" class="btn btn-neutral float-right" title="hreporting" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="cloudfunction.html" class="btn btn-neutral float-right" title="Harvest Messenger" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
     </div>

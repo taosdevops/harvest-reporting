@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>hreporting &mdash; Harvest Reporting 0.0.1 documentation</title>
+  <title>Harvest Messenger &mdash; Harvest Reporting 0.0.1 documentation</title>
   
 
   
@@ -34,7 +34,9 @@
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="CLI" href="cli.html" />
+    <link rel="prev" title="Harvest Reporting" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -79,8 +81,8 @@
             
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="cloudfunction.html">Harvest Messenger</a></li>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Harvest Messenger</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cli.html">CLI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="client.html">Harvest Client</a></li>
 <li class="toctree-l1"><a class="reference internal" href="config.html">Harvest Reporting Config</a></li>
@@ -130,13 +132,13 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>hreporting</li>
+      <li>Harvest Messenger</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/modules.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/cloudfunction.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -149,9 +151,16 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="hreporting">
-<h1>hreporting<a class="headerlink" href="#hreporting" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
+  <div class="section" id="harvest-messenger">
+<h1>Harvest Messenger<a class="headerlink" href="#harvest-messenger" title="Permalink to this headline">¶</a></h1>
+<p>The main.py file is to be used as an entrypoint for
+a cloud service provider to call on a schedule. This
+will load a config load it into a Harvest client and
+run a report and post them to the webhooks registered.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>More details regarding config variables please
+visit <a class="reference internal" href="config.html#config-reference-label"><span class="std std-ref">Harvest Reporting Config</span></a></p>
 </div>
 </div>
 
@@ -160,6 +169,15 @@
            
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="cli.html" class="btn btn-neutral float-right" title="CLI" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral float-left" title="Harvest Reporting" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>

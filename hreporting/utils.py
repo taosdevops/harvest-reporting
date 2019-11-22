@@ -82,7 +82,7 @@ def get_payload(used, clientName, percent, left, *args, _format="slack") -> dict
         return {
             "@type": "MessageCard",
             "@context": "https://schema.org/extensions",
-            "themeColor": get_color_code_for_utilization(used),
+            "themeColor": get_color_code_for_utilization(percent),
             "title": "DevOps Time Reports",
             "text": clientName,
             "sections": [

@@ -151,8 +151,8 @@
 <span></span><span class="kn">import</span> <span class="nn">yaml</span>
 <span class="kn">import</span> <span class="nn">requests</span>
 <span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">from</span> <span class="nn">google.cloud</span> <span class="k">import</span> <span class="n">storage</span>
-<span class="kn">from</span> <span class="nn">taosdevopsutils.slack</span> <span class="k">import</span> <span class="n">Slack</span>
+<span class="kn">from</span> <span class="nn">google.cloud</span> <span class="kn">import</span> <span class="n">storage</span>
+<span class="kn">from</span> <span class="nn">taosdevopsutils.slack</span> <span class="kn">import</span> <span class="n">Slack</span>
 
 <span class="c1"># In the future if we need to auth with multiple workspaces we might need</span>
 <span class="c1"># to move this to a factory method and pull a specific client for each token</span>
@@ -241,7 +241,7 @@
                 <span class="p">{</span><span class="s2">&quot;activityTitle&quot;</span><span class="p">:</span> <span class="s2">&quot;Hours Remaining&quot;</span><span class="p">,</span> <span class="s2">&quot;activitySubtitle&quot;</span><span class="p">:</span> <span class="n">left</span> <span class="p">},</span>
             <span class="p">]</span>
         <span class="p">}</span>
-    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Invalid Payload format </span><span class="si">{_format}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid Payload format </span><span class="si">{_format}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 
 <span class="c1"># Post to channel/workspace</span>

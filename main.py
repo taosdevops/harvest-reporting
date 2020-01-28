@@ -1,24 +1,8 @@
-import re
 import os
-import json
-import math
-import fileinput
-import urllib.request
-import requests
-import colorama
-from colorama import Fore, Style
-from datetime import date
-from datetime import time
+
 from hreporting.harvest_client import HarvestClient
-from hreporting.utils import (
-    truncate,
-    load_yaml,
-    print_verify,
-    channel_post,
-    load_yaml_file,
-    read_cloud_storage,
-    get_payload,
-)
+from hreporting.utils import (channel_post, load_yaml, load_yaml_file,
+                              print_verify, read_cloud_storage, truncate)
 
 
 def main_method(bearer_token, harvest_account, config):
@@ -43,8 +27,9 @@ def main_method(bearer_token, harvest_account, config):
 
         print_verify(used, clientName, percent, left)
 
-        [
+        return [
             channel_post(hook, used, clientName, percent, left)
+
             for hook in harvest_client.get_client_hooks(clientName)
         ]
 
@@ -56,9 +41,11 @@ def harvest_reports(*args):
     bucket = os.getenv("BUCKET")
     config = (
         load_yaml_file(config_path)
+
         if not bucket
         else load_yaml(read_cloud_storage(bucket, config_path))
     )
+
     return main_method(bearer_token, harvest_account, config)
 
 

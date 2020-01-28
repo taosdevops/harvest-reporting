@@ -19,4 +19,3 @@ class strings:
     bearer_token_help = "bearer token to use for the harvest-client"
     config_path_help = "path location to find the harvest-client config"
     account_id_help = "your harvest client id"
-

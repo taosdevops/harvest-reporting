@@ -1,6 +1,4 @@
 import yaml
-import requests
-import json
 from google.cloud import storage
 from taosdevopsutils.slack import Slack
 
@@ -36,8 +34,12 @@ def truncate(n, decimals=0) -> float:
     return int(n * multiplier) / multiplier
 
 
-load_yaml_file = lambda file_handle: yaml.load(open(file_handle), Loader=yaml.Loader)
-load_yaml = lambda yaml_string: yaml.load(yaml_string, Loader=yaml.Loader)
+def load_yaml_file(file_handle):
+    return yaml.load(open(file_handle), Loader=yaml.Loader)
+
+
+def load_yaml(yaml_string):
+    return yaml.load(yaml_string, Loader=yaml.Loader)
 
 
 def get_color_code_for_utilization(percent) -> str:
@@ -86,10 +88,10 @@ def get_payload(used, clientName, percent, left, *args, _format="slack") -> dict
             "title": "DevOps Time Reports",
             "text": clientName,
             "sections": [
-                {"text": "%d%%" % (percent) },
-                {"activityTitle": "Hours Used", "activitySubtitle": used },
-                {"activityTitle": "Hours Remaining", "activitySubtitle": left },
-            ]
+                {"text": "%d%%" % (percent)},
+                {"activityTitle": "Hours Used", "activitySubtitle": used},
+                {"activityTitle": "Hours Remaining", "activitySubtitle": left},
+            ],
         }
     raise Exception(f"Invalid Payload format {_format}")
 
@@ -98,11 +100,13 @@ def get_payload(used, clientName, percent, left, *args, _format="slack") -> dict
 def channel_post(webhook_url: str, used, clientName, percent, left) -> dict:
     """ Posts payload to webhook provided """
     post_format = (
-        "teams" if webhook_url.startswith("https://outlook.office.com") else "slack"
+        "teams" if webhook_url.startswith(
+            "https://outlook.office.com") else "slack"
     )
     data = get_payload(used, clientName, percent, left, _format=post_format)
     response = slack_client.post_slack_message(webhook_url, data)
     print(response)
+
     return response
 
 
@@ -112,4 +116,5 @@ def read_cloud_storage(bucket_name, file_name) -> str:
     bucket = client.get_bucket(bucket_name)
     blob = bucket.get_blob(file_name)
     response = blob.download_as_string()
+
     return response

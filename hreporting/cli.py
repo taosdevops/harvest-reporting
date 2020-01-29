@@ -1,7 +1,8 @@
 import click
-from hreporting.harvest_client import HarvestClient
-from hreporting.utils import truncate, print_verify, load_yaml
+
 from hreporting import config
+from hreporting.harvest_client import HarvestClient
+from hreporting.utils import load_yaml, print_verify, truncate
 
 
 @click.group()
@@ -45,6 +46,7 @@ def list_clients(client: HarvestClient):
     template = "{id:<9} {name}"
     click.echo("ID      | Name")
     # print(clients)
+
     for client in client.list_clients():
         click.echo(str.format(template, name=client["name"], id=client["id"]))
 

@@ -148,14 +148,16 @@
            <div itemprop="articleBody">
             
   <h1>Source code for hreporting.harvest_client</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">requests</span>
-<span class="kn">import</span> <span class="nn">datetime</span>
+<span></span><span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+
+<span class="kn">import</span> <span class="nn">requests</span>
 
 
 <span class="k">def</span> <span class="nf">_get_current_month</span><span class="p">():</span>  <span class="c1"># Maybe move ??</span>
     <span class="n">dm</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">()</span><span class="o">.</span><span class="n">month</span>
+
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{dm:02}</span><span class="s2">&quot;</span>
 
 
@@ -177,7 +179,9 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span>
                 <span class="n">client_entry</span>
+
                 <span class="k">for</span> <span class="n">client_entry</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;clients&quot;</span><span class="p">,</span> <span class="p">[])</span>
+
                 <span class="k">if</span> <span class="n">client_entry</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">client_name</span>
             <span class="p">][</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
@@ -188,6 +192,7 @@
         <span class="n">uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_url</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client_endpoint</span>
         <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">)</span>
         <span class="n">json_response</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
         <span class="k">return</span> <span class="n">json_response</span><span class="p">[</span><span class="s2">&quot;clients&quot;</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="HarvestClient.get_client_by_id"><a class="viewcode-back" href="../../client.html#hreporting.harvest_client.HarvestClient.get_client_by_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_client_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
@@ -195,6 +200,7 @@
         <span class="n">uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_url</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client_endpoint</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{client_id}</span><span class="s2">&quot;</span>
         <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">)</span>
         <span class="n">json_response</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
         <span class="k">return</span> <span class="n">json_response</span></div>
 
 <div class="viewcode-block" id="HarvestClient.get_client_time"><a class="viewcode-back" href="../../client.html#hreporting.harvest_client.HarvestClient.get_client_time">[docs]</a>    <span class="k">def</span> <span class="nf">get_client_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
@@ -202,6 +208,7 @@
         <span class="n">uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_url</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client_time_endpoint</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">client_id</span><span class="p">)</span>
         <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">)</span>
         <span class="n">json_response</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
         <span class="k">return</span> <span class="n">json_response</span><span class="p">[</span><span class="s2">&quot;time_entries&quot;</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="HarvestClient.get_client_time_used"><a class="viewcode-back" href="../../client.html#hreporting.harvest_client.HarvestClient.get_client_time_used">[docs]</a>    <span class="k">def</span> <span class="nf">get_client_time_used</span><span class="p">(</span>
@@ -209,10 +216,13 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot; returns sum of client time used for the given month &quot;&quot;&quot;</span>
         <span class="n">regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s2">&quot;([0-9]</span><span class="si">{4}</span><span class="s2">)-([0-9]</span><span class="si">{2}</span><span class="s2">)-([0-9]</span><span class="si">{2}</span><span class="s2">)&quot;</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span>
             <span class="p">[</span>
                 <span class="n">item</span><span class="p">[</span><span class="s2">&quot;hours&quot;</span><span class="p">]</span>
+
                 <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_client_time</span><span class="p">(</span><span class="n">client_id</span><span class="p">)</span>
+
                 <span class="k">if</span> <span class="n">regex</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="s2">&quot;spent_date&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="n">month</span>
             <span class="p">]</span>
         <span class="p">)</span></div>
@@ -220,11 +230,13 @@
 <div class="viewcode-block" id="HarvestClient.get_client_time_allotment"><a class="viewcode-back" href="../../client.html#hreporting.harvest_client.HarvestClient.get_client_time_allotment">[docs]</a>    <span class="k">def</span> <span class="nf">get_client_time_allotment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot; returns client allotment provided in class.config. *default=60* &quot;&quot;&quot;</span>
         <span class="n">client_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_client_config</span><span class="p">(</span><span class="n">client_name</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">client_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;hours&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;default_hours&quot;</span><span class="p">,</span> <span class="mi">80</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="HarvestClient.get_client_hooks"><a class="viewcode-back" href="../../client.html#hreporting.harvest_client.HarvestClient.get_client_hooks">[docs]</a>    <span class="k">def</span> <span class="nf">get_client_hooks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_name</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot; Returns list of webhooks registered for client. &quot;&quot;&quot;</span>
         <span class="n">client_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_client_config</span><span class="p">(</span><span class="n">client_name</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="p">[</span><span class="o">*</span><span class="n">client_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;hooks&quot;</span><span class="p">,</span> <span class="p">[]),</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;globalHooks&quot;</span><span class="p">,</span> <span class="p">[])]</span></div></div>
         <span class="c1"># client_config.get(&#39;hours&#39;,self.config.get(&#39;default_hours&#39;),80)</span>
 </pre></div>

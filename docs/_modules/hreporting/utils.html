@@ -149,8 +149,6 @@
             
   <h1>Source code for hreporting.utils</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">yaml</span>
-<span class="kn">import</span> <span class="nn">requests</span>
-<span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">google.cloud</span> <span class="kn">import</span> <span class="n">storage</span>
 <span class="kn">from</span> <span class="nn">taosdevopsutils.slack</span> <span class="kn">import</span> <span class="n">Slack</span>
 
@@ -186,8 +184,12 @@
     <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">n</span> <span class="o">*</span> <span class="n">multiplier</span><span class="p">)</span> <span class="o">/</span> <span class="n">multiplier</span></div>
 
 
-<span class="n">load_yaml_file</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">file_handle</span><span class="p">:</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">file_handle</span><span class="p">),</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">Loader</span><span class="p">)</span>
-<span class="n">load_yaml</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">yaml_string</span><span class="p">:</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">yaml_string</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">Loader</span><span class="p">)</span>
+<div class="viewcode-block" id="load_yaml_file"><a class="viewcode-back" href="../../utils.html#hreporting.utils.load_yaml_file">[docs]</a><span class="k">def</span> <span class="nf">load_yaml_file</span><span class="p">(</span><span class="n">file_handle</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">file_handle</span><span class="p">),</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">Loader</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="load_yaml"><a class="viewcode-back" href="../../utils.html#hreporting.utils.load_yaml">[docs]</a><span class="k">def</span> <span class="nf">load_yaml</span><span class="p">(</span><span class="n">yaml_string</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">yaml_string</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">Loader</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="get_color_code_for_utilization"><a class="viewcode-back" href="../../utils.html#hreporting.utils.get_color_code_for_utilization">[docs]</a><span class="k">def</span> <span class="nf">get_color_code_for_utilization</span><span class="p">(</span><span class="n">percent</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -236,10 +238,10 @@
             <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;DevOps Time Reports&quot;</span><span class="p">,</span>
             <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">clientName</span><span class="p">,</span>
             <span class="s2">&quot;sections&quot;</span><span class="p">:</span> <span class="p">[</span>
-                <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">%d%%</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">percent</span><span class="p">)</span> <span class="p">},</span>
-                <span class="p">{</span><span class="s2">&quot;activityTitle&quot;</span><span class="p">:</span> <span class="s2">&quot;Hours Used&quot;</span><span class="p">,</span> <span class="s2">&quot;activitySubtitle&quot;</span><span class="p">:</span> <span class="n">used</span> <span class="p">},</span>
-                <span class="p">{</span><span class="s2">&quot;activityTitle&quot;</span><span class="p">:</span> <span class="s2">&quot;Hours Remaining&quot;</span><span class="p">,</span> <span class="s2">&quot;activitySubtitle&quot;</span><span class="p">:</span> <span class="n">left</span> <span class="p">},</span>
-            <span class="p">]</span>
+                <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">%d%%</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">percent</span><span class="p">)},</span>
+                <span class="p">{</span><span class="s2">&quot;activityTitle&quot;</span><span class="p">:</span> <span class="s2">&quot;Hours Used&quot;</span><span class="p">,</span> <span class="s2">&quot;activitySubtitle&quot;</span><span class="p">:</span> <span class="n">used</span><span class="p">},</span>
+                <span class="p">{</span><span class="s2">&quot;activityTitle&quot;</span><span class="p">:</span> <span class="s2">&quot;Hours Remaining&quot;</span><span class="p">,</span> <span class="s2">&quot;activitySubtitle&quot;</span><span class="p">:</span> <span class="n">left</span><span class="p">},</span>
+            <span class="p">],</span>
         <span class="p">}</span>
     <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid Payload format </span><span class="si">{_format}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
@@ -248,11 +250,13 @@
 <div class="viewcode-block" id="channel_post"><a class="viewcode-back" href="../../utils.html#hreporting.utils.channel_post">[docs]</a><span class="k">def</span> <span class="nf">channel_post</span><span class="p">(</span><span class="n">webhook_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">used</span><span class="p">,</span> <span class="n">clientName</span><span class="p">,</span> <span class="n">percent</span><span class="p">,</span> <span class="n">left</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot; Posts payload to webhook provided &quot;&quot;&quot;</span>
     <span class="n">post_format</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">&quot;teams&quot;</span> <span class="k">if</span> <span class="n">webhook_url</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;https://outlook.office.com&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;slack&quot;</span>
+        <span class="s2">&quot;teams&quot;</span> <span class="k">if</span> <span class="n">webhook_url</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span>
+            <span class="s2">&quot;https://outlook.office.com&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;slack&quot;</span>
     <span class="p">)</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">get_payload</span><span class="p">(</span><span class="n">used</span><span class="p">,</span> <span class="n">clientName</span><span class="p">,</span> <span class="n">percent</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">_format</span><span class="o">=</span><span class="n">post_format</span><span class="p">)</span>
     <span class="n">response</span> <span class="o">=</span> <span class="n">slack_client</span><span class="o">.</span><span class="n">post_slack_message</span><span class="p">(</span><span class="n">webhook_url</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="n">response</span></div>
 
 
@@ -262,6 +266,7 @@
     <span class="n">bucket</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_bucket</span><span class="p">(</span><span class="n">bucket_name</span><span class="p">)</span>
     <span class="n">blob</span> <span class="o">=</span> <span class="n">bucket</span><span class="o">.</span><span class="n">get_blob</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
     <span class="n">response</span> <span class="o">=</span> <span class="n">blob</span><span class="o">.</span><span class="n">download_as_string</span><span class="p">()</span>
+
     <span class="k">return</span> <span class="n">response</span></div>
 </pre></div>
 

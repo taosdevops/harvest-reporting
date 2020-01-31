@@ -27,9 +27,8 @@ def main_method(bearer_token, harvest_account, config):
 
         print_verify(used, clientName, percent, left)
 
-        return [
+        [
             channel_post(hook, used, clientName, percent, left)
-
             for hook in harvest_client.get_client_hooks(clientName)
         ]
 

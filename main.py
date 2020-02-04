@@ -1,8 +1,14 @@
 import os
 
 from hreporting.harvest_client import HarvestClient
-from hreporting.utils import (channel_post, load_yaml, load_yaml_file,
-                              print_verify, read_cloud_storage, truncate)
+from hreporting.utils import (
+    channel_post,
+    load_yaml,
+    load_yaml_file,
+    print_verify,
+    read_cloud_storage,
+    truncate,
+)
 
 
 def main_method(bearer_token, harvest_account, config):
@@ -33,14 +39,13 @@ def main_method(bearer_token, harvest_account, config):
         ]
 
 
-def harvest_reports(*args):
+def harvest_test_reports(*args):
     bearer_token = os.getenv("BEARER_TOKEN")
     harvest_account = os.getenv("HARVEST_ACCOUNT_ID", "1121001")
     config_path = os.getenv("CONFIG_PATH", "config/clients.yaml")
     bucket = os.getenv("BUCKET")
     config = (
         load_yaml_file(config_path)
-
         if not bucket
         else load_yaml(read_cloud_storage(bucket, config_path))
     )
@@ -49,4 +54,4 @@ def harvest_reports(*args):
 
 
 if __name__ == "__main__":
-    harvest_reports()
+    harvest_test_reports()

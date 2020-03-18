@@ -89,3 +89,23 @@ class HarvestClient:
 
         return [*client_config.get("hooks", []), *self.config.get("globalHooks", [])]
         # client_config.get('hours',self.config.get('default_hours'),80)
+
+    def get_all_time_entries():
+
+        r = requests.get(url=url_address, headers=headers).json()
+        total_pages = int(r['total_pages'])
+
+        all_time_entries = []
+
+        for page in range(1, total_pages):
+
+            url = "https://api.harvestapp.com/v2/time_entries?page="+str(page)              
+            response = requests.get(url=url, headers=headers).json()        
+            all_time_entries.append(response)       
+            page += 1
+
+        data = json.dumps(all_time_entries, sort_keys=True, indent=4)
+
+        return data
+
+    print(get_all_time_entries())

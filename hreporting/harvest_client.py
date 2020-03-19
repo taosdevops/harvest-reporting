@@ -104,5 +104,3 @@ class HarvestClient:
         data = json.dumps(all_time_entries, sort_keys=True, indent=4)
 
         return data
-
-    print(get_all_time_entries())

@@ -40,8 +40,9 @@ class HarvestClient:
         uri = self._base_url + self._client_endpoint
         response = requests.get(uri, headers=self.headers)
         json_response = response.json()
+        clients = json_response["clients"]
 
-        return json_response["clients"]
+        return clients
 
     def get_client_by_id(self, client_id: str) -> list:
         """ Returns array of harvest Clients"""

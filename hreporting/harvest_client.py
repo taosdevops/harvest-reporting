@@ -3,6 +3,7 @@ import re
 from typing import List
 
 import requests
+import json
 
 
 def _get_current_month():  # Maybe move ??
@@ -29,9 +30,7 @@ class HarvestClient:
         try:
             return [
                 client_entry
-
                 for client_entry in self.config.get("clients", [])
-
                 if client_entry["name"] == client_name
             ][0]
         except IndexError:
@@ -70,9 +69,7 @@ class HarvestClient:
         return sum(
             [
                 item["hours"]
-
                 for item in self.get_client_time(client_id)
-
                 if regex.search(item["spent_date"]).group(2) == month
             ]
         )
@@ -93,15 +90,15 @@ class HarvestClient:
     def get_all_time_entries():
 
         r = requests.get(url=url_address, headers=headers).json()
-        total_pages = int(r['total_pages'])
+        total_pages = int(r["total_pages"])
 
         all_time_entries = []
 
         for page in range(1, total_pages):
 
-            url = "https://api.harvestapp.com/v2/time_entries?page="+str(page)              
-            response = requests.get(url=url, headers=headers).json()        
-            all_time_entries.append(response)       
+            url = "https://api.harvestapp.com/v2/time_entries?page=" + str(page)
+            response = requests.get(url=url, headers=headers).json()
+            all_time_entries.append(response)
             page += 1
 
         data = json.dumps(all_time_entries, sort_keys=True, indent=4)

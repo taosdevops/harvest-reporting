@@ -3,7 +3,6 @@ import re
 from typing import List
 
 import requests
-import json
 
 
 def _get_current_month():  # Maybe move ??

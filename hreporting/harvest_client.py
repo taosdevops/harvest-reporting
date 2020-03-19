@@ -58,7 +58,17 @@ class HarvestClient:
         response = requests.get(uri, headers=self.headers)
         json_response = response.json()
 
-        return json_response["time_entries"]
+        entries = json_response["time_entries"]
+
+        while json_response.get("links", {}).get("next"):
+            # Make follow up calls to compile the pages
+            response = requests.get(
+                json_response["links"]["next"], headers=self.headers
+            )
+            json_response = response.json()
+            entries.append(json_response["time_entries"])
+
+        return entries
 
     def get_client_time_used(
         self, client_id: str, month: str = _get_current_month()
@@ -86,21 +96,3 @@ class HarvestClient:
 
         return [*client_config.get("hooks", []), *self.config.get("globalHooks", [])]
         # client_config.get('hours',self.config.get('default_hours'),80)
-
-    def get_all_time_entries():
-
-        r = requests.get(url=url_address, headers=headers).json()
-        total_pages = int(r["total_pages"])
-
-        all_time_entries = []
-
-        for page in range(1, total_pages):
-
-            url = "https://api.harvestapp.com/v2/time_entries?page=" + str(page)
-            response = requests.get(url=url, headers=headers).json()
-            all_time_entries.append(response)
-            page += 1
-
-        data = json.dumps(all_time_entries, sort_keys=True, indent=4)
-
-        return data

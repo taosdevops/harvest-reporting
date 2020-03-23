@@ -66,7 +66,7 @@ class HarvestClient:
                 json_response["links"]["next"], headers=self.headers
             )
             json_response = response.json()
-            entries.append(json_response["time_entries"])
+            entries.extend(json_response["time_entries"])
 
         return entries
 

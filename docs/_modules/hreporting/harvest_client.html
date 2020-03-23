@@ -179,9 +179,7 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span>
                 <span class="n">client_entry</span>
-
                 <span class="k">for</span> <span class="n">client_entry</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;clients&quot;</span><span class="p">,</span> <span class="p">[])</span>
-
                 <span class="k">if</span> <span class="n">client_entry</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">client_name</span>
             <span class="p">][</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
@@ -192,8 +190,9 @@
         <span class="n">uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_url</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client_endpoint</span>
         <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">)</span>
         <span class="n">json_response</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="n">clients</span> <span class="o">=</span> <span class="n">json_response</span><span class="p">[</span><span class="s2">&quot;clients&quot;</span><span class="p">]</span>
 
-        <span class="k">return</span> <span class="n">json_response</span><span class="p">[</span><span class="s2">&quot;clients&quot;</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="n">clients</span></div>
 
 <div class="viewcode-block" id="HarvestClient.get_client_by_id"><a class="viewcode-back" href="../../client.html#hreporting.harvest_client.HarvestClient.get_client_by_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_client_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot; Returns array of harvest Clients&quot;&quot;&quot;</span>
@@ -209,7 +208,17 @@
         <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">)</span>
         <span class="n">json_response</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
 
-        <span class="k">return</span> <span class="n">json_response</span><span class="p">[</span><span class="s2">&quot;time_entries&quot;</span><span class="p">]</span></div>
+        <span class="n">entries</span> <span class="o">=</span> <span class="n">json_response</span><span class="p">[</span><span class="s2">&quot;time_entries&quot;</span><span class="p">]</span>
+
+        <span class="k">while</span> <span class="n">json_response</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;links&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;next&quot;</span><span class="p">):</span>
+            <span class="c1"># Make follow up calls to compile the pages</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="n">json_response</span><span class="p">[</span><span class="s2">&quot;links&quot;</span><span class="p">][</span><span class="s2">&quot;next&quot;</span><span class="p">],</span> <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span>
+            <span class="p">)</span>
+            <span class="n">json_response</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+            <span class="n">entries</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">json_response</span><span class="p">[</span><span class="s2">&quot;time_entries&quot;</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">entries</span></div>
 
 <div class="viewcode-block" id="HarvestClient.get_client_time_used"><a class="viewcode-back" href="../../client.html#hreporting.harvest_client.HarvestClient.get_client_time_used">[docs]</a>    <span class="k">def</span> <span class="nf">get_client_time_used</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">client_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">month</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">_get_current_month</span><span class="p">()</span>
@@ -220,9 +229,7 @@
         <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span>
             <span class="p">[</span>
                 <span class="n">item</span><span class="p">[</span><span class="s2">&quot;hours&quot;</span><span class="p">]</span>
-
                 <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_client_time</span><span class="p">(</span><span class="n">client_id</span><span class="p">)</span>
-
                 <span class="k">if</span> <span class="n">regex</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="s2">&quot;spent_date&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="n">month</span>
             <span class="p">]</span>
         <span class="p">)</span></div>

@@ -29,9 +29,7 @@ class HarvestClient:
         try:
             return [
                 client_entry
-
                 for client_entry in self.config.get("clients", [])
-
                 if client_entry["name"] == client_name
             ][0]
         except IndexError:
@@ -42,8 +40,9 @@ class HarvestClient:
         uri = self._base_url + self._client_endpoint
         response = requests.get(uri, headers=self.headers)
         json_response = response.json()
+        clients = json_response["clients"]
 
-        return json_response["clients"]
+        return clients
 
     def get_client_by_id(self, client_id: str) -> list:
         """ Returns array of harvest Clients"""
@@ -59,7 +58,17 @@ class HarvestClient:
         response = requests.get(uri, headers=self.headers)
         json_response = response.json()
 
-        return json_response["time_entries"]
+        entries = json_response["time_entries"]
+
+        while json_response.get("links", {}).get("next"):
+            # Make follow up calls to compile the pages
+            response = requests.get(
+                json_response["links"]["next"], headers=self.headers
+            )
+            json_response = response.json()
+            entries.extend(json_response["time_entries"])
+
+        return entries
 
     def get_client_time_used(
         self, client_id: str, month: str = _get_current_month()
@@ -70,9 +79,7 @@ class HarvestClient:
         return sum(
             [
                 item["hours"]
-
                 for item in self.get_client_time(client_id)
-
                 if regex.search(item["spent_date"]).group(2) == month
             ]
         )

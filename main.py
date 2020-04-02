@@ -9,6 +9,8 @@ from hreporting.utils import (
     read_cloud_storage,
     truncate,
 )
+from taosdevopsutils.slack import Slack
+import traceback
 
 
 def main_method(bearer_token, harvest_account, config):
@@ -50,7 +52,15 @@ def harvest_reports(*args):
         else load_yaml(read_cloud_storage(bucket, config_path))
     )
 
-    return main_method(bearer_token, harvest_account, config)
+    try:
+        return main_method(bearer_token, harvest_account, config)
+    except Exception as e:
+        if config.get("ExceptionHook"):
+            hook = config.get("ExceptionHook")
+            payload = "\n".join(
+                "Harvest Ran into an Exceptions", traceback.format_exc()
+            )
+            Slack().post_slack_message(hook, payload)
 
 
 if __name__ == "__main__":

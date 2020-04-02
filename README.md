@@ -1,7 +1,8 @@
 # harvest-reporting
+
 Harvest Time tracking and reporting API implementation
 
-Docs: https://taosdevops.github.io/harvest-reporting/
+Docs: [Harvest Reporting Docs](https://taosdevops.github.io/harvest-reporting/)
 
 ## CLI
 
@@ -46,4 +47,4 @@ Install the devrequirements to install sphinx and its dependencies then run
 
 `cd docs && python -m http.server`
 
-This will host the docs locally at http://localhost:8000
+This will host the docs [locally on 8000](http://localhost:8000)

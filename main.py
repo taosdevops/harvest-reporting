@@ -35,6 +35,7 @@ def main_method(bearer_token, harvest_account, config):
 
         [
             channel_post(hook, used, clientName, percent, left)
+
             for hook in harvest_client.get_client_hooks(clientName)
         ]
 
@@ -46,6 +47,7 @@ def harvest_reports(*args):
     bucket = os.getenv("BUCKET")
     config = (
         load_yaml_file(config_path)
+
         if not bucket
         else load_yaml(read_cloud_storage(bucket, config_path))
     )

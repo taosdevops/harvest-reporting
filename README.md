@@ -9,11 +9,11 @@ Docs: https://taosdevops.github.io/harvest-reporting/
 
 you can install this package off of pypi
 
-` pip install harvestcli `
+`pip install harvestcli`
 
 or you can clone the project install the project from that directory.
 
-` pip install .`
+`pip install .`
 
 ### Environment Variables
 
@@ -30,11 +30,11 @@ providing the input via command line flags.
 
 Create virtual env
 
- `pipenv shell`
+`pipenv shell`
 
 Install Dev dependencies
 
- `pipenv install --dev --skip-lock`
+`pipenv install --dev --skip-lock`
 
 #### Generate Docs
 

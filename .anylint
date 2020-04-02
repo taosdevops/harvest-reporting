@@ -1,4 +1,3 @@
 {
   "ignore": ["docs/"],
-  "disable": ["html"]
 }

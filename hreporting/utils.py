@@ -1,13 +1,17 @@
+import logging
+
 import yaml
 from google.cloud import storage
 from taosdevopsutils.slack import Slack
 
 # In the future if we need to auth with multiple workspaces we might need
 # to move this to a factory method and pull a specific client for each token
-slack_client = Slack()
+SLACK_CLIENT = Slack()
+
+LOG = logging.getLogger()
 
 
-def print_verify(used, clientName, percent, left) -> None:
+def print_verify(used, client_name, percent, left) -> None:
     """ Print Details for verification """
     Hour_Report_Template = """
     Client:           {name}
@@ -16,10 +20,10 @@ def print_verify(used, clientName, percent, left) -> None:
     Color:            {color}
     Percent:          {percent}
     """
-    print(
+    LOG.debug(
         str.format(
             Hour_Report_Template,
-            name=clientName,
+            name=client_name,
             used=used,
             left=left,
             percent="%d%%" % (percent),
@@ -64,48 +68,84 @@ def get_color_code_for_utilization(percent) -> str:
     return red
 
 
-# Define if teams or slack
-def get_payload(used, clientName, percent, left, *args, _format="slack") -> dict:
-    if _format == "slack":
+# Define types of payloads
+def get_payload(used, client_name, percent, left, *args, _format="slack") -> dict:
+    """ Get payload for every type of format"""
+    try:
+
         return {
-            "attachments": [
-                {
-                    "color": get_color_code_for_utilization(percent),
-                    "title": clientName,
-                    "text": "%d%%" % (percent),
-                    "fields": [
-                        {"title": "Hours Used", "value": used, "short": "true"},
-                        {"title": "Hours Remaining", "value": left, "short": "true"},
-                    ],
-                }
-            ]
-        }
-    if _format == "teams":
-        return {
-            "@type": "MessageCard",
-            "@context": "https://schema.org/extensions",
-            "themeColor": get_color_code_for_utilization(percent),
-            "title": "DevOps Time Reports",
-            "text": clientName,
-            "sections": [
-                {"text": "%d%%" % (percent)},
-                {"activityTitle": "Hours Used", "activitySubtitle": used},
-                {"activityTitle": "Hours Remaining", "activitySubtitle": left},
-            ],
-        }
-    raise Exception(f"Invalid Payload format {_format}")
+            "slack": get_slack_payload,
+            "teams": get_teams_payload,
+            "email": get_email_payload,
+        }[_format](used, client_name, percent, left, *args)
+
+    except KeyError:
+        raise Exception(f"Invalid Payload format {_format}")
+
+
+def get_slack_payload(used, client_name, percent, left, *args) -> dict:
+    """ Format JSON body for Slack channel posting"""
+
+    return {
+        "attachments": [
+            {
+                "color": get_color_code_for_utilization(percent),
+                "title": client_name,
+                "text": "%d%%" % (percent),
+                "fields": [
+                    {"title": "Hours Used", "value": used, "short": "true"},
+                    {"title": "Hours Remaining", "value": left, "short": "true"},
+                ],
+            }
+        ]
+    }
+
+
+def get_email_payload(used, client_name: str, percent, left, to_emails: list) -> dict:
+    """ Format JSON body for SendGrid Json email"""
+
+    to_block = map(lambda email: {"email": email}, to_emails)
+
+    return {
+        "personalizations": [
+            {
+                "to": list(to_block),
+                "subject": "DevOps Now hours usage for %s" % client_name,
+            }
+        ],
+        "from": {"email": "HoursDevOpsNow@taos.com", "name": "Hours for Dev Ops Now"},
+        "reply_to": {"email": "DevOpsNow@taos.com", "name": "Dev Ops Now"},
+        "content": [{"type": "text/plain", "value": f"{used}, {percent}, {left}"}],
+    }
+
+
+def get_teams_payload(used, client_name, percent, left, *args) -> dict:
+    """ Format JSON body for MS Teams channel post"""
+
+    return {
+        "@type": "MessageCard",
+        "@context": "https://schema.org/extensions",
+        "themeColor": get_color_code_for_utilization(percent),
+        "title": "DevOps Time Reports",
+        "text": client_name,
+        "sections": [
+            {"text": "%d%%" % (percent)},
+            {"activityTitle": "Hours Used", "activitySubtitle": used},
+            {"activityTitle": "Hours Remaining", "activitySubtitle": left},
+        ],
+    }
 
 
 # Post to channel/workspace
-def channel_post(webhook_url: str, used, clientName, percent, left) -> dict:
+def channel_post(webhook_url: str, used, client_name, percent, left) -> dict:
     """ Posts payload to webhook provided """
     post_format = (
-        "teams" if webhook_url.startswith(
-            "https://outlook.office.com") else "slack"
+        "teams" if webhook_url.startswith("https://outlook.office.com") else "slack"
     )
-    data = get_payload(used, clientName, percent, left, _format=post_format)
-    response = slack_client.post_slack_message(webhook_url, data)
-    print(response)
+
+    data = get_payload(used, client_name, percent, left, _format=post_format)
+    response = SLACK_CLIENT.post_slack_message(webhook_url, data)
+    LOG.debug(response)
 
     return response
 

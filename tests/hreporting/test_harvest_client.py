@@ -10,7 +10,6 @@ btoken = "SomeBearerToken"
 class TestHarvestClient(VCRTestCase):
     def test_list_clients_calls_uri(self):
         account_list = HarvestClient(btoken, account).list_clients()
-        # account_list = HarvestClient(bearer_token, account).list_clients()
 
         self.assertEqual(
             self.cassette.requests[0].uri, "https://api.harvestapp.com/v2/clients"
@@ -21,8 +20,9 @@ class TestHarvestClient(VCRTestCase):
         self.assertEqual(len(account_list), 9)
 
     def test_get_client_time_used(self):
-        time_used = HarvestClient(btoken, account) \
-            .get_client_time_used(8544728, month="09")
+        time_used = HarvestClient(btoken, account).get_client_time_used(
+            8544728, month="09"
+        )
         self.assertEqual(
             self.cassette.requests[0].uri,
             "https://api.harvestapp.com/v2/time_entries?client_id=8544728",

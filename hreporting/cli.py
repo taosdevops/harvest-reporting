@@ -45,7 +45,6 @@ def list_clients(client: HarvestClient):
     """ Returns a list of clients in table format """
     template = "{id:<9} {name}"
     click.echo("ID      | Name")
-    # print(clients)
 
     for client in client.list_clients():
         click.echo(str.format(template, name=client["name"], id=client["id"]))

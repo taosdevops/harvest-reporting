@@ -1,7 +1,9 @@
 from unittest import TestCase
-from hreporting.harvest_client import HarvestClient
+
 import vcr
 from vcr_unittest import VCRTestCase
+
+from hreporting.harvest_client import HarvestClient
 
 account = "1121001"
 btoken = "SomeBearerToken"
@@ -34,7 +36,7 @@ class TestHarvestClient(VCRTestCase):
         config = {"clients": [{"name": "dsc", "hooks": [hook_url]}]}
         client = HarvestClient(btoken, account, config)
         hooks = client.get_client_hooks("dsc")
-        self.assertEqual(hooks, [hook_url])
+        self.assertEqual(hooks, {"hooks": [hook_url], "emails": []})
 
     def test_get_client_hooks_compiles_global_hooks(self):
         hook_url = "http://123.com"
@@ -45,7 +47,7 @@ class TestHarvestClient(VCRTestCase):
         }
         client = HarvestClient(btoken, account, config)
         hooks = client.get_client_hooks("dsc")
-        self.assertEqual(hooks, [hook_url, global_hook])
+        self.assertEqual(hooks, {"hooks": [hook_url, global_hook], "emails": []})
 
     def test_get_time_alloted(self):
         config = {"clients": [{"name": "dsc", "hours": 60}]}

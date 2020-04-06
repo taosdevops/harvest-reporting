@@ -8,7 +8,8 @@ from taosdevopsutils.slack import Slack
 # to move this to a factory method and pull a specific client for each token
 SLACK_CLIENT = Slack()
 
-LOG = logging.getLogger()
+logging.getLogger(__name__)
+logging.basicConfig(format="%(asctime)s %(message)s")
 
 
 def print_verify(used, client_name, percent, left) -> None:
@@ -20,7 +21,7 @@ def print_verify(used, client_name, percent, left) -> None:
     Color:            {color}
     Percent:          {percent}
     """
-    LOG.debug(
+    logging.info(
         str.format(
             Hour_Report_Template,
             name=client_name,
@@ -145,7 +146,7 @@ def channel_post(webhook_url: str, used, client_name, percent, left) -> dict:
 
     data = get_payload(used, client_name, percent, left, _format=post_format)
     response = SLACK_CLIENT.post_slack_message(webhook_url, data)
-    LOG.debug(response)
+    logging.info(response)
 
     return response
 

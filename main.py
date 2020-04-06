@@ -30,7 +30,7 @@ def main_method(bearer_token, harvest_account, config):
         [
             channel_post(hook, used, clientName, percent, left)
 
-            for hook in harvest_client.get_client_hooks(clientName)
+            for hook in harvest_client.get_client_hooks(clientName)["hooks"]
         ]
 
 

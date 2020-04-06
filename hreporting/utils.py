@@ -14,7 +14,8 @@ logging.basicConfig(format="%(asctime)s %(message)s")
 
 def print_verify(used, client_name, percent, left) -> None:
     """ Print Details for verification """
-    Hour_Report_Template = """
+
+    hour_report_template = """
     Client:           {name}
     Used Hours:       {used}
     Remaining Hours:  {left}
@@ -23,13 +24,29 @@ def print_verify(used, client_name, percent, left) -> None:
     """
     logging.info(
         str.format(
-            Hour_Report_Template,
+            hour_report_template,
             name=client_name,
             used=used,
             left=left,
             percent="%d%%" % (percent),
             color=get_color_code_for_utilization(percent),
         )
+    )
+
+
+def email_body(used, client_name, percent, left) -> str:
+    hour_report_template = """
+    Client:           {name}
+    Used Hours:       {used}
+    Remaining Hours:  {left}
+    Percent:          {percent}
+    """
+    return str.format(
+        hour_report_template,
+        name=client_name,
+        used=used,
+        left=left,
+        percent="%d%%" % (percent),
     )
 
 
@@ -114,7 +131,12 @@ def get_email_payload(used, client_name: str, percent, left, to_emails: list) ->
         ],
         "from": {"email": "HoursDevOpsNow@taos.com", "name": "Hours for Dev Ops Now"},
         "reply_to": {"email": "DevOpsNow@taos.com", "name": "Dev Ops Now"},
-        "content": [{"type": "text/plain", "value": f"{used}, {percent}, {left}"}],
+        "content": [
+            {
+                "type": "text/plain",
+                "value": email_body(used, client_name, percent, left),
+            }
+        ],
     }
 
 

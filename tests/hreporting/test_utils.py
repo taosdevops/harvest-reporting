@@ -37,6 +37,8 @@ class TestGetPayload(TestCase):
         expectation = re.search(pattern, str(channel_post_under_test))
         self.assertTrue(expectation)
 
+
+class TestGetEmailPayload(TestCase):
     def test_returns_email_payload(self):
         channel_post_under_test = get_email_payload(
             60,
@@ -47,7 +49,14 @@ class TestGetPayload(TestCase):
         )
 
         # Excluding @ and .com for regex issues. Checking for the prefix is just as effective
-        patterns = ["personalizations", "myemailaddress", "anotheremailaddress"]
+        patterns = [
+            "personalizations",
+            "myemailaddress",
+            "anotheremailaddress",
+            "Used Hours",
+            "Percent",
+            "Remaining",
+        ]
 
         for pattern in patterns:
             expectation = re.search(pattern, str(channel_post_under_test))

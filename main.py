@@ -1,8 +1,9 @@
 import os
 
 from hreporting.harvest_client import HarvestClient
-from hreporting.utils import (channel_post, load_yaml, load_yaml_file,
-                              print_verify, read_cloud_storage, truncate)
+from hreporting.utils import (channel_post, email_send, load_yaml,
+                              load_yaml_file, print_verify, read_cloud_storage,
+                              truncate)
 
 
 def main_method(bearer_token, harvest_account, config):
@@ -27,11 +28,15 @@ def main_method(bearer_token, harvest_account, config):
 
         print_verify(used, clientName, percent, left)
 
+        client_hooks = harvest_client.get_client_hooks(clientName)
+
         [
             channel_post(hook, used, clientName, percent, left)
 
-            for hook in harvest_client.get_client_hooks(clientName)["hooks"]
+            for hook in client_hooks["hooks"]
         ]
+
+        email_send(client_hooks["emails"], used, clientName, percent, left)
 
 
 def harvest_reports(*args):

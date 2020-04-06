@@ -4,7 +4,7 @@ from unittest import TestCase
 from taosdevopsutils.slack import Slack
 
 from hreporting.utils import (channel_post, get_color_code_for_utilization,
-                              get_payload)
+                              get_email_payload, get_payload)
 
 
 class TestUtilsColorCode(TestCase):
@@ -38,13 +38,12 @@ class TestGetPayload(TestCase):
         self.assertTrue(expectation)
 
     def test_returns_email_payload(self):
-        channel_post_under_test = get_payload(
+        channel_post_under_test = get_email_payload(
             60,
             "SVB",
             50,
             30,
             ["myemailaddress@test.com", "anotheremailaddress@test.com"],
-            _format="email",
         )
 
         # Excluding @ and .com for regex issues. Checking for the prefix is just as effective

@@ -70,15 +70,13 @@ def get_color_code_for_utilization(percent) -> str:
 
 
 # Define types of payloads
-def get_payload(used, client_name, percent, left, *args, _format="slack") -> dict:
+def get_payload(used, client_name, percent, left, _format="slack") -> dict:
     """ Get payload for every type of format"""
     try:
 
-        return {
-            "slack": get_slack_payload,
-            "teams": get_teams_payload,
-            "email": get_email_payload,
-        }[_format](used, client_name, percent, left, *args)
+        return {"slack": get_slack_payload, "teams": get_teams_payload}[_format](
+            used, client_name, percent, left
+        )
 
     except KeyError:
         raise Exception(f"Invalid Payload format {_format}")
@@ -149,6 +147,14 @@ def channel_post(webhook_url: str, used, client_name, percent, left) -> dict:
     logging.info(response)
 
     return response
+
+
+def email_send(
+    emails: list, used: float, client_name: str, percent: float, left: float
+) -> dict:
+    data = get_email_payload(used, client_name, percent, left, emails)
+
+    return {}
 
 
 def read_cloud_storage(bucket_name, file_name) -> str:

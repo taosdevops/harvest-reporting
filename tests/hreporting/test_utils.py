@@ -3,8 +3,8 @@ from unittest import TestCase
 
 from taosdevopsutils.slack import Slack
 
-from hreporting.utils import (channel_post, get_color_code_for_utilization,
-                              get_email_payload, get_payload)
+from hreporting.utils import (channel_post, email_body,
+                              get_color_code_for_utilization, get_payload)
 
 
 class TestUtilsColorCode(TestCase):
@@ -40,23 +40,10 @@ class TestGetPayload(TestCase):
 
 class TestGetEmailPayload(TestCase):
     def test_returns_email_payload(self):
-        channel_post_under_test = get_email_payload(
-            60,
-            "SVB",
-            50,
-            30,
-            ["myemailaddress@test.com", "anotheremailaddress@test.com"],
-        )
+        channel_post_under_test = email_body(60, "SVB", 50, 30)
 
         # Excluding @ and .com for regex issues. Checking for the prefix is just as effective
-        patterns = [
-            "personalizations",
-            "myemailaddress",
-            "anotheremailaddress",
-            "Used Hours",
-            "Percent",
-            "Remaining",
-        ]
+        patterns = ["Used Hours", "Percent", "Remaining"]
 
         for pattern in patterns:
             expectation = re.search(pattern, str(channel_post_under_test))

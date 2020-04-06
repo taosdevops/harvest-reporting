@@ -25,6 +25,12 @@ from hreporting.utils import load_yaml, print_verify, truncate
     default=None,
     help=config.strings.account_id_help,
 )
+@click.option(
+    "--send-grid",
+    envvar="SENDGRID_API_KEY",
+    required=True,
+    help=config.strings.sendgrid_api_help,
+)
 @click.pass_context
 def main(ctx, bearer_token, account_id, config_path):
     if config_path:

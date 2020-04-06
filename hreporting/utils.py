@@ -2,6 +2,7 @@ import logging
 
 import yaml
 from google.cloud import storage
+from sendgrid.helpers.mail import *
 from taosdevopsutils.slack import Slack
 
 # In the future if we need to auth with multiple workspaces we might need
@@ -117,29 +118,6 @@ def get_slack_payload(used, client_name, percent, left, *args) -> dict:
     }
 
 
-def get_email_payload(used, client_name: str, percent, left, to_emails: list) -> dict:
-    """ Format JSON body for SendGrid Json email"""
-
-    to_block = map(lambda email: {"email": email}, to_emails)
-
-    return {
-        "personalizations": [
-            {
-                "to": list(to_block),
-                "subject": "DevOps Now hours usage for %s" % client_name,
-            }
-        ],
-        "from": {"email": "HoursDevOpsNow@taos.com", "name": "Hours for Dev Ops Now"},
-        "reply_to": {"email": "DevOpsNow@taos.com", "name": "Dev Ops Now"},
-        "content": [
-            {
-                "type": "text/plain",
-                "value": email_body(used, client_name, percent, left),
-            }
-        ],
-    }
-
-
 def get_teams_payload(used, client_name, percent, left, *args) -> dict:
     """ Format JSON body for MS Teams channel post"""
 
@@ -172,11 +150,19 @@ def channel_post(webhook_url: str, used, client_name, percent, left) -> dict:
 
 
 def email_send(
-    emails: list, used: float, client_name: str, percent: float, left: float
+    emails: list, used: float, client_name: str, percent: float, left: float, sg_client
 ) -> dict:
-    data = get_email_payload(used, client_name, percent, left, emails)
 
-    return {}
+    subject = Subject(f"DevOps Now Hour Usage")
+    from_email = Email("DevOpsNow@taos.com")
+
+    to_emails = map(Bcc, emails)
+    content = Content("text/plain", email_body(used, client_name, percent, left))
+
+    mail = Mail(from_email, list(to_emails), subject, content)
+    response = sg_client.client.mail.send.post(request_body=mail.get())
+
+    return response
 
 
 def read_cloud_storage(bucket_name, file_name) -> str:

@@ -26,6 +26,7 @@ providing the input via command line flags.
 | BEARER_TOKEN | -b, --bearer-token |
 | HARVEST_ACCOUNT_ID | --account-id |
 | HARVEST_CONFIG | --config-path |
+| SENDGRID_API_KEY| -s, --send-grid |
 
 ### Local Development
 

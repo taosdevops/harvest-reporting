@@ -156,10 +156,10 @@ def email_send(
     subject = Subject(f"DevOps Now Hour Usage")
     from_email = Email("DevOpsNow@taos.com")
 
-    to_emails = map(Bcc, emails)
     content = Content("text/plain", email_body(used, client_name, percent, left))
 
-    mail = Mail(from_email, list(to_emails), subject, content)
+    mail = Mail(from_email, emails, subject, content)
+
     response = sg_client.client.mail.send.post(request_body=mail.get())
 
     return response

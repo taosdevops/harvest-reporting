@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -169,7 +169,7 @@ usage statistics.</p>
 <dl class="method">
 <dt id="hreporting.harvest_client.HarvestClient.get_client_hooks">
 <code class="sig-name descname">get_client_hooks</code><span class="sig-paren">(</span><em class="sig-param">client_name</em><span class="sig-paren">)</span> &#x2192; List[str]<a class="reference internal" href="_modules/hreporting/harvest_client.html#HarvestClient.get_client_hooks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.harvest_client.HarvestClient.get_client_hooks" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns list of webhooks registered for client.</p>
+<dd><p>Returns list of webhooks and emails registered for client.</p>
 </dd></dl>
 
 <dl class="method">
@@ -186,7 +186,7 @@ usage statistics.</p>
 
 <dl class="method">
 <dt id="hreporting.harvest_client.HarvestClient.get_client_time_used">
-<code class="sig-name descname">get_client_time_used</code><span class="sig-paren">(</span><em class="sig-param">client_id: str</em>, <em class="sig-param">month: str = '03'</em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="_modules/hreporting/harvest_client.html#HarvestClient.get_client_time_used"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.harvest_client.HarvestClient.get_client_time_used" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_client_time_used</code><span class="sig-paren">(</span><em class="sig-param">client_id: str</em>, <em class="sig-param">month: str = '04'</em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="_modules/hreporting/harvest_client.html#HarvestClient.get_client_time_used"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.harvest_client.HarvestClient.get_client_time_used" title="Permalink to this definition">¶</a></dt>
 <dd><p>returns sum of client time used for the given month</p>
 </dd></dl>
 

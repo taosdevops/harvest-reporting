@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -179,7 +179,9 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span>
                 <span class="n">client_entry</span>
+
                 <span class="k">for</span> <span class="n">client_entry</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;clients&quot;</span><span class="p">,</span> <span class="p">[])</span>
+
                 <span class="k">if</span> <span class="n">client_entry</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">client_name</span>
             <span class="p">][</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
@@ -229,7 +231,9 @@
         <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span>
             <span class="p">[</span>
                 <span class="n">item</span><span class="p">[</span><span class="s2">&quot;hours&quot;</span><span class="p">]</span>
+
                 <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_client_time</span><span class="p">(</span><span class="n">client_id</span><span class="p">)</span>
+
                 <span class="k">if</span> <span class="n">regex</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="s2">&quot;spent_date&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="n">month</span>
             <span class="p">]</span>
         <span class="p">)</span></div>
@@ -241,11 +245,19 @@
         <span class="k">return</span> <span class="n">client_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;hours&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;default_hours&quot;</span><span class="p">,</span> <span class="mi">80</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="HarvestClient.get_client_hooks"><a class="viewcode-back" href="../../client.html#hreporting.harvest_client.HarvestClient.get_client_hooks">[docs]</a>    <span class="k">def</span> <span class="nf">get_client_hooks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_name</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot; Returns list of webhooks registered for client. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Returns list of webhooks and emails registered for client. &quot;&quot;&quot;</span>
         <span class="n">client_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_client_config</span><span class="p">(</span><span class="n">client_name</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="p">[</span><span class="o">*</span><span class="n">client_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;hooks&quot;</span><span class="p">,</span> <span class="p">[]),</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;globalHooks&quot;</span><span class="p">,</span> <span class="p">[])]</span></div></div>
-        <span class="c1"># client_config.get(&#39;hours&#39;,self.config.get(&#39;default_hours&#39;),80)</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;hooks&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="o">*</span><span class="n">client_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;hooks&quot;</span><span class="p">,</span> <span class="p">[]),</span>
+                <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;globalHooks&quot;</span><span class="p">,</span> <span class="p">[]),</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;emails&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="o">*</span><span class="n">client_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;emails&quot;</span><span class="p">,</span> <span class="p">[]),</span>
+                <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;globalEmails&quot;</span><span class="p">,</span> <span class="p">[]),</span>
+            <span class="p">],</span>
+        <span class="p">}</span></div></div>
 </pre></div>
 
            </div>

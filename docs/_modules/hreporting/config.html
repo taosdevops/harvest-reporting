@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script type="text/javascript" src="../../_static/jquery.js"></script>
-        <script type="text/javascript" src="../../_static/underscore.js"></script>
-        <script type="text/javascript" src="../../_static/doctools.js"></script>
-        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -162,13 +162,17 @@
 <span class="n">BUCKET</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;BUCKET&quot;</span><span class="p">)</span>
 <span class="sd">&quot;&quot;&quot; ENV:BUCKET: The GCP Storage Bucket to fetch config from &quot;&quot;&quot;</span>
 
+<span class="n">SENDGRID_API_KEY</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SENDGRID_API_KEY&quot;</span><span class="p">)</span>
+<span class="sd">&quot;&quot;&quot; ENV:SENDGRID_API_KEY: The SendGrid API key that allows for email send&quot;&quot;&quot;</span>
+
 
 <div class="viewcode-block" id="strings"><a class="viewcode-back" href="../../config.html#hreporting.config.strings">[docs]</a><span class="k">class</span> <span class="nc">strings</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot; Class to house string literals &quot;&quot;&quot;</span>
 
     <span class="n">bearer_token_help</span> <span class="o">=</span> <span class="s2">&quot;bearer token to use for the harvest-client&quot;</span>
     <span class="n">config_path_help</span> <span class="o">=</span> <span class="s2">&quot;path location to find the harvest-client config&quot;</span>
-    <span class="n">account_id_help</span> <span class="o">=</span> <span class="s2">&quot;your harvest client id&quot;</span></div>
+    <span class="n">account_id_help</span> <span class="o">=</span> <span class="s2">&quot;your harvest client id&quot;</span>
+    <span class="n">sendgrid_api_help</span> <span class="o">=</span> <span class="s2">&quot;your SendGrid API key&quot;</span></div>
 </pre></div>
 
            </div>

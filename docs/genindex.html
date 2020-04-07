@@ -22,10 +22,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -155,6 +155,7 @@
  <a href="#Symbols"><strong>Symbols</strong></a>
  | <a href="#B"><strong>B</strong></a>
  | <a href="#C"><strong>C</strong></a>
+ | <a href="#E"><strong>E</strong></a>
  | <a href="#G"><strong>G</strong></a>
  | <a href="#H"><strong>H</strong></a>
  | <a href="#L"><strong>L</strong></a>
@@ -181,13 +182,20 @@
         <li><a href="cli.html#cmdoption-harvestcli-b">harvestcli command line option</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     --config-path &lt;config_path&gt;
 
       <ul>
         <li><a href="cli.html#cmdoption-harvestcli-config-path">harvestcli command line option</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    --send-grid &lt;send_grid&gt;
+
+      <ul>
+        <li><a href="cli.html#cmdoption-harvestcli-send-grid">harvestcli command line option</a>
 </li>
       </ul></li>
       <li>
@@ -231,6 +239,18 @@
   </ul></td>
 </tr></table>
 
+<h2 id="E">E</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="utils.html#hreporting.utils.email_body">email_body() (in module hreporting.utils)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="utils.html#hreporting.utils.email_send">email_send() (in module hreporting.utils)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -240,15 +260,19 @@
 </li>
       <li><a href="client.html#hreporting.harvest_client.HarvestClient.get_client_time">get_client_time() (hreporting.harvest_client.HarvestClient method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="client.html#hreporting.harvest_client.HarvestClient.get_client_time_allotment">get_client_time_allotment() (hreporting.harvest_client.HarvestClient method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="client.html#hreporting.harvest_client.HarvestClient.get_client_time_used">get_client_time_used() (hreporting.harvest_client.HarvestClient method)</a>
 </li>
       <li><a href="utils.html#hreporting.utils.get_color_code_for_utilization">get_color_code_for_utilization() (in module hreporting.utils)</a>
 </li>
       <li><a href="utils.html#hreporting.utils.get_payload">get_payload() (in module hreporting.utils)</a>
+</li>
+      <li><a href="utils.html#hreporting.utils.get_slack_payload">get_slack_payload() (in module hreporting.utils)</a>
+</li>
+      <li><a href="utils.html#hreporting.utils.get_teams_payload">get_teams_payload() (in module hreporting.utils)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -267,6 +291,8 @@
         <li><a href="cli.html#cmdoption-harvestcli-b">--bearer-token &lt;bearer_token&gt;</a>
 </li>
         <li><a href="cli.html#cmdoption-harvestcli-config-path">--config-path &lt;config_path&gt;</a>
+</li>
+        <li><a href="cli.html#cmdoption-harvestcli-send-grid">--send-grid &lt;send_grid&gt;</a>
 </li>
         <li><a href="cli.html#cmdoption-harvestcli-b">-b</a>
 </li>
@@ -323,6 +349,10 @@
 
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="config.html#hreporting.config.SENDGRID_API_KEY">SENDGRID_API_KEY (in module hreporting.config)</a>
+</li>
+  </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="config.html#hreporting.config.strings">strings (class in hreporting.config)</a>
 </li>

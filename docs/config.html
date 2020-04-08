@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Python Module Index &mdash; Harvest Reporting 0.1.1 documentation</title>
+  <title>Harvest Reporting Config &mdash; Harvest Reporting 0.1.1 documentation</title>
   
 
   
@@ -35,9 +35,8 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
- 
-
-
+    <link rel="next" title="Utility Functions" href="utils.html" />
+    <link rel="prev" title="Harvest Client" href="client.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -82,11 +81,11 @@
             
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="cloudfunction.html">Harvest Messenger</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cli.html">CLI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="client.html">Harvest Client</a></li>
-<li class="toctree-l1"><a class="reference internal" href="config.html">Harvest Reporting Config</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Harvest Reporting Config</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">Utility Functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="emails.html">Harvest Emails Module</a></li>
 </ul>
@@ -134,10 +133,14 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Python Module Index</li>
+      <li>Harvest Reporting Config</li>
     
     
       <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/config.rst.txt" rel="nofollow"> View page source</a>
+          
         
       </li>
     
@@ -149,50 +152,60 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
+  <div class="section" id="module-hreporting.config">
+<span id="harvest-reporting-config"></span><span id="config-reference-label"></span><h1>Harvest Reporting Config<a class="headerlink" href="#module-hreporting.config" title="Permalink to this headline">¶</a></h1>
+<dl class="data">
+<dt id="hreporting.config.BEARER_TOKEN">
+<code class="sig-prename descclassname">hreporting.config.</code><code class="sig-name descname">BEARER_TOKEN</code><em class="property"> = None</em><a class="headerlink" href="#hreporting.config.BEARER_TOKEN" title="Permalink to this definition">¶</a></dt>
+<dd><p>ENV:BEARER_TOKEN: The Bearer Token used to authenticate to harvest with</p>
+</dd></dl>
 
-   <h1>Python Module Index</h1>
+<dl class="data">
+<dt id="hreporting.config.BUCKET">
+<code class="sig-prename descclassname">hreporting.config.</code><code class="sig-name descname">BUCKET</code><em class="property"> = None</em><a class="headerlink" href="#hreporting.config.BUCKET" title="Permalink to this definition">¶</a></dt>
+<dd><p>ENV:BUCKET: The GCP Storage Bucket to fetch config from</p>
+</dd></dl>
 
-   <div class="modindex-jumpbox">
-   <a href="#cap-h"><strong>h</strong></a>
-   </div>
+<dl class="data">
+<dt id="hreporting.config.CONFIG_PATH">
+<code class="sig-prename descclassname">hreporting.config.</code><code class="sig-name descname">CONFIG_PATH</code><em class="property"> = 'config/clients.yaml'</em><a class="headerlink" href="#hreporting.config.CONFIG_PATH" title="Permalink to this definition">¶</a></dt>
+<dd><p>ENV:CONFIG_PATH: The config path to load when looking for the Harvest Config</p>
+</dd></dl>
 
-   <table class="indextable modindextable">
-     <tr class="pcap"><td></td><td>&#160;</td><td></td></tr>
-     <tr class="cap" id="cap-h"><td></td><td>
-       <strong>h</strong></td><td></td></tr>
-     <tr>
-       <td><img src="_static/minus.png" class="toggler"
-              id="toggle-1" style="display: none" alt="-" /></td>
-       <td>
-       <code class="xref">hreporting</code></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="config.html#module-hreporting.config"><code class="xref">hreporting.config</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="emails.html#module-hreporting.emails"><code class="xref">hreporting.emails</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="client.html#module-hreporting.harvest_client"><code class="xref">hreporting.harvest_client</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="utils.html#module-hreporting.utils"><code class="xref">hreporting.utils</code></a></td><td>
-       <em></em></td></tr>
-   </table>
+<dl class="data">
+<dt id="hreporting.config.HARVEST_ACCOUNT">
+<code class="sig-prename descclassname">hreporting.config.</code><code class="sig-name descname">HARVEST_ACCOUNT</code><em class="property"> = '1121001'</em><a class="headerlink" href="#hreporting.config.HARVEST_ACCOUNT" title="Permalink to this definition">¶</a></dt>
+<dd><p>ENV:HARVEST_ACCOUNT_ID:  Your harvest account ID</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="hreporting.config.SENDGRID_API_KEY">
+<code class="sig-prename descclassname">hreporting.config.</code><code class="sig-name descname">SENDGRID_API_KEY</code><em class="property"> = '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'</em><a class="headerlink" href="#hreporting.config.SENDGRID_API_KEY" title="Permalink to this definition">¶</a></dt>
+<dd><p>ENV:SENDGRID_API_KEY: The SendGrid API key that allows for email send</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="hreporting.config.strings">
+<em class="property">class </em><code class="sig-prename descclassname">hreporting.config.</code><code class="sig-name descname">strings</code><a class="reference internal" href="_modules/hreporting/config.html#strings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.config.strings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class to house string literals</p>
+</dd></dl>
+
+</div>
 
 
            </div>
            
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="utils.html" class="btn btn-neutral float-right" title="Utility Functions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="client.html" class="btn btn-neutral float-left" title="Harvest Client" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>

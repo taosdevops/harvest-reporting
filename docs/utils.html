@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>hreporting package &mdash; Harvest Reporting 0.1.1 documentation</title>
+  <title>Utility Functions &mdash; Harvest Reporting 0.1.1 documentation</title>
   
 
   
@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -35,7 +35,8 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="Harvest Reporting" href="index.html" /> 
+    <link rel="next" title="Harvest Emails Module" href="emails.html" />
+    <link rel="prev" title="Harvest Reporting Config" href="config.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -81,14 +82,12 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">hreporting package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#module-hreporting">Module contents</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-hreporting.cli">hreporting.cli module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-hreporting.harvest_client">hreporting.harvest_client module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-hreporting.utils">hreporting.utils module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-hreporting.emails">hreporting.emails module</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="cloudfunction.html">Harvest Messenger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">CLI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="client.html">Harvest Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config.html">Harvest Reporting Config</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Utility Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="emails.html">Harvest Emails Module</a></li>
 </ul>
 
             
@@ -134,13 +133,13 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>hreporting package</li>
+      <li>Utility Functions</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/hreporting.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/utils.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -153,62 +152,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="hreporting-package">
-<h1>hreporting package<a class="headerlink" href="#hreporting-package" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="module-hreporting">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-hreporting" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="module-hreporting.cli">
-<span id="hreporting-cli-module"></span><h2>hreporting.cli module<a class="headerlink" href="#module-hreporting.cli" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="module-hreporting.harvest_client">
-<span id="hreporting-harvest-client-module"></span><h2>hreporting.harvest_client module<a class="headerlink" href="#module-hreporting.harvest_client" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="hreporting.harvest_client.HarvestClient">
-<em class="property">class </em><code class="sig-prename descclassname">hreporting.harvest_client.</code><code class="sig-name descname">HarvestClient</code><span class="sig-paren">(</span><em class="sig-param">bearer_token: str</em>, <em class="sig-param">account_id: str</em>, <em class="sig-param">config=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hreporting/harvest_client.html#HarvestClient"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.harvest_client.HarvestClient" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Harvest Client</p>
-<dl class="method">
-<dt id="hreporting.harvest_client.HarvestClient.get_client_by_id">
-<code class="sig-name descname">get_client_by_id</code><span class="sig-paren">(</span><em class="sig-param">client_id: str</em><span class="sig-paren">)</span> &#x2192; list<a class="reference internal" href="_modules/hreporting/harvest_client.html#HarvestClient.get_client_by_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.harvest_client.HarvestClient.get_client_by_id" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns array of harvest Clients</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="hreporting.harvest_client.HarvestClient.get_client_hooks">
-<code class="sig-name descname">get_client_hooks</code><span class="sig-paren">(</span><em class="sig-param">client_name</em><span class="sig-paren">)</span> &#x2192; List[str]<a class="reference internal" href="_modules/hreporting/harvest_client.html#HarvestClient.get_client_hooks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.harvest_client.HarvestClient.get_client_hooks" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns list of webhooks and emails registered for client.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="hreporting.harvest_client.HarvestClient.get_client_time">
-<code class="sig-name descname">get_client_time</code><span class="sig-paren">(</span><em class="sig-param">client_id: str</em><span class="sig-paren">)</span> &#x2192; List[dict]<a class="reference internal" href="_modules/hreporting/harvest_client.html#HarvestClient.get_client_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.harvest_client.HarvestClient.get_client_time" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns Time entries for Harvest Clients</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="hreporting.harvest_client.HarvestClient.get_client_time_allotment">
-<code class="sig-name descname">get_client_time_allotment</code><span class="sig-paren">(</span><em class="sig-param">client_name: str</em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="_modules/hreporting/harvest_client.html#HarvestClient.get_client_time_allotment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.harvest_client.HarvestClient.get_client_time_allotment" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns client allotment provided in class.config. <em>default=60</em></p>
-</dd></dl>
-
-<dl class="method">
-<dt id="hreporting.harvest_client.HarvestClient.get_client_time_used">
-<code class="sig-name descname">get_client_time_used</code><span class="sig-paren">(</span><em class="sig-param">client_id: str</em>, <em class="sig-param">month: str = '04'</em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="_modules/hreporting/harvest_client.html#HarvestClient.get_client_time_used"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.harvest_client.HarvestClient.get_client_time_used" title="Permalink to this definition">¶</a></dt>
-<dd><p>returns sum of client time used for the given month</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="hreporting.harvest_client.HarvestClient.list_clients">
-<code class="sig-name descname">list_clients</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[dict]<a class="reference internal" href="_modules/hreporting/harvest_client.html#HarvestClient.list_clients"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.harvest_client.HarvestClient.list_clients" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns array of harvest Clients</p>
-</dd></dl>
-
-</dd></dl>
-
-</div>
-<div class="section" id="module-hreporting.utils">
-<span id="hreporting-utils-module"></span><h2>hreporting.utils module<a class="headerlink" href="#module-hreporting.utils" title="Permalink to this headline">¶</a></h2>
+  <div class="section" id="module-hreporting.utils">
+<span id="utility-functions"></span><h1>Utility Functions<a class="headerlink" href="#module-hreporting.utils" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="hreporting.utils.channel_post">
 <code class="sig-prename descclassname">hreporting.utils.</code><code class="sig-name descname">channel_post</code><span class="sig-paren">(</span><em class="sig-param">webhook_url: str</em>, <em class="sig-param">used</em>, <em class="sig-param">client_name</em>, <em class="sig-param">percent</em>, <em class="sig-param">left</em><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="_modules/hreporting/utils.html#channel_post"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.utils.channel_post" title="Permalink to this definition">¶</a></dt>
@@ -266,20 +211,6 @@
 <dd></dd></dl>
 
 </div>
-<div class="section" id="module-hreporting.emails">
-<span id="hreporting-emails-module"></span><h2>hreporting.emails module<a class="headerlink" href="#module-hreporting.emails" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="hreporting.emails.email_body">
-<code class="sig-prename descclassname">hreporting.emails.</code><code class="sig-name descname">email_body</code><span class="sig-paren">(</span><em class="sig-param">used</em>, <em class="sig-param">client_name</em>, <em class="sig-param">percent</em>, <em class="sig-param">left</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/hreporting/emails.html#email_body"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.emails.email_body" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="hreporting.emails.email_send">
-<code class="sig-prename descclassname">hreporting.emails.</code><code class="sig-name descname">email_send</code><span class="sig-paren">(</span><em class="sig-param">emails: list</em>, <em class="sig-param">used: float</em>, <em class="sig-param">client_name: str</em>, <em class="sig-param">percent: float</em>, <em class="sig-param">left: float</em>, <em class="sig-param">sg_client</em><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="_modules/hreporting/emails.html#email_send"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.emails.email_send" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</div>
-</div>
 
 
            </div>
@@ -289,8 +220,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
+        <a href="emails.html" class="btn btn-neutral float-right" title="Harvest Emails Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
-        <a href="index.html" class="btn btn-neutral float-left" title="Harvest Reporting" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+        <a href="config.html" class="btn btn-neutral float-left" title="Harvest Reporting Config" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

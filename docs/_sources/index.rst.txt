@@ -9,8 +9,12 @@ as a time management solution with other applications.
    :maxdepth: 2
    :caption: Contents:
 
-   hreporting
-
+   cloudfunction
+   cli
+   client
+   config
+   utils
+   emails
 
 Indices and tables
 ==================
@@ -18,8 +22,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
-README
-======
-
-.. include:: ../README.md

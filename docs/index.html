@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="hreporting package" href="hreporting.html" /> 
+    <link rel="next" title="Harvest Messenger" href="cloudfunction.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -81,7 +81,12 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="hreporting.html">hreporting package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cloudfunction.html">Harvest Messenger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">CLI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="client.html">Harvest Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config.html">Harvest Reporting Config</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utility Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="emails.html">Harvest Emails Module</a></li>
 </ul>
 
             
@@ -153,14 +158,16 @@ as a time management solution with other applications.</p>
 <div class="toctree-wrapper compound">
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="hreporting.html">hreporting package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="hreporting.html#module-hreporting">Module contents</a></li>
-<li class="toctree-l2"><a class="reference internal" href="hreporting.html#module-hreporting.cli">hreporting.cli module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="hreporting.html#module-hreporting.harvest_client">hreporting.harvest_client module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="hreporting.html#module-hreporting.utils">hreporting.utils module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="hreporting.html#module-hreporting.emails">hreporting.emails module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cloudfunction.html">Harvest Messenger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">CLI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cli.html#getting-started">Getting started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli.html#cli-module">CLI Module</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="client.html">Harvest Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config.html">Harvest Reporting Config</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utility Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="emails.html">Harvest Emails Module</a></li>
 </ul>
 </div>
 </div>
@@ -172,40 +179,6 @@ as a time management solution with other applications.</p>
 <li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
 </div>
-<div class="section" id="readme">
-<h1>README<a class="headerlink" href="#readme" title="Permalink to this headline">¶</a></h1>
-<p># harvest-reporting</p>
-<p>Harvest Time tracking and reporting API implementation</p>
-<p>Docs: [Harvest Reporting Docs](<a class="reference external" href="https://taosdevops.github.io/harvest-reporting/">https://taosdevops.github.io/harvest-reporting/</a>)</p>
-<p>## CLI</p>
-<p>### Installing as CLI</p>
-<p>you can install this package off of pypi</p>
-<p><cite>pip install harvestcli</cite></p>
-<p>or you can clone the project install the project from that directory.</p>
-<p><cite>pip install .</cite></p>
-<p>### Environment Variables</p>
-<p>When using the cli Environment Variables can be used as an alternative to
-providing the input via command line flags.</p>
-<div class="line-block">
-<div class="line">Variable | Option |</div>
-<div class="line">——– | —— |</div>
-<div class="line">BEARER_TOKEN | -b, –bearer-token |</div>
-<div class="line">HARVEST_ACCOUNT_ID | –account-id |</div>
-<div class="line">HARVEST_CONFIG | –config-path |</div>
-<div class="line">SENDGRID_API_KEY| -s, –send-grid |</div>
-</div>
-<p>### Local Development</p>
-<p>Create virtual env</p>
-<p><cite>pipenv shell</cite></p>
-<p>Install Dev dependencies</p>
-<p><cite>pipenv install –dev –skip-lock</cite></p>
-<p>#### Generate Docs</p>
-<p>Install the devrequirements to install sphinx and its dependencies then run</p>
-<p><cite>sphinx-build .docs docs</cite></p>
-<p>#### Hosting the docs</p>
-<p><cite>cd docs &amp;&amp; python -m http.server</cite></p>
-<p>This will host the docs [locally on 8000](<a class="reference external" href="http://localhost:8000">http://localhost:8000</a>)</p>
-</div>
 
 
            </div>
@@ -215,7 +188,7 @@ providing the input via command line flags.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="hreporting.html" class="btn btn-neutral float-right" title="hreporting package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="cloudfunction.html" class="btn btn-neutral float-right" title="Harvest Messenger" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
     </div>

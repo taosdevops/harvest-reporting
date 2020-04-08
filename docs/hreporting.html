@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>hreporting package &mdash; Harvest Reporting 0.0.1 documentation</title>
+  <title>hreporting package &mdash; Harvest Reporting 0.1.1 documentation</title>
   
 
   
@@ -21,10 +21,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="hreporting" href="modules.html" /> 
+    <link rel="prev" title="Harvest Reporting" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -81,15 +81,12 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="modules.html">hreporting</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">hreporting package</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-hreporting.cli">hreporting.cli module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-hreporting.harvest_client">hreporting.harvest_client module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-hreporting.utils">hreporting.utils module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-hreporting">Module contents</a></li>
-</ul>
-</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">hreporting package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-hreporting">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-hreporting.cli">hreporting.cli module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-hreporting.harvest_client">hreporting.harvest_client module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-hreporting.utils">hreporting.utils module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-hreporting.emails">hreporting.emails module</a></li>
 </ul>
 </li>
 </ul>
@@ -137,8 +134,6 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-          <li><a href="modules.html">hreporting</a> &raquo;</li>
-        
       <li>hreporting package</li>
     
     
@@ -160,8 +155,8 @@
             
   <div class="section" id="hreporting-package">
 <h1>hreporting package<a class="headerlink" href="#hreporting-package" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-hreporting">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-hreporting" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-hreporting.cli">
 <span id="hreporting-cli-module"></span><h2>hreporting.cli module<a class="headerlink" href="#module-hreporting.cli" title="Permalink to this headline">¶</a></h2>
@@ -172,51 +167,40 @@
 <dt id="hreporting.harvest_client.HarvestClient">
 <em class="property">class </em><code class="sig-prename descclassname">hreporting.harvest_client.</code><code class="sig-name descname">HarvestClient</code><span class="sig-paren">(</span><em class="sig-param">bearer_token: str</em>, <em class="sig-param">account_id: str</em>, <em class="sig-param">config=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hreporting/harvest_client.html#HarvestClient"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.harvest_client.HarvestClient" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="attribute">
-<dt id="hreporting.harvest_client.HarvestClient.base_url">
-<code class="sig-name descname">base_url</code><em class="property"> = 'https://api.harvestapp.com/v2/'</em><a class="headerlink" href="#hreporting.harvest_client.HarvestClient.base_url" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="hreporting.harvest_client.HarvestClient.client_endpoint">
-<code class="sig-name descname">client_endpoint</code><em class="property"> = 'clients'</em><a class="headerlink" href="#hreporting.harvest_client.HarvestClient.client_endpoint" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
-<dt id="hreporting.harvest_client.HarvestClient.client_time_endpoint">
-<code class="sig-name descname">client_time_endpoint</code><em class="property"> = 'time_entries?client_id='</em><a class="headerlink" href="#hreporting.harvest_client.HarvestClient.client_time_endpoint" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<p>Harvest Client</p>
 <dl class="method">
 <dt id="hreporting.harvest_client.HarvestClient.get_client_by_id">
-<code class="sig-name descname">get_client_by_id</code><span class="sig-paren">(</span><em class="sig-param">client_id</em><span class="sig-paren">)</span> &#x2192; list<a class="reference internal" href="_modules/hreporting/harvest_client.html#HarvestClient.get_client_by_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.harvest_client.HarvestClient.get_client_by_id" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_client_by_id</code><span class="sig-paren">(</span><em class="sig-param">client_id: str</em><span class="sig-paren">)</span> &#x2192; list<a class="reference internal" href="_modules/hreporting/harvest_client.html#HarvestClient.get_client_by_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.harvest_client.HarvestClient.get_client_by_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns array of harvest Clients</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="hreporting.harvest_client.HarvestClient.get_client_hooks">
-<code class="sig-name descname">get_client_hooks</code><span class="sig-paren">(</span><em class="sig-param">client_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hreporting/harvest_client.html#HarvestClient.get_client_hooks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.harvest_client.HarvestClient.get_client_hooks" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">get_client_hooks</code><span class="sig-paren">(</span><em class="sig-param">client_name</em><span class="sig-paren">)</span> &#x2192; List[str]<a class="reference internal" href="_modules/hreporting/harvest_client.html#HarvestClient.get_client_hooks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.harvest_client.HarvestClient.get_client_hooks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns list of webhooks and emails registered for client.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="hreporting.harvest_client.HarvestClient.get_client_time">
-<code class="sig-name descname">get_client_time</code><span class="sig-paren">(</span><em class="sig-param">client_id: str</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hreporting/harvest_client.html#HarvestClient.get_client_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.harvest_client.HarvestClient.get_client_time" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_client_time</code><span class="sig-paren">(</span><em class="sig-param">client_id: str</em><span class="sig-paren">)</span> &#x2192; List[dict]<a class="reference internal" href="_modules/hreporting/harvest_client.html#HarvestClient.get_client_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.harvest_client.HarvestClient.get_client_time" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns Time entries for Harvest Clients</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="hreporting.harvest_client.HarvestClient.get_client_time_allotment">
-<code class="sig-name descname">get_client_time_allotment</code><span class="sig-paren">(</span><em class="sig-param">client_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hreporting/harvest_client.html#HarvestClient.get_client_time_allotment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.harvest_client.HarvestClient.get_client_time_allotment" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">get_client_time_allotment</code><span class="sig-paren">(</span><em class="sig-param">client_name: str</em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="_modules/hreporting/harvest_client.html#HarvestClient.get_client_time_allotment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.harvest_client.HarvestClient.get_client_time_allotment" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns client allotment provided in class.config. <em>default=60</em></p>
+</dd></dl>
 
 <dl class="method">
 <dt id="hreporting.harvest_client.HarvestClient.get_client_time_used">
-<code class="sig-name descname">get_client_time_used</code><span class="sig-paren">(</span><em class="sig-param">client_id: str</em>, <em class="sig-param">month='11'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hreporting/harvest_client.html#HarvestClient.get_client_time_used"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.harvest_client.HarvestClient.get_client_time_used" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">get_client_time_used</code><span class="sig-paren">(</span><em class="sig-param">client_id: str</em>, <em class="sig-param">month: str = '04'</em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="_modules/hreporting/harvest_client.html#HarvestClient.get_client_time_used"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.harvest_client.HarvestClient.get_client_time_used" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns sum of client time used for the given month</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="hreporting.harvest_client.HarvestClient.list_clients">
-<code class="sig-name descname">list_clients</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; list<a class="reference internal" href="_modules/hreporting/harvest_client.html#HarvestClient.list_clients"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.harvest_client.HarvestClient.list_clients" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">list_clients</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List[dict]<a class="reference internal" href="_modules/hreporting/harvest_client.html#HarvestClient.list_clients"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.harvest_client.HarvestClient.list_clients" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns array of harvest Clients</p>
 </dd></dl>
 
@@ -227,48 +211,73 @@
 <span id="hreporting-utils-module"></span><h2>hreporting.utils module<a class="headerlink" href="#module-hreporting.utils" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="hreporting.utils.channel_post">
-<code class="sig-prename descclassname">hreporting.utils.</code><code class="sig-name descname">channel_post</code><span class="sig-paren">(</span><em class="sig-param">webhook_url: str</em>, <em class="sig-param">used</em>, <em class="sig-param">clientName</em>, <em class="sig-param">percent</em>, <em class="sig-param">left</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hreporting/utils.html#channel_post"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.utils.channel_post" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-prename descclassname">hreporting.utils.</code><code class="sig-name descname">channel_post</code><span class="sig-paren">(</span><em class="sig-param">webhook_url: str</em>, <em class="sig-param">used</em>, <em class="sig-param">client_name</em>, <em class="sig-param">percent</em>, <em class="sig-param">left</em><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="_modules/hreporting/utils.html#channel_post"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.utils.channel_post" title="Permalink to this definition">¶</a></dt>
+<dd><p>Posts payload to webhook provided</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="hreporting.utils.get_color_code_for_utilization">
-<code class="sig-prename descclassname">hreporting.utils.</code><code class="sig-name descname">get_color_code_for_utilization</code><span class="sig-paren">(</span><em class="sig-param">percent</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hreporting/utils.html#get_color_code_for_utilization"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.utils.get_color_code_for_utilization" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">hreporting.utils.</code><code class="sig-name descname">get_color_code_for_utilization</code><span class="sig-paren">(</span><em class="sig-param">percent</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/hreporting/utils.html#get_color_code_for_utilization"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.utils.get_color_code_for_utilization" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="hreporting.utils.get_payload">
-<code class="sig-prename descclassname">hreporting.utils.</code><code class="sig-name descname">get_payload</code><span class="sig-paren">(</span><em class="sig-param">used</em>, <em class="sig-param">clientName</em>, <em class="sig-param">percent</em>, <em class="sig-param">left</em>, <em class="sig-param">*args</em>, <em class="sig-param">_format='slack'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hreporting/utils.html#get_payload"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.utils.get_payload" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-prename descclassname">hreporting.utils.</code><code class="sig-name descname">get_payload</code><span class="sig-paren">(</span><em class="sig-param">used</em>, <em class="sig-param">client_name</em>, <em class="sig-param">percent</em>, <em class="sig-param">left</em>, <em class="sig-param">_format='slack'</em><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="_modules/hreporting/utils.html#get_payload"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.utils.get_payload" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get payload for every type of format</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="hreporting.utils.get_slack_payload">
+<code class="sig-prename descclassname">hreporting.utils.</code><code class="sig-name descname">get_slack_payload</code><span class="sig-paren">(</span><em class="sig-param">used</em>, <em class="sig-param">client_name</em>, <em class="sig-param">percent</em>, <em class="sig-param">left</em>, <em class="sig-param">*args</em><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="_modules/hreporting/utils.html#get_slack_payload"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.utils.get_slack_payload" title="Permalink to this definition">¶</a></dt>
+<dd><p>Format JSON body for Slack channel posting</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="hreporting.utils.get_teams_payload">
+<code class="sig-prename descclassname">hreporting.utils.</code><code class="sig-name descname">get_teams_payload</code><span class="sig-paren">(</span><em class="sig-param">used</em>, <em class="sig-param">client_name</em>, <em class="sig-param">percent</em>, <em class="sig-param">left</em>, <em class="sig-param">*args</em><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="_modules/hreporting/utils.html#get_teams_payload"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.utils.get_teams_payload" title="Permalink to this definition">¶</a></dt>
+<dd><p>Format JSON body for MS Teams channel post</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="hreporting.utils.load_yaml">
-<code class="sig-prename descclassname">hreporting.utils.</code><code class="sig-name descname">load_yaml</code><span class="sig-paren">(</span><em class="sig-param">yaml_string</em><span class="sig-paren">)</span><a class="headerlink" href="#hreporting.utils.load_yaml" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">hreporting.utils.</code><code class="sig-name descname">load_yaml</code><span class="sig-paren">(</span><em class="sig-param">yaml_string</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hreporting/utils.html#load_yaml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.utils.load_yaml" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="hreporting.utils.load_yaml_file">
-<code class="sig-prename descclassname">hreporting.utils.</code><code class="sig-name descname">load_yaml_file</code><span class="sig-paren">(</span><em class="sig-param">file_handle</em><span class="sig-paren">)</span><a class="headerlink" href="#hreporting.utils.load_yaml_file" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">hreporting.utils.</code><code class="sig-name descname">load_yaml_file</code><span class="sig-paren">(</span><em class="sig-param">file_handle</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hreporting/utils.html#load_yaml_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.utils.load_yaml_file" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="hreporting.utils.print_verify">
-<code class="sig-prename descclassname">hreporting.utils.</code><code class="sig-name descname">print_verify</code><span class="sig-paren">(</span><em class="sig-param">used</em>, <em class="sig-param">clientName</em>, <em class="sig-param">percent</em>, <em class="sig-param">left</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hreporting/utils.html#print_verify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.utils.print_verify" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">hreporting.utils.</code><code class="sig-name descname">print_verify</code><span class="sig-paren">(</span><em class="sig-param">used</em>, <em class="sig-param">client_name</em>, <em class="sig-param">percent</em>, <em class="sig-param">left</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/hreporting/utils.html#print_verify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.utils.print_verify" title="Permalink to this definition">¶</a></dt>
 <dd><p>Print Details for verification</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="hreporting.utils.read_cloud_storage">
-<code class="sig-prename descclassname">hreporting.utils.</code><code class="sig-name descname">read_cloud_storage</code><span class="sig-paren">(</span><em class="sig-param">bucket_name</em>, <em class="sig-param">file_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hreporting/utils.html#read_cloud_storage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.utils.read_cloud_storage" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-prename descclassname">hreporting.utils.</code><code class="sig-name descname">read_cloud_storage</code><span class="sig-paren">(</span><em class="sig-param">bucket_name</em>, <em class="sig-param">file_name</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/hreporting/utils.html#read_cloud_storage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.utils.read_cloud_storage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns file contents from provided bucket and file names</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="hreporting.utils.truncate">
-<code class="sig-prename descclassname">hreporting.utils.</code><code class="sig-name descname">truncate</code><span class="sig-paren">(</span><em class="sig-param">n</em>, <em class="sig-param">decimals=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hreporting/utils.html#truncate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.utils.truncate" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">hreporting.utils.</code><code class="sig-name descname">truncate</code><span class="sig-paren">(</span><em class="sig-param">n</em>, <em class="sig-param">decimals=0</em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="_modules/hreporting/utils.html#truncate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.utils.truncate" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
-<div class="section" id="module-hreporting">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-hreporting" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-hreporting.emails">
+<span id="hreporting-emails-module"></span><h2>hreporting.emails module<a class="headerlink" href="#module-hreporting.emails" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="hreporting.emails.email_body">
+<code class="sig-prename descclassname">hreporting.emails.</code><code class="sig-name descname">email_body</code><span class="sig-paren">(</span><em class="sig-param">used</em>, <em class="sig-param">client_name</em>, <em class="sig-param">percent</em>, <em class="sig-param">left</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/hreporting/emails.html#email_body"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.emails.email_body" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="hreporting.emails.email_send">
+<code class="sig-prename descclassname">hreporting.emails.</code><code class="sig-name descname">email_send</code><span class="sig-paren">(</span><em class="sig-param">emails: list</em>, <em class="sig-param">used: float</em>, <em class="sig-param">client_name: str</em>, <em class="sig-param">percent: float</em>, <em class="sig-param">left: float</em>, <em class="sig-param">sg_client</em><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="_modules/hreporting/emails.html#email_send"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.emails.email_send" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
 </div>
 
@@ -281,7 +290,7 @@
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="modules.html" class="btn btn-neutral float-left" title="hreporting" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Harvest Reporting" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -290,7 +299,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Austin and Adam
+        &copy; Copyright 2019, Austin Earl, Adam McChesney, Robert R. Meyer
 
     </p>
   </div>

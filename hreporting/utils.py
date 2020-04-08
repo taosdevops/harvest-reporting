@@ -2,7 +2,6 @@ import logging
 
 import yaml
 from google.cloud import storage
-from sendgrid.helpers.mail import *
 from taosdevopsutils.slack import Slack
 
 # In the future if we need to auth with multiple workspaces we might need
@@ -32,22 +31,6 @@ def print_verify(used, client_name, percent, left) -> None:
             percent="%d%%" % (percent),
             color=get_color_code_for_utilization(percent),
         )
-    )
-
-
-def email_body(used, client_name, percent, left) -> str:
-    hour_report_template = """
-    Client:           {name}
-    Used Hours:       {used}
-    Remaining Hours:  {left}
-    Percent:          {percent}
-    """
-    return str.format(
-        hour_report_template,
-        name=client_name,
-        used=used,
-        left=left,
-        percent="%d%%" % (percent),
     )
 
 
@@ -145,22 +128,6 @@ def channel_post(webhook_url: str, used, client_name, percent, left) -> dict:
     data = get_payload(used, client_name, percent, left, _format=post_format)
     response = SLACK_CLIENT.post_slack_message(webhook_url, data)
     logging.info(response)
-
-    return response
-
-
-def email_send(
-    emails: list, used: float, client_name: str, percent: float, left: float, sg_client
-) -> dict:
-
-    subject = Subject(f"DevOps Now Hour Usage")
-    from_email = Email("DevOpsNow@taos.com")
-
-    content = Content("text/plain", email_body(used, client_name, percent, left))
-
-    mail = Mail(from_email, emails, subject, content)
-
-    response = sg_client.client.mail.send.post(request_body=mail.get())
 
     return response
 

@@ -1,8 +1,13 @@
 hreporting package
 ==================
 
-Submodules
-----------
+Module contents
+---------------
+
+.. automodule:: hreporting
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 hreporting.cli module
 ---------------------
@@ -28,11 +33,10 @@ hreporting.utils module
    :undoc-members:
    :show-inheritance:
 
+hreporting.emails module
+------------------------
 
-Module contents
----------------
-
-.. automodule:: hreporting
+.. automodule:: hreporting.emails
    :members:
    :undoc-members:
    :show-inheritance:

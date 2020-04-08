@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>hreporting.harvest_client &mdash; Harvest Reporting 0.0.1 documentation</title>
+  <title>hreporting.harvest_client &mdash; Harvest Reporting 0.1.1 documentation</title>
   
 
   
@@ -80,11 +80,7 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../cloudfunction.html">Harvest Messenger</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../cli.html">CLI</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../client.html">Harvest Client</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../config.html">Harvest Reporting Config</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../utils.html">Utility Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../hreporting.html">hreporting package</a></li>
 </ul>
 
             
@@ -161,7 +157,7 @@
     <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dm</span><span class="si">:</span><span class="s2">02</span><span class="si">}</span><span class="s2">&quot;</span>
 
 
-<div class="viewcode-block" id="HarvestClient"><a class="viewcode-back" href="../../client.html#hreporting.harvest_client.HarvestClient">[docs]</a><span class="k">class</span> <span class="nc">HarvestClient</span><span class="p">:</span>
+<div class="viewcode-block" id="HarvestClient"><a class="viewcode-back" href="../../hreporting.html#hreporting.harvest_client.HarvestClient">[docs]</a><span class="k">class</span> <span class="nc">HarvestClient</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot; Harvest Client &quot;&quot;&quot;</span>
 
     <span class="n">_base_url</span> <span class="o">=</span> <span class="s2">&quot;https://api.harvestapp.com/v2/&quot;</span>
@@ -187,7 +183,7 @@
         <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">{}</span>
 
-<div class="viewcode-block" id="HarvestClient.list_clients"><a class="viewcode-back" href="../../client.html#hreporting.harvest_client.HarvestClient.list_clients">[docs]</a>    <span class="k">def</span> <span class="nf">list_clients</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
+<div class="viewcode-block" id="HarvestClient.list_clients"><a class="viewcode-back" href="../../hreporting.html#hreporting.harvest_client.HarvestClient.list_clients">[docs]</a>    <span class="k">def</span> <span class="nf">list_clients</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot; Returns array of harvest Clients&quot;&quot;&quot;</span>
         <span class="n">uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_url</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client_endpoint</span>
         <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">)</span>
@@ -196,7 +192,7 @@
 
         <span class="k">return</span> <span class="n">clients</span></div>
 
-<div class="viewcode-block" id="HarvestClient.get_client_by_id"><a class="viewcode-back" href="../../client.html#hreporting.harvest_client.HarvestClient.get_client_by_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_client_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<div class="viewcode-block" id="HarvestClient.get_client_by_id"><a class="viewcode-back" href="../../hreporting.html#hreporting.harvest_client.HarvestClient.get_client_by_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_client_by_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot; Returns array of harvest Clients&quot;&quot;&quot;</span>
         <span class="n">uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_url</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client_endpoint</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="n">client_id</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">)</span>
@@ -204,7 +200,7 @@
 
         <span class="k">return</span> <span class="n">json_response</span></div>
 
-<div class="viewcode-block" id="HarvestClient.get_client_time"><a class="viewcode-back" href="../../client.html#hreporting.harvest_client.HarvestClient.get_client_time">[docs]</a>    <span class="k">def</span> <span class="nf">get_client_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
+<div class="viewcode-block" id="HarvestClient.get_client_time"><a class="viewcode-back" href="../../hreporting.html#hreporting.harvest_client.HarvestClient.get_client_time">[docs]</a>    <span class="k">def</span> <span class="nf">get_client_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot; Returns Time entries for Harvest Clients &quot;&quot;&quot;</span>
         <span class="n">uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base_url</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client_time_endpoint</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">client_id</span><span class="p">)</span>
         <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">uri</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">)</span>
@@ -222,7 +218,7 @@
 
         <span class="k">return</span> <span class="n">entries</span></div>
 
-<div class="viewcode-block" id="HarvestClient.get_client_time_used"><a class="viewcode-back" href="../../client.html#hreporting.harvest_client.HarvestClient.get_client_time_used">[docs]</a>    <span class="k">def</span> <span class="nf">get_client_time_used</span><span class="p">(</span>
+<div class="viewcode-block" id="HarvestClient.get_client_time_used"><a class="viewcode-back" href="../../hreporting.html#hreporting.harvest_client.HarvestClient.get_client_time_used">[docs]</a>    <span class="k">def</span> <span class="nf">get_client_time_used</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">client_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">month</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">_get_current_month</span><span class="p">()</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot; returns sum of client time used for the given month &quot;&quot;&quot;</span>
@@ -238,13 +234,13 @@
             <span class="p">]</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="HarvestClient.get_client_time_allotment"><a class="viewcode-back" href="../../client.html#hreporting.harvest_client.HarvestClient.get_client_time_allotment">[docs]</a>    <span class="k">def</span> <span class="nf">get_client_time_allotment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="HarvestClient.get_client_time_allotment"><a class="viewcode-back" href="../../hreporting.html#hreporting.harvest_client.HarvestClient.get_client_time_allotment">[docs]</a>    <span class="k">def</span> <span class="nf">get_client_time_allotment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot; returns client allotment provided in class.config. *default=60* &quot;&quot;&quot;</span>
         <span class="n">client_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_client_config</span><span class="p">(</span><span class="n">client_name</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">client_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;hours&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;default_hours&quot;</span><span class="p">,</span> <span class="mi">80</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="HarvestClient.get_client_hooks"><a class="viewcode-back" href="../../client.html#hreporting.harvest_client.HarvestClient.get_client_hooks">[docs]</a>    <span class="k">def</span> <span class="nf">get_client_hooks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_name</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<div class="viewcode-block" id="HarvestClient.get_client_hooks"><a class="viewcode-back" href="../../hreporting.html#hreporting.harvest_client.HarvestClient.get_client_hooks">[docs]</a>    <span class="k">def</span> <span class="nf">get_client_hooks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_name</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot; Returns list of webhooks and emails registered for client. &quot;&quot;&quot;</span>
         <span class="n">client_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_client_config</span><span class="p">(</span><span class="n">client_name</span><span class="p">)</span>
 
@@ -270,7 +266,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Austin and Adam
+        &copy; Copyright 2019, Austin Earl, Adam McChesney, Robert R. Meyer
 
     </p>
   </div>

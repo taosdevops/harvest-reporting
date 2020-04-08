@@ -2,10 +2,10 @@ import os
 
 import sendgrid
 
+from hreporting.emails import email_send
 from hreporting.harvest_client import HarvestClient
-from hreporting.utils import (channel_post, email_send, load_yaml,
-                              load_yaml_file, print_verify, read_cloud_storage,
-                              truncate)
+from hreporting.utils import (channel_post, load_yaml, load_yaml_file,
+                              print_verify, read_cloud_storage, truncate)
 
 
 def main_method(bearer_token, harvest_account, send_grid_api, config):

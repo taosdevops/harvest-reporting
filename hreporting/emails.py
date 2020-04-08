@@ -1,5 +1,6 @@
-from sendgrid.helpers.mail import *
 from datetime import date
+
+from sendgrid.helpers.mail import *
 
 
 def email_body(used, client_name, percent, left) -> str:
@@ -22,9 +23,9 @@ def email_send(
     emails: list, used: float, client_name: str, percent: float, left: float, sg_client
 ) -> dict:
 
-    current_date = date.today.strftime("%B %d, %Y")
+    current_date = date.today().strftime("%B %d, %Y")
     subject = Subject(f"{client_name} usage of DevOps Now hours as of {current_date} ")
-    from_email = Email("DevOpsNow@taos.com")
+    from_email = Email("DevOpsNow@nottaos.com")
 
     content = Content("text/plain", email_body(used, client_name, percent, left))
 

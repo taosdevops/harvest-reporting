@@ -4,6 +4,13 @@ Harvest Time tracking and reporting API implementation
 
 Docs: [Harvest Reporting Docs](https://taosdevops.github.io/harvest-reporting/)
 
+## Configration of Notifications
+
+### YAML Settings
+
+There is an [example yaml](./examples/config.yaml) that shows how to
+set up every kind of integration.
+
 ## CLI
 
 ### Installing as CLI
@@ -49,3 +56,4 @@ Install the devrequirements to install sphinx and its dependencies then run
 `cd docs && python -m http.server`
 
 This will host the docs [locally on 8000](http://localhost:8000)
+

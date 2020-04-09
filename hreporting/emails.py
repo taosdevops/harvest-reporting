@@ -3,34 +3,53 @@ from datetime import date
 from sendgrid.helpers.mail import *
 
 
-def email_body(used, client_name, percent, left) -> str:
-    hour_report_template = """
-    Client:           {name}
-    Used Hours:       {used}
-    Remaining Hours:  {left}
-    Percent:          {percent}
-    """
-    return str.format(
-        hour_report_template,
-        name=client_name,
-        used=used,
-        left=left,
-        percent="%d%%" % (percent),
-    )
+class SendGridSummaryEmail:
+    def __init__(
+        self,
+        client_name: str,
+        emails: list,
+        left: float,
+        percent: float,
+        sg_client,
+        used: float,
+    ):
 
+        self.client_name = client_name
+        self.emails = map(To, emails)
+        self.left = left
+        self.percent = percent
+        self.sg_client = sg_client
+        self.used = used
 
-def email_send(
-    emails: list, used: float, client_name: str, percent: float, left: float, sg_client
-) -> dict:
+    def email_body(self) -> str:
+        hour_report_template = """
+        Client:           {name}
+        Used Hours:       {used}
+        Remaining Hours:  {left}
+        Percent:          {percent}
+        """
+        return str.format(
+            hour_report_template,
+            name=self.client_name,
+            used=self.used,
+            left=self.left,
+            percent="%d%%" % (self.percent),
+        )
 
-    current_date = date.today().strftime("%B %d, %Y")
-    subject = Subject(f"{client_name} usage of DevOps Now hours as of {current_date} ")
-    from_email = Email("DevOpsNow@nottaos.com")
+    def construct_mail(self) -> Mail:
+        current_date = date.today().strftime("%B %d, %Y")
+        subject = Subject(
+            f"{self.client_name} usage of DevOps Now hours as of {current_date} "
+        )
+        from_email = Email("DevOpsNow@nottaos.com")
 
-    content = Content("text/plain", email_body(used, client_name, percent, left))
+        content = Content("text/plain", self.email_body())
 
-    mail = Mail(from_email, emails, subject, content)
+        return Mail(from_email, list(self.emails), subject, content)
 
-    response = sg_client.client.mail.send.post(request_body=mail.get())
+    def email_send(self,) -> dict:
+        mail = self.construct_mail()
 
-    return response
+        response = self.sg_client.client.mail.send.post(request_body=mail.get())
+
+        return response

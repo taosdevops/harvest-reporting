@@ -24,6 +24,7 @@ class TestEmail(VCRTestCase):
             self.percet,
             self.sg_client,
             self.used,
+            "BadEmail@exmaple.com",
         )
 
     def test_to_emails(self):

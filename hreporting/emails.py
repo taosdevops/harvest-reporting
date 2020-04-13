@@ -12,6 +12,7 @@ class SendGridSummaryEmail:
         percent: float,
         sg_client,
         used: float,
+        from_email: str,
     ):
 
         self.client_name = client_name
@@ -20,6 +21,7 @@ class SendGridSummaryEmail:
         self.percent = percent
         self.sg_client = sg_client
         self.used = used
+        self.from_email = from_email
 
     def email_body(self) -> str:
         hour_report_template = """
@@ -41,11 +43,10 @@ class SendGridSummaryEmail:
         subject = Subject(
             f"{self.client_name} usage of DevOps Now hours as of {current_date} "
         )
-        from_email = Email("DevOpsNow@nottaos.com")
 
         content = Content("text/plain", self.email_body())
 
-        return Mail(from_email, list(self.emails), subject, content)
+        return Mail(Email(self.from_email), list(self.emails), subject, content)
 
     def email_send(self,) -> dict:
         mail = self.construct_mail()

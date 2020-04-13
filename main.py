@@ -2,13 +2,13 @@ import os
 
 import sendgrid
 
-from hreporting.emails import email_send
+from hreporting.emails import SendGridSummaryEmail
 from hreporting.harvest_client import HarvestClient
 from hreporting.utils import (channel_post, load_yaml, load_yaml_file,
                               print_verify, read_cloud_storage, truncate)
 
 
-def main_method(bearer_token, harvest_account, send_grid_api, config):
+def main_method(bearer_token, harvest_account, send_grid_api, config, from_email):
     harvest_client = HarvestClient(bearer_token, harvest_account, config)
 
     sg_client = sendgrid.SendGridAPIClient(api_key=send_grid_api)
@@ -40,7 +40,16 @@ def main_method(bearer_token, harvest_account, send_grid_api, config):
             for hook in client_hooks["hooks"]
         ]
 
-        email_send(client_hooks["emails"], used, clientName, percent, left, sg_client)
+        email_summary = SendGridSummaryEmail(
+            clientName,
+            client_hooks["emails"],
+            left,
+            percent,
+            sg_client,
+            used,
+            from_email,
+        )
+        email_summary.email_send()
 
 
 def harvest_reports(*args):
@@ -49,6 +58,7 @@ def harvest_reports(*args):
     config_path = os.getenv("CONFIG_PATH", "config/clients.yaml")
     harvest_account = os.getenv("HARVEST_ACCOUNT_ID", "1121001")
     send_grid_api = os.getenv("SENDGRID_API_KEY")
+    from_email = os.getenv("ORIGIN_EMAIL_ADDRESS", "DevOpsNow@taos.com")
 
     config = (
         load_yaml_file(config_path)
@@ -57,7 +67,7 @@ def harvest_reports(*args):
         else load_yaml(read_cloud_storage(bucket, config_path))
     )
 
-    return main_method(bearer_token, harvest_account, send_grid_api, config)
+    return main_method(bearer_token, harvest_account, send_grid_api, config, from_email)
 
 
 if __name__ == "__main__":

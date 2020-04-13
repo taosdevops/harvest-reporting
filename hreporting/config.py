@@ -15,6 +15,9 @@ BUCKET = os.getenv("BUCKET")
 SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
 """ ENV:SENDGRID_API_KEY: The SendGrid API key that allows for email send"""
 
+ORIGIN_EMAIL_ADDRESS = os.getenv("ORIGIN_EMAIL_ADDRESS", "DevOpsNow@taos.com")
+""" ENV:ORIGIN_EMAIL_ADDRESS: The origin email address that shows in the FROM line """
+
 
 class strings:
     """ Class to house string literals """

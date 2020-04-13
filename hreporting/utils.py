@@ -1,4 +1,5 @@
 import logging
+import sys
 
 import yaml
 from google.cloud import storage
@@ -10,6 +11,8 @@ SLACK_CLIENT = Slack()
 
 logging.getLogger(__name__)
 logging.basicConfig(format="%(asctime)s %(message)s")
+
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 
 def print_verify(used, client_name, percent, left) -> None:

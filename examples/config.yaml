@@ -21,9 +21,9 @@ clients:
 
   - name: Email Only
     hours: 160
-       emails:
-        - primary@emailonly.com
-        - secondary@emailonly.com
+    emails:
+      - primary@emailonly.com
+      - secondary@emailonly.com
 
   - name: All Defaults with No Hooks
 

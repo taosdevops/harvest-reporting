@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>hreporting.utils &mdash; Harvest Reporting 0.0.1 documentation</title>
+  <title>hreporting.utils &mdash; Harvest Reporting 0.1.1 documentation</title>
   
 
   
@@ -85,6 +85,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../client.html">Harvest Client</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../config.html">Harvest Reporting Config</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../utils.html">Utility Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../emails.html">Harvest Emails Module</a></li>
 </ul>
 
             
@@ -148,28 +149,34 @@
            <div itemprop="articleBody">
             
   <h1>Source code for hreporting.utils</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">yaml</span>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">yaml</span>
 <span class="kn">from</span> <span class="nn">google.cloud</span> <span class="kn">import</span> <span class="n">storage</span>
 <span class="kn">from</span> <span class="nn">taosdevopsutils.slack</span> <span class="kn">import</span> <span class="n">Slack</span>
 
 <span class="c1"># In the future if we need to auth with multiple workspaces we might need</span>
 <span class="c1"># to move this to a factory method and pull a specific client for each token</span>
-<span class="n">slack_client</span> <span class="o">=</span> <span class="n">Slack</span><span class="p">()</span>
+<span class="n">SLACK_CLIENT</span> <span class="o">=</span> <span class="n">Slack</span><span class="p">()</span>
+
+<span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2"> </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="print_verify"><a class="viewcode-back" href="../../utils.html#hreporting.utils.print_verify">[docs]</a><span class="k">def</span> <span class="nf">print_verify</span><span class="p">(</span><span class="n">used</span><span class="p">,</span> <span class="n">clientName</span><span class="p">,</span> <span class="n">percent</span><span class="p">,</span> <span class="n">left</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="print_verify"><a class="viewcode-back" href="../../utils.html#hreporting.utils.print_verify">[docs]</a><span class="k">def</span> <span class="nf">print_verify</span><span class="p">(</span><span class="n">used</span><span class="p">,</span> <span class="n">client_name</span><span class="p">,</span> <span class="n">percent</span><span class="p">,</span> <span class="n">left</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot; Print Details for verification &quot;&quot;&quot;</span>
-    <span class="n">Hour_Report_Template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+
+    <span class="n">hour_report_template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">    Client:           </span><span class="si">{name}</span><span class="s2"></span>
 <span class="s2">    Used Hours:       </span><span class="si">{used}</span><span class="s2"></span>
 <span class="s2">    Remaining Hours:  </span><span class="si">{left}</span><span class="s2"></span>
 <span class="s2">    Color:            </span><span class="si">{color}</span><span class="s2"></span>
 <span class="s2">    Percent:          </span><span class="si">{percent}</span><span class="s2"></span>
 <span class="s2">    &quot;&quot;&quot;</span>
-    <span class="nb">print</span><span class="p">(</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
         <span class="nb">str</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-            <span class="n">Hour_Report_Template</span><span class="p">,</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">clientName</span><span class="p">,</span>
+            <span class="n">hour_report_template</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">client_name</span><span class="p">,</span>
             <span class="n">used</span><span class="o">=</span><span class="n">used</span><span class="p">,</span>
             <span class="n">left</span><span class="o">=</span><span class="n">left</span><span class="p">,</span>
             <span class="n">percent</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%d%%</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">percent</span><span class="p">),</span>
@@ -214,48 +221,64 @@
     <span class="k">return</span> <span class="n">red</span></div>
 
 
-<span class="c1"># Define if teams or slack</span>
-<div class="viewcode-block" id="get_payload"><a class="viewcode-back" href="../../utils.html#hreporting.utils.get_payload">[docs]</a><span class="k">def</span> <span class="nf">get_payload</span><span class="p">(</span><span class="n">used</span><span class="p">,</span> <span class="n">clientName</span><span class="p">,</span> <span class="n">percent</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">_format</span><span class="o">=</span><span class="s2">&quot;slack&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-    <span class="k">if</span> <span class="n">_format</span> <span class="o">==</span> <span class="s2">&quot;slack&quot;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;attachments&quot;</span><span class="p">:</span> <span class="p">[</span>
-                <span class="p">{</span>
-                    <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="n">get_color_code_for_utilization</span><span class="p">(</span><span class="n">percent</span><span class="p">),</span>
-                    <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="n">clientName</span><span class="p">,</span>
-                    <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">%d%%</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">percent</span><span class="p">),</span>
-                    <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span>
-                        <span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Hours Used&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">used</span><span class="p">,</span> <span class="s2">&quot;short&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">},</span>
-                        <span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Hours Remaining&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">left</span><span class="p">,</span> <span class="s2">&quot;short&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">},</span>
-                    <span class="p">],</span>
-                <span class="p">}</span>
-            <span class="p">]</span>
-        <span class="p">}</span>
-    <span class="k">if</span> <span class="n">_format</span> <span class="o">==</span> <span class="s2">&quot;teams&quot;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;@type&quot;</span><span class="p">:</span> <span class="s2">&quot;MessageCard&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;@context&quot;</span><span class="p">:</span> <span class="s2">&quot;https://schema.org/extensions&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;themeColor&quot;</span><span class="p">:</span> <span class="n">get_color_code_for_utilization</span><span class="p">(</span><span class="n">percent</span><span class="p">),</span>
-            <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;DevOps Time Reports&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">clientName</span><span class="p">,</span>
-            <span class="s2">&quot;sections&quot;</span><span class="p">:</span> <span class="p">[</span>
-                <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">%d%%</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">percent</span><span class="p">)},</span>
-                <span class="p">{</span><span class="s2">&quot;activityTitle&quot;</span><span class="p">:</span> <span class="s2">&quot;Hours Used&quot;</span><span class="p">,</span> <span class="s2">&quot;activitySubtitle&quot;</span><span class="p">:</span> <span class="n">used</span><span class="p">},</span>
-                <span class="p">{</span><span class="s2">&quot;activityTitle&quot;</span><span class="p">:</span> <span class="s2">&quot;Hours Remaining&quot;</span><span class="p">,</span> <span class="s2">&quot;activitySubtitle&quot;</span><span class="p">:</span> <span class="n">left</span><span class="p">},</span>
-            <span class="p">],</span>
-        <span class="p">}</span>
-    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid Payload format </span><span class="si">{</span><span class="n">_format</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+<span class="c1"># Define types of payloads</span>
+<div class="viewcode-block" id="get_payload"><a class="viewcode-back" href="../../utils.html#hreporting.utils.get_payload">[docs]</a><span class="k">def</span> <span class="nf">get_payload</span><span class="p">(</span><span class="n">used</span><span class="p">,</span> <span class="n">client_name</span><span class="p">,</span> <span class="n">percent</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">_format</span><span class="o">=</span><span class="s2">&quot;slack&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Get payload for every type of format&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;slack&quot;</span><span class="p">:</span> <span class="n">get_slack_payload</span><span class="p">,</span> <span class="s2">&quot;teams&quot;</span><span class="p">:</span> <span class="n">get_teams_payload</span><span class="p">}[</span><span class="n">_format</span><span class="p">](</span>
+            <span class="n">used</span><span class="p">,</span> <span class="n">client_name</span><span class="p">,</span> <span class="n">percent</span><span class="p">,</span> <span class="n">left</span>
+        <span class="p">)</span>
+
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid Payload format </span><span class="si">{_format}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_slack_payload"><a class="viewcode-back" href="../../utils.html#hreporting.utils.get_slack_payload">[docs]</a><span class="k">def</span> <span class="nf">get_slack_payload</span><span class="p">(</span><span class="n">used</span><span class="p">,</span> <span class="n">client_name</span><span class="p">,</span> <span class="n">percent</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Format JSON body for Slack channel posting&quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;attachments&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="n">get_color_code_for_utilization</span><span class="p">(</span><span class="n">percent</span><span class="p">),</span>
+                <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="n">client_name</span><span class="p">,</span>
+                <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">%d%%</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">percent</span><span class="p">),</span>
+                <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Hours Used&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">used</span><span class="p">,</span> <span class="s2">&quot;short&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">},</span>
+                    <span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Hours Remaining&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">left</span><span class="p">,</span> <span class="s2">&quot;short&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">},</span>
+                <span class="p">],</span>
+            <span class="p">}</span>
+        <span class="p">]</span>
+    <span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="get_teams_payload"><a class="viewcode-back" href="../../utils.html#hreporting.utils.get_teams_payload">[docs]</a><span class="k">def</span> <span class="nf">get_teams_payload</span><span class="p">(</span><span class="n">used</span><span class="p">,</span> <span class="n">client_name</span><span class="p">,</span> <span class="n">percent</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Format JSON body for MS Teams channel post&quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">&quot;@type&quot;</span><span class="p">:</span> <span class="s2">&quot;MessageCard&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;@context&quot;</span><span class="p">:</span> <span class="s2">&quot;https://schema.org/extensions&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;themeColor&quot;</span><span class="p">:</span> <span class="n">get_color_code_for_utilization</span><span class="p">(</span><span class="n">percent</span><span class="p">),</span>
+        <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;DevOps Time Reports&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">client_name</span><span class="p">,</span>
+        <span class="s2">&quot;sections&quot;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">%d%%</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">percent</span><span class="p">)},</span>
+            <span class="p">{</span><span class="s2">&quot;activityTitle&quot;</span><span class="p">:</span> <span class="s2">&quot;Hours Used&quot;</span><span class="p">,</span> <span class="s2">&quot;activitySubtitle&quot;</span><span class="p">:</span> <span class="n">used</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">&quot;activityTitle&quot;</span><span class="p">:</span> <span class="s2">&quot;Hours Remaining&quot;</span><span class="p">,</span> <span class="s2">&quot;activitySubtitle&quot;</span><span class="p">:</span> <span class="n">left</span><span class="p">},</span>
+        <span class="p">],</span>
+    <span class="p">}</span></div>
 
 
 <span class="c1"># Post to channel/workspace</span>
-<div class="viewcode-block" id="channel_post"><a class="viewcode-back" href="../../utils.html#hreporting.utils.channel_post">[docs]</a><span class="k">def</span> <span class="nf">channel_post</span><span class="p">(</span><span class="n">webhook_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">used</span><span class="p">,</span> <span class="n">clientName</span><span class="p">,</span> <span class="n">percent</span><span class="p">,</span> <span class="n">left</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<div class="viewcode-block" id="channel_post"><a class="viewcode-back" href="../../utils.html#hreporting.utils.channel_post">[docs]</a><span class="k">def</span> <span class="nf">channel_post</span><span class="p">(</span><span class="n">webhook_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">used</span><span class="p">,</span> <span class="n">client_name</span><span class="p">,</span> <span class="n">percent</span><span class="p">,</span> <span class="n">left</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot; Posts payload to webhook provided &quot;&quot;&quot;</span>
     <span class="n">post_format</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">&quot;teams&quot;</span> <span class="k">if</span> <span class="n">webhook_url</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span>
-            <span class="s2">&quot;https://outlook.office.com&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;slack&quot;</span>
+        <span class="s2">&quot;teams&quot;</span> <span class="k">if</span> <span class="n">webhook_url</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;https://outlook.office.com&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;slack&quot;</span>
     <span class="p">)</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="n">get_payload</span><span class="p">(</span><span class="n">used</span><span class="p">,</span> <span class="n">clientName</span><span class="p">,</span> <span class="n">percent</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">_format</span><span class="o">=</span><span class="n">post_format</span><span class="p">)</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="n">slack_client</span><span class="o">.</span><span class="n">post_slack_message</span><span class="p">(</span><span class="n">webhook_url</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">get_payload</span><span class="p">(</span><span class="n">used</span><span class="p">,</span> <span class="n">client_name</span><span class="p">,</span> <span class="n">percent</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">_format</span><span class="o">=</span><span class="n">post_format</span><span class="p">)</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">SLACK_CLIENT</span><span class="o">.</span><span class="n">post_slack_message</span><span class="p">(</span><span class="n">webhook_url</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">response</span></div>
 
@@ -280,7 +303,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Austin and Adam
+        &copy; Copyright 2019, Austin Earl, Adam McChesney, Robert R. Meyer
 
     </p>
   </div>

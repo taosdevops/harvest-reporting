@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>CLI &mdash; Harvest Reporting 0.0.1 documentation</title>
+  <title>CLI &mdash; Harvest Reporting 0.1.1 documentation</title>
   
 
   
@@ -102,6 +102,7 @@
 <li class="toctree-l1"><a class="reference internal" href="client.html">Harvest Client</a></li>
 <li class="toctree-l1"><a class="reference internal" href="config.html">Harvest Reporting Config</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">Utility Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="emails.html">Harvest Emails Module</a></li>
 </ul>
 
             
@@ -235,6 +236,12 @@ providing the input via command line flags.</p>
 <dd><p>your harvest client id</p>
 </dd></dl>
 
+<dl class="option">
+<dt id="cmdoption-harvestcli-send-grid">
+<code class="sig-name descname">--send-grid</code><code class="sig-prename descclassname"> &lt;send_grid&gt;</code><a class="headerlink" href="#cmdoption-harvestcli-send-grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>your SendGrid API key  [required]</p>
+</dd></dl>
+
 <p class="rubric">Environment variables</p>
 <span class="target" id="harvestcli-bearer-token-bearer-token"></span><dl class="envvar">
 <dt>
@@ -257,6 +264,14 @@ providing the input via command line flags.</p>
 <code class="sig-name descname">HARVEST_CONFIG</code></dt>
 <dd><blockquote>
 <div><p>Provide a default for <a class="reference internal" href="#cmdoption-harvestcli-config-path"><code class="xref std std-option docutils literal notranslate"><span class="pre">--config-path</span></code></a></p>
+</div></blockquote>
+</dd></dl>
+
+<span class="target" id="harvestcli-send-grid-sendgrid-api-key"></span><dl class="envvar">
+<dt>
+<code class="sig-name descname">SENDGRID_API_KEY</code></dt>
+<dd><blockquote>
+<div><p>Provide a default for <a class="reference internal" href="#cmdoption-harvestcli-send-grid"><code class="xref std std-option docutils literal notranslate"><span class="pre">--send-grid</span></code></a></p>
 </div></blockquote>
 </dd></dl>
 
@@ -305,7 +320,7 @@ providing the input via command line flags.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Austin and Adam
+        &copy; Copyright 2019, Austin Earl, Adam McChesney, Robert R. Meyer
 
     </p>
   </div>

@@ -25,6 +25,12 @@ from hreporting.utils import load_yaml, print_verify, truncate
     default=None,
     help=config.strings.account_id_help,
 )
+@click.option(
+    "--send-grid",
+    envvar="SENDGRID_API_KEY",
+    required=True,
+    help=config.strings.sendgrid_api_help,
+)
 @click.pass_context
 def main(ctx, bearer_token, account_id, config_path):
     if config_path:
@@ -45,7 +51,6 @@ def list_clients(client: HarvestClient):
     """ Returns a list of clients in table format """
     template = "{id:<9} {name}"
     click.echo("ID      | Name")
-    # print(clients)
 
     for client in client.list_clients():
         click.echo(str.format(template, name=client["name"], id=client["id"]))

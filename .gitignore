@@ -111,3 +111,6 @@ venv.bak/
 
 #vscode settings
 .vscode
+
+# Harvest configurations
+harvest-clients.yaml

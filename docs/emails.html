@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>hreporting &mdash; Harvest Reporting 0.0.1 documentation</title>
+  <title>Harvest Emails Module &mdash; Harvest Reporting 0.1.1 documentation</title>
   
 
   
@@ -34,7 +34,8 @@
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Utility Functions" href="utils.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -79,12 +80,13 @@
             
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="cloudfunction.html">Harvest Messenger</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cli.html">CLI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="client.html">Harvest Client</a></li>
 <li class="toctree-l1"><a class="reference internal" href="config.html">Harvest Reporting Config</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">Utility Functions</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Harvest Emails Module</a></li>
 </ul>
 
             
@@ -130,13 +132,13 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>hreporting</li>
+      <li>Harvest Emails Module</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/modules.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/emails.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -149,10 +151,18 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="hreporting">
-<h1>hreporting<a class="headerlink" href="#hreporting" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
-</div>
+  <div class="section" id="module-hreporting.emails">
+<span id="harvest-emails-module"></span><h1>Harvest Emails Module<a class="headerlink" href="#module-hreporting.emails" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="hreporting.emails.email_body">
+<code class="sig-prename descclassname">hreporting.emails.</code><code class="sig-name descname">email_body</code><span class="sig-paren">(</span><em class="sig-param">used</em>, <em class="sig-param">client_name</em>, <em class="sig-param">percent</em>, <em class="sig-param">left</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/hreporting/emails.html#email_body"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.emails.email_body" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="hreporting.emails.email_send">
+<code class="sig-prename descclassname">hreporting.emails.</code><code class="sig-name descname">email_send</code><span class="sig-paren">(</span><em class="sig-param">emails: list</em>, <em class="sig-param">used: float</em>, <em class="sig-param">client_name: str</em>, <em class="sig-param">percent: float</em>, <em class="sig-param">left: float</em>, <em class="sig-param">sg_client</em><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="_modules/hreporting/emails.html#email_send"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.emails.email_send" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
 
 
@@ -161,12 +171,19 @@
           </div>
           <footer>
   
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="utils.html" class="btn btn-neutral float-left" title="Utility Functions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Austin and Adam
+        &copy; Copyright 2019, Austin Earl, Adam McChesney, Robert R. Meyer
 
     </p>
   </div>

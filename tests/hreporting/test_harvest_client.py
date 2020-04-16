@@ -1,7 +1,9 @@
 from unittest import TestCase
-from hreporting.harvest_client import HarvestClient
+
 import vcr
 from vcr_unittest import VCRTestCase
+
+from hreporting.harvest_client import HarvestClient
 
 account = "1121001"
 btoken = "SomeBearerToken"
@@ -10,7 +12,6 @@ btoken = "SomeBearerToken"
 class TestHarvestClient(VCRTestCase):
     def test_list_clients_calls_uri(self):
         account_list = HarvestClient(btoken, account).list_clients()
-        # account_list = HarvestClient(bearer_token, account).list_clients()
 
         self.assertEqual(
             self.cassette.requests[0].uri, "https://api.harvestapp.com/v2/clients"
@@ -21,8 +22,9 @@ class TestHarvestClient(VCRTestCase):
         self.assertEqual(len(account_list), 9)
 
     def test_get_client_time_used(self):
-        time_used = HarvestClient(btoken, account) \
-            .get_client_time_used(8544728, month="09")
+        time_used = HarvestClient(btoken, account).get_client_time_used(
+            8544728, month="09"
+        )
         self.assertEqual(
             self.cassette.requests[0].uri,
             "https://api.harvestapp.com/v2/time_entries?client_id=8544728",
@@ -34,7 +36,7 @@ class TestHarvestClient(VCRTestCase):
         config = {"clients": [{"name": "dsc", "hooks": [hook_url]}]}
         client = HarvestClient(btoken, account, config)
         hooks = client.get_client_hooks("dsc")
-        self.assertEqual(hooks, [hook_url])
+        self.assertEqual(hooks, {"hooks": [hook_url], "emails": []})
 
     def test_get_client_hooks_compiles_global_hooks(self):
         hook_url = "http://123.com"
@@ -45,7 +47,7 @@ class TestHarvestClient(VCRTestCase):
         }
         client = HarvestClient(btoken, account, config)
         hooks = client.get_client_hooks("dsc")
-        self.assertEqual(hooks, [hook_url, global_hook])
+        self.assertEqual(hooks, {"hooks": [hook_url, global_hook], "emails": []})
 
     def test_get_time_alloted(self):
         config = {"clients": [{"name": "dsc", "hours": 60}]}

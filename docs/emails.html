@@ -153,15 +153,26 @@
             
   <div class="section" id="module-hreporting.emails">
 <span id="harvest-emails-module"></span><h1>Harvest Emails Module<a class="headerlink" href="#module-hreporting.emails" title="Permalink to this headline">¶</a></h1>
-<dl class="function">
-<dt id="hreporting.emails.email_body">
-<code class="sig-prename descclassname">hreporting.emails.</code><code class="sig-name descname">email_body</code><span class="sig-paren">(</span><em class="sig-param">used</em>, <em class="sig-param">client_name</em>, <em class="sig-param">percent</em>, <em class="sig-param">left</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/hreporting/emails.html#email_body"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.emails.email_body" title="Permalink to this definition">¶</a></dt>
+<dl class="class">
+<dt id="hreporting.emails.SendGridSummaryEmail">
+<em class="property">class </em><code class="sig-prename descclassname">hreporting.emails.</code><code class="sig-name descname">SendGridSummaryEmail</code><span class="sig-paren">(</span><em class="sig-param">client_name: str</em>, <em class="sig-param">emails: list</em>, <em class="sig-param">left: float</em>, <em class="sig-param">percent: float</em>, <em class="sig-param">sg_client</em>, <em class="sig-param">used: float</em>, <em class="sig-param">from_email: str</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/hreporting/emails.html#SendGridSummaryEmail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.emails.SendGridSummaryEmail" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="hreporting.emails.SendGridSummaryEmail.construct_mail">
+<code class="sig-name descname">construct_mail</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; sendgrid.helpers.mail.mail.Mail<a class="reference internal" href="_modules/hreporting/emails.html#SendGridSummaryEmail.construct_mail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.emails.SendGridSummaryEmail.construct_mail" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="function">
-<dt id="hreporting.emails.email_send">
-<code class="sig-prename descclassname">hreporting.emails.</code><code class="sig-name descname">email_send</code><span class="sig-paren">(</span><em class="sig-param">emails: list</em>, <em class="sig-param">used: float</em>, <em class="sig-param">client_name: str</em>, <em class="sig-param">percent: float</em>, <em class="sig-param">left: float</em>, <em class="sig-param">sg_client</em><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="_modules/hreporting/emails.html#email_send"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.emails.email_send" title="Permalink to this definition">¶</a></dt>
+<dl class="method">
+<dt id="hreporting.emails.SendGridSummaryEmail.email_body">
+<code class="sig-name descname">email_body</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/hreporting/emails.html#SendGridSummaryEmail.email_body"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.emails.SendGridSummaryEmail.email_body" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="method">
+<dt id="hreporting.emails.SendGridSummaryEmail.email_send">
+<code class="sig-name descname">email_send</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="_modules/hreporting/emails.html#SendGridSummaryEmail.email_send"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.emails.SendGridSummaryEmail.email_send" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
 
 </div>
 

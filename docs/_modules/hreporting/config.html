@@ -166,6 +166,9 @@
 <span class="n">SENDGRID_API_KEY</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;SENDGRID_API_KEY&quot;</span><span class="p">)</span>
 <span class="sd">&quot;&quot;&quot; ENV:SENDGRID_API_KEY: The SendGrid API key that allows for email send&quot;&quot;&quot;</span>
 
+<span class="n">ORIGIN_EMAIL_ADDRESS</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;ORIGIN_EMAIL_ADDRESS&quot;</span><span class="p">,</span> <span class="s2">&quot;DevOpsNow@taos.com&quot;</span><span class="p">)</span>
+<span class="sd">&quot;&quot;&quot; ENV:ORIGIN_EMAIL_ADDRESS: The origin email address that shows in the FROM line &quot;&quot;&quot;</span>
+
 
 <div class="viewcode-block" id="strings"><a class="viewcode-back" href="../../config.html#hreporting.config.strings">[docs]</a><span class="k">class</span> <span class="nc">strings</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot; Class to house string literals &quot;&quot;&quot;</span>

@@ -149,41 +149,62 @@
            <div itemprop="articleBody">
             
   <h1>Source code for hreporting.emails</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">sendgrid.helpers.mail</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">date</span>
+<span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">date</span>
+
+<span class="kn">from</span> <span class="nn">sendgrid.helpers.mail</span> <span class="kn">import</span> <span class="o">*</span>
 
 
-<div class="viewcode-block" id="email_body"><a class="viewcode-back" href="../../emails.html#hreporting.emails.email_body">[docs]</a><span class="k">def</span> <span class="nf">email_body</span><span class="p">(</span><span class="n">used</span><span class="p">,</span> <span class="n">client_name</span><span class="p">,</span> <span class="n">percent</span><span class="p">,</span> <span class="n">left</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="n">hour_report_template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">    Client:           </span><span class="si">{name}</span><span class="s2"></span>
-<span class="s2">    Used Hours:       </span><span class="si">{used}</span><span class="s2"></span>
-<span class="s2">    Remaining Hours:  </span><span class="si">{left}</span><span class="s2"></span>
-<span class="s2">    Percent:          </span><span class="si">{percent}</span><span class="s2"></span>
-<span class="s2">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="nb">str</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-        <span class="n">hour_report_template</span><span class="p">,</span>
-        <span class="n">name</span><span class="o">=</span><span class="n">client_name</span><span class="p">,</span>
-        <span class="n">used</span><span class="o">=</span><span class="n">used</span><span class="p">,</span>
-        <span class="n">left</span><span class="o">=</span><span class="n">left</span><span class="p">,</span>
-        <span class="n">percent</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%d%%</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">percent</span><span class="p">),</span>
-    <span class="p">)</span></div>
+<div class="viewcode-block" id="SendGridSummaryEmail"><a class="viewcode-back" href="../../emails.html#hreporting.emails.SendGridSummaryEmail">[docs]</a><span class="k">class</span> <span class="nc">SendGridSummaryEmail</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">client_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">emails</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+        <span class="n">left</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">percent</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">sg_client</span><span class="p">,</span>
+        <span class="n">used</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">from_email</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">):</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">client_name</span> <span class="o">=</span> <span class="n">client_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">emails</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">To</span><span class="p">,</span> <span class="n">emails</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">left</span> <span class="o">=</span> <span class="n">left</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">percent</span> <span class="o">=</span> <span class="n">percent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sg_client</span> <span class="o">=</span> <span class="n">sg_client</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">used</span> <span class="o">=</span> <span class="n">used</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">from_email</span> <span class="o">=</span> <span class="n">from_email</span>
 
-<div class="viewcode-block" id="email_send"><a class="viewcode-back" href="../../emails.html#hreporting.emails.email_send">[docs]</a><span class="k">def</span> <span class="nf">email_send</span><span class="p">(</span>
-    <span class="n">emails</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">used</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">client_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">percent</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">left</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">sg_client</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<div class="viewcode-block" id="SendGridSummaryEmail.email_body"><a class="viewcode-back" href="../../emails.html#hreporting.emails.SendGridSummaryEmail.email_body">[docs]</a>    <span class="k">def</span> <span class="nf">email_body</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">hour_report_template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">        Client:           </span><span class="si">{name}</span><span class="s2"></span>
+<span class="s2">        Used Hours:       </span><span class="si">{used}</span><span class="s2"></span>
+<span class="s2">        Remaining Hours:  </span><span class="si">{left}</span><span class="s2"></span>
+<span class="s2">        Percent:          </span><span class="si">{percent}</span><span class="s2"></span>
+<span class="s2">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">hour_report_template</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">client_name</span><span class="p">,</span>
+            <span class="n">used</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">used</span><span class="p">,</span>
+            <span class="n">left</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="p">,</span>
+            <span class="n">percent</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%d%%</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">percent</span><span class="p">),</span>
+        <span class="p">)</span></div>
 
-    <span class="n">current_date</span> <span class="o">=</span> <span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%B </span><span class="si">%d</span><span class="s2">, %Y&quot;</span><span class="p">)</span>
-    <span class="n">subject</span> <span class="o">=</span> <span class="n">Subject</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{client_name}</span><span class="s2"> usage of DevOps Now hours as of </span><span class="si">{current_date}</span><span class="s2"> &quot;</span><span class="p">)</span>
-    <span class="n">from_email</span> <span class="o">=</span> <span class="n">Email</span><span class="p">(</span><span class="s2">&quot;DevOpsNow@taos.com&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="SendGridSummaryEmail.construct_mail"><a class="viewcode-back" href="../../emails.html#hreporting.emails.SendGridSummaryEmail.construct_mail">[docs]</a>    <span class="k">def</span> <span class="nf">construct_mail</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Mail</span><span class="p">:</span>
+        <span class="n">current_date</span> <span class="o">=</span> <span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%B </span><span class="si">%d</span><span class="s2">, %Y&quot;</span><span class="p">)</span>
+        <span class="n">subject</span> <span class="o">=</span> <span class="n">Subject</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">client_name</span><span class="si">}</span><span class="s2"> usage of DevOps Now hours as of </span><span class="si">{</span><span class="n">current_date</span><span class="si">}</span><span class="s2"> &quot;</span>
+        <span class="p">)</span>
 
-    <span class="n">content</span> <span class="o">=</span> <span class="n">Content</span><span class="p">(</span><span class="s2">&quot;text/plain&quot;</span><span class="p">,</span> <span class="n">email_body</span><span class="p">(</span><span class="n">used</span><span class="p">,</span> <span class="n">client_name</span><span class="p">,</span> <span class="n">percent</span><span class="p">,</span> <span class="n">left</span><span class="p">))</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="n">Content</span><span class="p">(</span><span class="s2">&quot;text/plain&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">email_body</span><span class="p">())</span>
 
-    <span class="n">mail</span> <span class="o">=</span> <span class="n">Mail</span><span class="p">(</span><span class="n">from_email</span><span class="p">,</span> <span class="n">emails</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">content</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Mail</span><span class="p">(</span><span class="n">Email</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">from_email</span><span class="p">),</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">emails</span><span class="p">),</span> <span class="n">subject</span><span class="p">,</span> <span class="n">content</span><span class="p">)</span></div>
 
-    <span class="n">response</span> <span class="o">=</span> <span class="n">sg_client</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">mail</span><span class="o">.</span><span class="n">send</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">request_body</span><span class="o">=</span><span class="n">mail</span><span class="o">.</span><span class="n">get</span><span class="p">())</span>
+<div class="viewcode-block" id="SendGridSummaryEmail.email_send"><a class="viewcode-back" href="../../emails.html#hreporting.emails.SendGridSummaryEmail.email_send">[docs]</a>    <span class="k">def</span> <span class="nf">email_send</span><span class="p">(</span><span class="bp">self</span><span class="p">,)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="n">mail</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">construct_mail</span><span class="p">()</span>
 
-    <span class="k">return</span> <span class="n">response</span></div>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sg_client</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">mail</span><span class="o">.</span><span class="n">send</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">request_body</span><span class="o">=</span><span class="n">mail</span><span class="o">.</span><span class="n">get</span><span class="p">())</span>
+
+        <span class="k">return</span> <span class="n">response</span></div></div>
 </pre></div>
 
            </div>

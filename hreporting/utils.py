@@ -140,6 +140,28 @@ def read_cloud_storage(bucket_name, file_name) -> str:
     client = storage.Client()
     bucket = client.get_bucket(bucket_name)
     blob = bucket.get_blob(file_name)
-    response = blob.download_as_string()
+    response = blob
+
+    return response
+
+
+def exception_channel_post(exception, client, webhook_url) -> dict:
+    """
+    Performs a protected attempt to send slack message about an error.
+    Wraps try blocks for assurance that the message will not further break the system.
+    """
+
+    data = {
+        "attachments": [
+            {
+                "color": "#ff0000",
+                "title": f"Exception while processing {client['name']}",
+                "text": str(exception),
+            }
+        ]
+    }
+
+    response = SLACK_CLIENT.post_slack_message(webhook_url, data)
+    logging.error(response)
 
     return response

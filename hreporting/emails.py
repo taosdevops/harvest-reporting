@@ -48,7 +48,7 @@ class SendGridSummaryEmail:
 
         return Mail(Email(self.from_email), list(self.emails), subject, content)
 
-    def email_send(self,) -> dict:
+    def email_send(self) -> dict:
         mail = self.construct_mail()
 
         response = self.sg_client.client.mail.send.post(request_body=mail.get())

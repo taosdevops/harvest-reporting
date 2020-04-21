@@ -94,6 +94,9 @@ class HarvestClient:
 
         return client_config.get("hours", self.config.get("default_hours", 80))
 
+    def get_exception_hook(self) -> str:
+        return self.config.get("exceptionHook", "")
+
     def get_client_hooks(self, client_name) -> List[str]:
         """ Returns list of webhooks and emails registered for client. """
         client_config = self._get_client_config(client_name)

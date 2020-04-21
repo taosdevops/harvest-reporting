@@ -43,12 +43,6 @@ def _send_notifications(harvest_client, sg_client, client, from_email) -> None:
 
         client_hooks = harvest_client.get_client_hooks(clientName)
 
-        [
-            channel_post(hook, used, clientName, percent, left)
-
-            for hook in client_hooks["hooks"]
-        ]
-
         email_summary = SendGridSummaryEmail(
             clientName,
             client_hooks["emails"],
@@ -59,6 +53,12 @@ def _send_notifications(harvest_client, sg_client, client, from_email) -> None:
             from_email,
         )
         email_summary.email_send()
+
+        [
+            channel_post(hook, used, clientName, percent, left)
+
+            for hook in client_hooks["hooks"]
+        ]
 
     except UnauthorizedError as unauthorized:
         logging.error(unauthorized)

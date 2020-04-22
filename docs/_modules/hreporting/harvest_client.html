@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>hreporting.harvest_client &mdash; Harvest Reporting 0.0.1 documentation</title>
+  <title>hreporting.harvest_client &mdash; Harvest Reporting 0.1.1 documentation</title>
   
 
   
@@ -85,6 +85,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../client.html">Harvest Client</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../config.html">Harvest Reporting Config</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../utils.html">Utility Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../emails.html">Harvest Emails Module</a></li>
 </ul>
 
             
@@ -179,7 +180,9 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[</span>
                 <span class="n">client_entry</span>
+
                 <span class="k">for</span> <span class="n">client_entry</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;clients&quot;</span><span class="p">,</span> <span class="p">[])</span>
+
                 <span class="k">if</span> <span class="n">client_entry</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">client_name</span>
             <span class="p">][</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
@@ -229,7 +232,9 @@
         <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span>
             <span class="p">[</span>
                 <span class="n">item</span><span class="p">[</span><span class="s2">&quot;hours&quot;</span><span class="p">]</span>
+
                 <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_client_time</span><span class="p">(</span><span class="n">client_id</span><span class="p">)</span>
+
                 <span class="k">if</span> <span class="n">regex</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="s2">&quot;spent_date&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="n">month</span>
             <span class="p">]</span>
         <span class="p">)</span></div>
@@ -240,12 +245,23 @@
 
         <span class="k">return</span> <span class="n">client_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;hours&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;default_hours&quot;</span><span class="p">,</span> <span class="mi">80</span><span class="p">))</span></div>
 
+<div class="viewcode-block" id="HarvestClient.get_exception_hook"><a class="viewcode-back" href="../../client.html#hreporting.harvest_client.HarvestClient.get_exception_hook">[docs]</a>    <span class="k">def</span> <span class="nf">get_exception_hook</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;exceptionHook&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="HarvestClient.get_client_hooks"><a class="viewcode-back" href="../../client.html#hreporting.harvest_client.HarvestClient.get_client_hooks">[docs]</a>    <span class="k">def</span> <span class="nf">get_client_hooks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_name</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot; Returns list of webhooks registered for client. &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Returns list of webhooks and emails registered for client. &quot;&quot;&quot;</span>
         <span class="n">client_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_client_config</span><span class="p">(</span><span class="n">client_name</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="p">[</span><span class="o">*</span><span class="n">client_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;hooks&quot;</span><span class="p">,</span> <span class="p">[]),</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;globalHooks&quot;</span><span class="p">,</span> <span class="p">[])]</span></div></div>
-        <span class="c1"># client_config.get(&#39;hours&#39;,self.config.get(&#39;default_hours&#39;),80)</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;hooks&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="o">*</span><span class="n">client_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;hooks&quot;</span><span class="p">,</span> <span class="p">[]),</span>
+                <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;globalHooks&quot;</span><span class="p">,</span> <span class="p">[]),</span>
+            <span class="p">],</span>
+            <span class="s2">&quot;emails&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="o">*</span><span class="n">client_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;emails&quot;</span><span class="p">,</span> <span class="p">[]),</span>
+                <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;globalEmails&quot;</span><span class="p">,</span> <span class="p">[]),</span>
+            <span class="p">],</span>
+        <span class="p">}</span></div></div>
 </pre></div>
 
            </div>
@@ -258,7 +274,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Austin and Adam
+        &copy; Copyright 2019, Austin Earl, Adam McChesney, Robert R. Meyer
 
     </p>
   </div>

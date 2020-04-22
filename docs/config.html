@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Harvest Reporting Config &mdash; Harvest Reporting 0.0.1 documentation</title>
+  <title>Harvest Reporting Config &mdash; Harvest Reporting 0.1.1 documentation</title>
   
 
   
@@ -87,6 +87,7 @@
 <li class="toctree-l1"><a class="reference internal" href="client.html">Harvest Client</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Harvest Reporting Config</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">Utility Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="emails.html">Harvest Emails Module</a></li>
 </ul>
 
             
@@ -177,6 +178,18 @@
 <dd><p>ENV:HARVEST_ACCOUNT_ID:  Your harvest account ID</p>
 </dd></dl>
 
+<dl class="data">
+<dt id="hreporting.config.ORIGIN_EMAIL_ADDRESS">
+<code class="sig-prename descclassname">hreporting.config.</code><code class="sig-name descname">ORIGIN_EMAIL_ADDRESS</code><em class="property"> = 'DevOpsNow&#64;taos.com'</em><a class="headerlink" href="#hreporting.config.ORIGIN_EMAIL_ADDRESS" title="Permalink to this definition">¶</a></dt>
+<dd><p>ENV:ORIGIN_EMAIL_ADDRESS: The origin email address that shows in the FROM line</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="hreporting.config.SENDGRID_API_KEY">
+<code class="sig-prename descclassname">hreporting.config.</code><code class="sig-name descname">SENDGRID_API_KEY</code><em class="property"> = None</em><a class="headerlink" href="#hreporting.config.SENDGRID_API_KEY" title="Permalink to this definition">¶</a></dt>
+<dd><p>ENV:SENDGRID_API_KEY: The SendGrid API key that allows for email send</p>
+</dd></dl>
+
 <dl class="class">
 <dt id="hreporting.config.strings">
 <em class="property">class </em><code class="sig-prename descclassname">hreporting.config.</code><code class="sig-name descname">strings</code><a class="reference internal" href="_modules/hreporting/config.html#strings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.config.strings" title="Permalink to this definition">¶</a></dt>
@@ -205,7 +218,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Austin and Adam
+        &copy; Copyright 2019, Austin Earl, Adam McChesney, Robert R. Meyer
 
     </p>
   </div>

@@ -1,0 +1,37 @@
+clients:
+  - name: LotsOfHours
+    hours: 160
+    hooks:
+      - https://hooks.slack.com/services/dude/what!
+
+  - name: Normal Amount of hours
+    hooks:
+      - https://hooks.slack.com/services/dude/less!
+
+  - name: Direct Message
+    hooks:
+      - UID!
+
+
+  - name: MS Teams Hours
+    hours: 240
+    hooks:
+      - https://outlook.office.com/webhook/lotsOfhashes
+
+
+  - name: Email Only
+    hours: 160
+    emails:
+      - primary@emailonly.com
+      - secondary@emailonly.com
+
+  - name: All Defaults with No Hooks
+
+globalHooks:
+  - https://hooks.slack.com/services/GlobalHooksForAllClients
+
+globalEmails:
+  - myEmailForAllclients@emailsforall.com
+  - AnotherOne@emailsforall.com
+
+default_hours: 80

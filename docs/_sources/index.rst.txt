@@ -14,6 +14,7 @@ as a time management solution with other applications.
    client
    config
    utils
+   emails
 
 Indices and tables
 ==================
@@ -21,4 +22,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-

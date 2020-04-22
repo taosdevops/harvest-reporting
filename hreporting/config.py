@@ -12,6 +12,12 @@ CONFIG_PATH = os.getenv("CONFIG_PATH", "config/clients.yaml")
 BUCKET = os.getenv("BUCKET")
 """ ENV:BUCKET: The GCP Storage Bucket to fetch config from """
 
+SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
+""" ENV:SENDGRID_API_KEY: The SendGrid API key that allows for email send"""
+
+ORIGIN_EMAIL_ADDRESS = os.getenv("ORIGIN_EMAIL_ADDRESS", "DevOpsNow@taos.com")
+""" ENV:ORIGIN_EMAIL_ADDRESS: The origin email address that shows in the FROM line """
+
 
 class strings:
     """ Class to house string literals """
@@ -19,3 +25,4 @@ class strings:
     bearer_token_help = "bearer token to use for the harvest-client"
     config_path_help = "path location to find the harvest-client config"
     account_id_help = "your harvest client id"
+    sendgrid_api_help = "your SendGrid API key"

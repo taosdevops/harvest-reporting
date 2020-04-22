@@ -7,13 +7,14 @@ setup(
     license=open("LICENSE").read(),
     long_description=open("README.md").read(),
     packages=find_packages(exclude=["contrib", "docs", "tests"]),
-    version="0.1.0",
+    version="0.1.1",
     url="https://github.com/taosmountain/harvest-reporting",
     install_requires=[
         "Click==7.0",
         "colorama==0.4.1",
         "PyYAML==5.1.2",
         "requests==2.22.0",
+        "sendgrid==6.2.1",
     ],
     entry_points="""
         [console_scripts]

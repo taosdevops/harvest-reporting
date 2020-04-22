@@ -85,12 +85,19 @@ def harvest_reports(*args):
     )
 
     try:
-        return main_method(bearer_token, harvest_account, config)
+        return main_method(
+            bearer_token=bearer_token,
+            harvest_account=harvest_account,
+            config=config,
+            from_email=from_email,
+            send_grid_api=send_grid_api,
+        )
+
     except Exception as e:
-        if config.get("ExceptionHook"):
-            hook = config.get("ExceptionHook")
+        if config.get("exceptionHook"):
+            hook = config.get("exceptionHook")
             payload = "\n".join(
-                "Harvest Ran into an Exceptions", traceback.format_exc()
+                ["Harvest Ran into an Exceptions", traceback.format_exc()]
             )
             Slack().post_slack_message(hook, payload)
 

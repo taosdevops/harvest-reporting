@@ -1,11 +1,14 @@
+import logging
 import os
 
 import sendgrid
+from python_http_client.exceptions import UnauthorizedError
 
 from hreporting.emails import SendGridSummaryEmail
 from hreporting.harvest_client import HarvestClient
-from hreporting.utils import (channel_post, load_yaml, load_yaml_file,
-                              print_verify, read_cloud_storage, truncate)
+from hreporting.utils import (channel_post, exception_channel_post, load_yaml,
+                              load_yaml_file, print_verify, read_cloud_storage,
+                              truncate)
 
 
 def main_method(bearer_token, harvest_account, send_grid_api, config, from_email):
@@ -18,6 +21,12 @@ def main_method(bearer_token, harvest_account, send_grid_api, config, from_email
     ]
 
     for client in active_clients:
+        _send_notifications(harvest_client, sg_client, client, from_email)
+
+
+def _send_notifications(harvest_client, sg_client, client, from_email) -> None:
+
+    try:
         clientId = client["id"]
         clientName = client["name"]
 
@@ -34,12 +43,6 @@ def main_method(bearer_token, harvest_account, send_grid_api, config, from_email
 
         client_hooks = harvest_client.get_client_hooks(clientName)
 
-        [
-            channel_post(hook, used, clientName, percent, left)
-
-            for hook in client_hooks["hooks"]
-        ]
-
         email_summary = SendGridSummaryEmail(
             clientName,
             client_hooks["emails"],
@@ -50,6 +53,18 @@ def main_method(bearer_token, harvest_account, send_grid_api, config, from_email
             from_email,
         )
         email_summary.email_send()
+
+        [
+            channel_post(hook, used, clientName, percent, left)
+
+            for hook in client_hooks["hooks"]
+        ]
+
+    except UnauthorizedError as unauthorized:
+        logging.error(unauthorized)
+        exception_channel_post(
+            unauthorized, client, harvest_client.get_exception_hook()
+        )
 
 
 def harvest_reports(*args):

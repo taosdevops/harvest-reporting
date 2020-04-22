@@ -2,6 +2,7 @@ import re
 from unittest import TestCase
 from unittest.mock import MagicMock
 
+import sendgrid
 import vcr
 from vcr_unittest import VCRTestCase
 
@@ -10,6 +11,7 @@ from hreporting.emails import SendGridSummaryEmail
 
 class TestEmail(VCRTestCase):
     def setUp(self):
+
         self.client_name = "My Client Under Test"
         self.emails = ["emailToCheck@test.com", "GlobalEmailToTest@example.com"]
         self.left = 60

@@ -1,8 +1,10 @@
 import logging
 import os
+import traceback
 
 import sendgrid
-from python_http_client.exceptions import UnauthorizedError
+from python_http_client.exceptions import BadRequestsError, UnauthorizedError
+from taosdevopsutils.slack import Slack
 
 from hreporting.emails import SendGridSummaryEmail
 from hreporting.harvest_client import HarvestClient
@@ -26,22 +28,29 @@ def main_method(bearer_token, harvest_account, send_grid_api, config, from_email
 
 def _send_notifications(harvest_client, sg_client, client, from_email) -> None:
 
+    clientId = client["id"]
+    clientName = client["name"]
+
+    hours_used = harvest_client.get_client_time_used(clientId)
+    total_hours = harvest_client.get_client_time_allotment(clientName)
+    hours_left = total_hours - hours_used
+
+    used = truncate(hours_used, 2)
+    left = truncate(hours_left, 2)
+
+    percent = used / total_hours * 100
+
+    print_verify(used, clientName, percent, left)
+
+    client_hooks = harvest_client.get_client_hooks(clientName)
+
+    [
+        channel_post(hook, used, clientName, percent, left)
+
+        for hook in client_hooks["hooks"]
+    ]
+
     try:
-        clientId = client["id"]
-        clientName = client["name"]
-
-        hours_used = harvest_client.get_client_time_used(clientId)
-        total_hours = harvest_client.get_client_time_allotment(clientName)
-        hours_left = total_hours - hours_used
-
-        used = truncate(hours_used, 2)
-        left = truncate(hours_left, 2)
-
-        percent = used / total_hours * 100
-
-        print_verify(used, clientName, percent, left)
-
-        client_hooks = harvest_client.get_client_hooks(clientName)
 
         email_summary = SendGridSummaryEmail(
             clientName,
@@ -54,13 +63,7 @@ def _send_notifications(harvest_client, sg_client, client, from_email) -> None:
         )
         email_summary.email_send()
 
-        [
-            channel_post(hook, used, clientName, percent, left)
-
-            for hook in client_hooks["hooks"]
-        ]
-
-    except UnauthorizedError as unauthorized:
+    except (UnauthorizedError, BadRequestsError) as unauthorized:
         logging.error(unauthorized)
         exception_channel_post(
             unauthorized, client, harvest_client.get_exception_hook()
@@ -82,7 +85,22 @@ def harvest_reports(*args):
         else load_yaml(read_cloud_storage(bucket, config_path))
     )
 
-    return main_method(bearer_token, harvest_account, send_grid_api, config, from_email)
+    try:
+        return main_method(
+            bearer_token=bearer_token,
+            harvest_account=harvest_account,
+            config=config,
+            from_email=from_email,
+            send_grid_api=send_grid_api,
+        )
+
+    except Exception as e:
+        if config.get("exceptionHook"):
+            hook = config.get("exceptionHook")
+            payload = "\n".join(
+                ["Harvest Ran into an Exceptions", traceback.format_exc()]
+            )
+            Slack().post_slack_message(hook, payload)
 
 
 if __name__ == "__main__":

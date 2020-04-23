@@ -120,15 +120,21 @@ def get_teams_payload(used, client_name, percent, left, *args) -> dict:
 # Post to channel/workspace
 def channel_post(webhook_url: str, used, client_name, percent, left) -> dict:
     """ Posts payload to webhook provided """
-    post_format = (
-        "teams" if webhook_url.startswith("https://outlook.office.com") else "slack"
-    )
 
-    data = get_payload(used, client_name, percent, left, _format=post_format)
-    response = SLACK_CLIENT.post_slack_message(webhook_url, data)
-    logging.info(response)
+    if webhook_url:
+        post_format = (
+            "teams" if webhook_url.startswith("https://outlook.office.com") else "slack"
+        )
 
-    return response
+        data = get_payload(used, client_name, percent, left, _format=post_format)
+        response = SLACK_CLIENT.post_slack_message(webhook_url, data)
+        logging.info(response)
+
+        return response
+
+    logging.warning("No webhook url found for %client_name", client_name)
+
+    return dict()
 
 
 def read_cloud_storage(bucket_name, file_name) -> str:
@@ -157,7 +163,12 @@ def exception_channel_post(exception, client, webhook_url) -> dict:
         ]
     }
 
-    response = SLACK_CLIENT.post_slack_message(webhook_url, data)
-    logging.error(response)
+    if webhook_url:
+        response = SLACK_CLIENT.post_slack_message(webhook_url, data)
+        logging.error(response)
 
-    return response
+        return response
+
+    logging.error(exception.to_dict)
+
+    return exception.to_dict

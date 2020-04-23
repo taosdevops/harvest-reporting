@@ -66,7 +66,11 @@ def _send_notifications(harvest_client, sg_client, client, from_email) -> None:
             used,
             from_email,
         )
-        email_summary.email_send()
+
+        if client_hooks["emails"]:
+            email_summary.email_send()
+        else:
+            logging.warning("No email addresses found for %s", clientName)
 
     except (UnauthorizedError, BadRequestsError) as unauthorized:
         logging.error(unauthorized)

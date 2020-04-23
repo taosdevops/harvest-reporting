@@ -59,9 +59,6 @@ class SendGridSummaryEmail:
 
             return response
 
-        logging.info(
-            "No Email addresses were found for {client_name}".format(
-                client_name=self.client_name
-            )
-        )
+        logging.warning("No Email addresses were found for %s", self.client_name)
+
         return dict()

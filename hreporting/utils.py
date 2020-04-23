@@ -1,5 +1,4 @@
 import logging
-import sys
 
 import yaml
 from google.cloud import storage
@@ -9,10 +8,7 @@ from taosdevopsutils.slack import Slack
 # to move this to a factory method and pull a specific client for each token
 SLACK_CLIENT = Slack()
 
-logging.getLogger(__name__)
-logging.basicConfig(format="%(asctime)s %(message)s")
-
-logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+logging.getLogger("harvest_reports")
 
 
 def print_verify(used, client_name, percent, left) -> None:

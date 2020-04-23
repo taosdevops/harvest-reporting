@@ -1,5 +1,6 @@
 import logging
 import os
+import sys
 import traceback
 
 import sendgrid
@@ -11,6 +12,10 @@ from hreporting.harvest_client import HarvestClient
 from hreporting.utils import (channel_post, exception_channel_post, load_yaml,
                               load_yaml_file, print_verify, read_cloud_storage,
                               truncate)
+
+logging.getLogger("harvest_reports")
+logging.basicConfig(format="%(asctime)s %(message)s")
+logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 
 def main_method(bearer_token, harvest_account, send_grid_api, config, from_email):

@@ -1,6 +1,9 @@
+import logging
 from datetime import date
 
 from sendgrid.helpers.mail import *
+
+logging.getLogger("harvest_reports")
 
 
 class SendGridSummaryEmail:
@@ -49,8 +52,16 @@ class SendGridSummaryEmail:
         return Mail(Email(self.from_email), list(self.emails), subject, content)
 
     def email_send(self) -> dict:
-        mail = self.construct_mail()
+        if self.emails:
+            mail = self.construct_mail()
 
-        response = self.sg_client.client.mail.send.post(request_body=mail.get())
+            response = self.sg_client.client.mail.send.post(request_body=mail.get())
 
-        return response
+            return response
+
+        logging.info(
+            "No Email addresses were found for {client_name}".format(
+                client_name=self.client_name
+            )
+        )
+        return dict()

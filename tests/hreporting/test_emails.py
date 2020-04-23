@@ -63,3 +63,9 @@ class TestEmail(VCRTestCase):
                     expectation,
                     f"Looking for body pattern of {pattern} in {element.content}",
                 )
+
+    def test_email_send_returns_if_missing_emails(self):
+        self.sg_email.emails = []
+
+        email_under_test = self.sg_email.email_send()
+        self.assertEqual({}, email_under_test)

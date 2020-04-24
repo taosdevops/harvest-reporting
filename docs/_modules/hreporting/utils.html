@@ -150,7 +150,6 @@
             
   <h1>Source code for hreporting.utils</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">sys</span>
 
 <span class="kn">import</span> <span class="nn">yaml</span>
 <span class="kn">from</span> <span class="nn">google.cloud</span> <span class="kn">import</span> <span class="n">storage</span>
@@ -160,10 +159,7 @@
 <span class="c1"># to move this to a factory method and pull a specific client for each token</span>
 <span class="n">SLACK_CLIENT</span> <span class="o">=</span> <span class="n">Slack</span><span class="p">()</span>
 
-<span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="nb">format</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2"> </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">)</span>
-
-<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">stream</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;harvest_reports&quot;</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="print_verify"><a class="viewcode-back" href="../../utils.html#hreporting.utils.print_verify">[docs]</a><span class="k">def</span> <span class="nf">print_verify</span><span class="p">(</span><span class="n">used</span><span class="p">,</span> <span class="n">client_name</span><span class="p">,</span> <span class="n">percent</span><span class="p">,</span> <span class="n">left</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -275,15 +271,21 @@
 <span class="c1"># Post to channel/workspace</span>
 <div class="viewcode-block" id="channel_post"><a class="viewcode-back" href="../../utils.html#hreporting.utils.channel_post">[docs]</a><span class="k">def</span> <span class="nf">channel_post</span><span class="p">(</span><span class="n">webhook_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">used</span><span class="p">,</span> <span class="n">client_name</span><span class="p">,</span> <span class="n">percent</span><span class="p">,</span> <span class="n">left</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot; Posts payload to webhook provided &quot;&quot;&quot;</span>
-    <span class="n">post_format</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="s2">&quot;teams&quot;</span> <span class="k">if</span> <span class="n">webhook_url</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;https://outlook.office.com&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;slack&quot;</span>
-    <span class="p">)</span>
 
-    <span class="n">data</span> <span class="o">=</span> <span class="n">get_payload</span><span class="p">(</span><span class="n">used</span><span class="p">,</span> <span class="n">client_name</span><span class="p">,</span> <span class="n">percent</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">_format</span><span class="o">=</span><span class="n">post_format</span><span class="p">)</span>
-    <span class="n">response</span> <span class="o">=</span> <span class="n">SLACK_CLIENT</span><span class="o">.</span><span class="n">post_slack_message</span><span class="p">(</span><span class="n">webhook_url</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">webhook_url</span><span class="p">:</span>
+        <span class="n">post_format</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;teams&quot;</span> <span class="k">if</span> <span class="n">webhook_url</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;https://outlook.office.com&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;slack&quot;</span>
+        <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">response</span></div>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">get_payload</span><span class="p">(</span><span class="n">used</span><span class="p">,</span> <span class="n">client_name</span><span class="p">,</span> <span class="n">percent</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">_format</span><span class="o">=</span><span class="n">post_format</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">SLACK_CLIENT</span><span class="o">.</span><span class="n">post_slack_message</span><span class="p">(</span><span class="n">webhook_url</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">response</span>
+
+    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;No webhook url found for </span><span class="si">%c</span><span class="s2">lient_name&quot;</span><span class="p">,</span> <span class="n">client_name</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="read_cloud_storage"><a class="viewcode-back" href="../../utils.html#hreporting.utils.read_cloud_storage">[docs]</a><span class="k">def</span> <span class="nf">read_cloud_storage</span><span class="p">(</span><span class="n">bucket_name</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -312,10 +314,15 @@
         <span class="p">]</span>
     <span class="p">}</span>
 
-    <span class="n">response</span> <span class="o">=</span> <span class="n">SLACK_CLIENT</span><span class="o">.</span><span class="n">post_slack_message</span><span class="p">(</span><span class="n">webhook_url</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">webhook_url</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">SLACK_CLIENT</span><span class="o">.</span><span class="n">post_slack_message</span><span class="p">(</span><span class="n">webhook_url</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">response</span></div>
+        <span class="k">return</span> <span class="n">response</span>
+
+    <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">exception</span><span class="o">.</span><span class="n">to_dict</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">exception</span><span class="o">.</span><span class="n">to_dict</span></div>
 </pre></div>
 
            </div>

@@ -5,8 +5,12 @@ from unittest.mock import MagicMock
 from requests.exceptions import MissingSchema
 from vcr_unittest import VCRTestCase
 
-from hreporting.utils import (channel_post, exception_channel_post,
-                              get_color_code_for_utilization, get_payload)
+from hreporting.utils import (
+    channel_post,
+    exception_channel_post,
+    get_color_code_for_utilization,
+    get_payload,
+)
 
 
 class TestUtilsColorCode(TestCase):

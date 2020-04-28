@@ -11,7 +11,7 @@ Docs: [Harvest Reporting Docs](https://taosdevops.github.io/harvest-reporting/)
 There is an [example yaml](./examples/config.yaml) that shows how to
 set up every kind of integration.
 
-### Global Hooks:
+### Global Hooks
 
 There are two types of global hooks. Emails and WebHooks.
 
@@ -24,7 +24,6 @@ globalEmails:
   - firstEmailAddress@example.com
   - secnodEmailAddress@example.com
 ```
-
 
 Hooks are listed in the `globalHooks`. All hooks in this block will receive *all*
 notifications. This includes client names and usage information. This should only be
@@ -54,7 +53,6 @@ clients:
       - https://outlook.office.com/webhook/lotsOfhashes
 ```
 
-
 All destination email addresses are to be listed under `emails:`
 ```.yaml
 clients:
@@ -64,7 +62,6 @@ clients:
       - primary@emailonly.com
       - secondary@emailonly.com
 ```
-
 
 ## CLI
 

@@ -12,13 +12,14 @@ There is an [example yaml](./examples/config.yaml) that shows how to
 set up every kind of integration.
 
 ### Global Hooks:
+
 There are two types of global hooks. Emails and WebHooks.
 
 Emails are in the block labeled `globalEmails`. All emails in this block receive *all*
 notifications. This includes client names and usage information. This should only be
 used for internal notification for project owners or business management.
 
-```
+```.yaml
 globalEmails:
   - firstEmailAddress@example.com
   - secnodEmailAddress@example.com
@@ -29,7 +30,7 @@ Hooks are listed in the `globalHooks`. All hooks in this block will receive *all
 notifications. This includes client names and usage information. This should only be
 used for internal notification for project owners or business management.
 
-```
+```.yaml
 globalHooks:
   - https://hooks.slack.com/services/GlobalHooksForAllClients
   - https://hooks.slack.com/services/GlobalHookForProjects
@@ -44,7 +45,7 @@ All webhooks are to be listed under `hooks:` for the client. This
 list is provider agnostic and will auto-switch the formatting based on
 if MS Teams or Slack is detected. This hook will only send specific client data.
 
-```
+```.yaml
 clients:
   - name: LotsOfHours
     hours: 160
@@ -55,7 +56,7 @@ clients:
 
 
 All destination email addresses are to be listed under `emails:`
-```
+```.yaml
 clients:
   - name: Email Only
     hours: 160

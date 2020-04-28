@@ -3,7 +3,6 @@ from unittest import TestCase
 from unittest.mock import MagicMock
 
 import sendgrid
-import vcr
 from vcr_unittest import VCRTestCase
 
 from hreporting.emails import SendGridSummaryEmail
@@ -19,21 +18,28 @@ class TestEmail(VCRTestCase):
         self.sg_client = MagicMock()
         self.used = 100
 
-        self.sg_email = SendGridSummaryEmail(
-            self.client_name,
-            self.emails,
-            self.left,
-            self.percet,
-            self.sg_client,
-            self.used,
-            "BadEmail@exmaple.com",
-        )
+        self.test_body = """
+        This is a test body
+        """
+
+        self.sg_email = SendGridSummaryEmail()
+
+        # self.client_name,
+        # self.emails,
+        # self.left,
+        # self.percet,
+        # self.sg_client,
+        # self.used,
+        # "BadEmail@exmaple.com",
+        # )
 
     def test_to_emails(self):
         # Excluding @ and .com for regex issues. Checking for the prefix is just as effective
         patterns = self.emails
 
-        email_under_test = self.sg_email.construct_mail()
+        email_under_test = self.sg_email.construct_mail(
+            emails=self.emails, body=self.test_body, client_name=self.client_name
+        )
 
         for personalization in email_under_test.personalizations:
 
@@ -43,29 +49,8 @@ class TestEmail(VCRTestCase):
                     expectation, f"Looking for {pattern} in {personalization}"
                 )
 
-    def test_email_body(self):
-        patterns = [
-            "Client",
-            self.client_name,
-            "Used Hours",
-            str(self.used),
-            "Remaining",
-            str(self.left),
-        ]
-
-        email_under_test = self.sg_email.construct_mail()
-
-        for pattern in patterns:
-            for element in email_under_test.contents:
-
-                expectation = re.search(pattern, element.content)
-                self.assertTrue(
-                    expectation,
-                    f"Looking for body pattern of {pattern} in {element.content}",
-                )
-
     def test_email_send_returns_if_missing_emails(self):
-        self.sg_email.emails = []
-
-        email_under_test = self.sg_email.email_send()
+        email_under_test = self.sg_email.email_send(
+            emails=[], client_name=self.client_name, body=self.test_body
+        )
         self.assertEqual({}, email_under_test)

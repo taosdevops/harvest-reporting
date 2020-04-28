@@ -12,16 +12,14 @@ clients:
     hooks:
       - UID!
 
-
   - name: MS Teams Hours
     hours: 240
     hooks:
       - https://outlook.office.com/webhook/lotsOfhashes
 
-
   - name: Email Only
     hours: 160
-    emails:
+    hooks:
       - primary@emailonly.com
       - secondary@emailonly.com
 
@@ -29,9 +27,12 @@ clients:
 
 globalHooks:
   - https://hooks.slack.com/services/GlobalHooksForAllClients
-
-globalEmails:
   - myEmailForAllclients@emailsforall.com
   - AnotherOne@emailsforall.com
 
 default_hours: 80
+
+# Can comment out this filter to show all clients
+client_filter:
+  - Direct Message
+  - Email Only

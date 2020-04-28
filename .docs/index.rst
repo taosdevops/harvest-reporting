@@ -12,6 +12,7 @@ as a time management solution with other applications.
    cloudfunction
    cli
    client
+   client_config
    config
    utils
    emails

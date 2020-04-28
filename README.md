@@ -54,6 +54,7 @@ clients:
 ```
 
 All destination email addresses are to be listed under `emails:`
+
 ```.yaml
 clients:
   - name: Email Only
@@ -108,4 +109,3 @@ Install the devrequirements to install sphinx and its dependencies then run
 `cd docs && python -m http.server`
 
 This will host the docs [locally on 8000](http://localhost:8000)
-

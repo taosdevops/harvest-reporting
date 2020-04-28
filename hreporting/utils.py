@@ -1,11 +1,15 @@
 import logging
+import re
+import traceback
 
 import yaml
 from google.cloud import storage
+from slack.errors import SlackApiError
 from taosdevopsutils.slack import Slack
 
-# In the future if we need to auth with multiple workspaces we might need
-# to move this to a factory method and pull a specific client for each token
+from hreporting.emails import SendGridSummaryEmail
+
+SENDGRID_EMAILER = SendGridSummaryEmail()
 SLACK_CLIENT = Slack()
 
 logging.getLogger("harvest_reports")
@@ -74,9 +78,11 @@ def get_payload(used, client_name, percent, left, _format="slack") -> dict:
     """ Get payload for every type of format"""
     try:
 
-        return {"slack": get_slack_payload, "teams": get_teams_payload}[_format](
-            used, client_name, percent, left
-        )
+        return {
+            "slack": get_slack_payload,
+            "teams": get_teams_payload,
+            "email": get_email_payload,
+        }[_format](used, client_name, percent, left)
 
     except KeyError:
         raise Exception(f"Invalid Payload format {_format}")
@@ -117,17 +123,45 @@ def get_teams_payload(used, client_name, percent, left, *args) -> dict:
     }
 
 
+def get_email_payload(used, client_name, percent, left, *args) -> str:
+    return f"""
+    Client:           {client_name}
+    Used Hours:       {used}
+    Remaining Hours:  {left}
+    Percent:          {percent}
+    """
+
+
 # Post to channel/workspace
-def channel_post(webhook_url: str, used, client_name, percent, left) -> dict:
+def channel_post(
+    webhook_url: str,
+    used,
+    client_name,
+    percent,
+    left,
+    slack_client=SLACK_CLIENT,
+    sg_client=SENDGRID_EMAILER,
+) -> dict:
     """ Posts payload to webhook provided """
 
     if webhook_url:
-        post_format = (
-            "teams" if webhook_url.startswith("https://outlook.office.com") else "slack"
+        post_format = (  # Identify Type of payload
+            "teams"
+
+            if webhook_url.startswith("https://outlook.office.com")
+            else "email"
+
+            if re.match(r"[^@]+@[^@]+\.[^@]+", webhook_url)
+            else "slack"
         )
 
         data = get_payload(used, client_name, percent, left, _format=post_format)
-        response = SLACK_CLIENT.post_slack_message(webhook_url, data)
+
+        if post_format == "email":
+            response = sg_client.email_send([webhook_url], client_name, data)
+        else:
+            response = slack_client.post_slack_message(webhook_url, data)
+
         logging.info(response)
 
         return response
@@ -147,7 +181,42 @@ def read_cloud_storage(bucket_name, file_name) -> str:
     return response
 
 
-def exception_channel_post(exception, client, webhook_url) -> dict:
+def completion_notification(
+    hook: str, active_clients: list, slack_client=SLACK_CLIENT
+) -> dict:
+    """
+    Simple send to add a completion notice to the end of the client send.
+    Makes it easy to see at the end of a notification block that all clients were sent.
+    """
+
+    active_client_count = str(len(active_clients))
+    active_client_names = "\n".join([client["name"] for client in active_clients])
+
+    data = {
+        "attachments": [
+            {
+                "color": "#ff00ff",
+                "title": "Client Daily Hour reporting completed.",
+                "text": "Clients in the list %s" % active_client_count,
+                "fields": [
+                    {
+                        "title": "Clients contacted",
+                        "value": active_client_names,
+                        "short": "true",
+                    }
+                ],
+            }
+        ]
+    }
+
+    response = slack_client.post_slack_message(hook, data)
+
+    return response
+
+
+def exception_channel_post(
+    client_name: str, webhook_url: str, *args, slack_client=SLACK_CLIENT
+) -> dict:
     """
     Performs a protected attempt to send slack message about an error.
     Wraps try blocks for assurance that the message will not further break the system.
@@ -157,18 +226,13 @@ def exception_channel_post(exception, client, webhook_url) -> dict:
         "attachments": [
             {
                 "color": "#ff0000",
-                "title": f"Exception while processing {client['name']}",
-                "text": str(exception),
+                "title": f"Exception while processing {client_name}",
+                "text": "".join([*args, traceback.format_exc(limit=3)]),
             }
         ]
     }
 
-    if webhook_url:
-        response = SLACK_CLIENT.post_slack_message(webhook_url, data)
-        logging.error(response)
+    response = slack_client.post_slack_message(webhook_url, data)
+    logging.error(response)
 
-        return response
-
-    logging.error(exception.to_dict)
-
-    return exception.to_dict
+    return response

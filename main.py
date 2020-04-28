@@ -5,14 +5,13 @@ import sys
 from python_http_client.exceptions import BadRequestsError, UnauthorizedError
 from taosdevopsutils.slack import Slack
 
+from hreporting import config, utils
 from hreporting.emails import SendGridSummaryEmail
 from hreporting.harvest_client import HarvestClient
-from hreporting.utils import (channel_post, exception_channel_post, load_yaml,
+from hreporting.utils import (channel_post, completion_notification,
+                              exception_channel_post, load_yaml,
                               load_yaml_file, print_verify, read_cloud_storage,
                               truncate)
-
-from hreporting import config
-from hreporting import utils
 
 logging.getLogger("harvest_reports")
 logging.basicConfig(format="%(asctime)s %(message)s")
@@ -25,8 +24,8 @@ def client_is_filtered(client, filter_list=None):
         return client['is_active'] and client['name'] in filter_list
 
 def main_method(
-        bearer_token, harvest_account, client_config, from_email,
-        exception_hooks=None):
+    bearer_token, harvest_account, client_config, from_email, exception_hooks=None
+):
     harvest_client = HarvestClient(bearer_token, harvest_account, client_config)
     client_filter = client_config.get("client_filter", [])
 
@@ -38,10 +37,15 @@ def main_method(
     for client in active_clients:
         _send_notifications(harvest_client, client, from_email, exception_hooks)
 
+    if client_config.get("sendVerificationHook"):
+        completion_notification(
+            client_config.get("sendVerificationHook"), active_clients=active_clients
+        )
+
 
 def _send_notifications(
-        harvest_client, client, from_email,
-        exception_hooks=None) -> None:
+    harvest_client, client, from_email, exception_hooks=None
+) -> None:
 
     clientId = client["id"]
     clientName = client["name"]
@@ -66,19 +70,20 @@ def _send_notifications(
             if exception_hooks:
                 for ehook in exception_hooks:
                     utils.exception_channel_post(
-                        clientName, ehook,
-                        f"Original Hook:{hook}\n"
+                        clientName, ehook, f"Original Hook:{hook}\n"
                     )
 
+
 def harvest_reports(*args):
-    bearer_token    = config.BEARER_TOKEN
-    bucket          = config.BUCKET
-    config_path     = config.CONFIG_PATH
+    bearer_token = config.BEARER_TOKEN
+    bucket = config.BUCKET
+    config_path = config.CONFIG_PATH
     harvest_account = config.HARVEST_ACCOUNT
-    from_email      = config.ORIGIN_EMAIL_ADDRESS
+    from_email = config.ORIGIN_EMAIL_ADDRESS
 
     client_config = (
         load_yaml_file(config_path)
+
         if not bucket
         else load_yaml(read_cloud_storage(bucket, config_path))
     )
@@ -88,8 +93,9 @@ def harvest_reports(*args):
         harvest_account=harvest_account,
         client_config=client_config,
         from_email=from_email,
-        exception_hooks=client_config.get("exceptionHook")
+        exception_hooks=client_config.get("exceptionHook"),
     )
+
 
 if __name__ == "__main__":
     harvest_reports()

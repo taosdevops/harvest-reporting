@@ -1,11 +1,12 @@
 import logging
-import traceback
-import yaml
 import re
+import traceback
+
+import yaml
 from google.cloud import storage
 from slack.errors import SlackApiError
-
 from taosdevopsutils.slack import Slack
+
 from hreporting.emails import SendGridSummaryEmail
 
 SENDGRID_EMAILER = SendGridSummaryEmail()
@@ -80,7 +81,7 @@ def get_payload(used, client_name, percent, left, _format="slack") -> dict:
         return {
             "slack": get_slack_payload,
             "teams": get_teams_payload,
-            "email": get_email_payload
+            "email": get_email_payload,
         }[_format](used, client_name, percent, left)
 
     except KeyError:
@@ -130,23 +131,33 @@ def get_email_payload(used, client_name, percent, left, *args) -> str:
     Percent:          {percent}
     """
 
+
 # Post to channel/workspace
 def channel_post(
-        webhook_url: str, used, client_name, percent, left,
-        slack_client=SLACK_CLIENT,
-        sg_client=SENDGRID_EMAILER) -> dict:
+    webhook_url: str,
+    used,
+    client_name,
+    percent,
+    left,
+    slack_client=SLACK_CLIENT,
+    sg_client=SENDGRID_EMAILER,
+) -> dict:
     """ Posts payload to webhook provided """
 
     if webhook_url:
         post_format = (  # Identify Type of payload
-            "teams" if webhook_url.startswith("https://outlook.office.com")
-            else "email" if re.match(r"[^@]+@[^@]+\.[^@]+", webhook_url)
+            "teams"
+
+            if webhook_url.startswith("https://outlook.office.com")
+            else "email"
+
+            if re.match(r"[^@]+@[^@]+\.[^@]+", webhook_url)
             else "slack"
         )
 
         data = get_payload(used, client_name, percent, left, _format=post_format)
 
-        if post_format=="email":
+        if post_format == "email":
             response = sg_client.email_send([webhook_url], client_name, data)
         else:
             response = slack_client.post_slack_message(webhook_url, data)
@@ -170,9 +181,42 @@ def read_cloud_storage(bucket_name, file_name) -> str:
     return response
 
 
+def completion_notification(
+    hook: str, active_clients: list, slack_client=SLACK_CLIENT
+) -> dict:
+    """
+    Simple send to add a completion notice to the end of the client send.
+    Makes it easy to see at the end of a notification block that all clients were sent.
+    """
+
+    active_client_count = str(len(active_clients))
+    active_client_names = "\n".join([client["name"] for client in active_clients])
+
+    data = {
+        "attachments": [
+            {
+                "color": "#ff00ff",
+                "title": "Client Daily Hour reporting completed.",
+                "text": "Clients in the list %s" % active_client_count,
+                "fields": [
+                    {
+                        "title": "Clients contacted",
+                        "value": active_client_names,
+                        "short": "true",
+                    }
+                ],
+            }
+        ]
+    }
+
+    response = slack_client.post_slack_message(hook, data)
+
+    return response
+
+
 def exception_channel_post(
-        client_name:str, webhook_url:str, *args,
-        slack_client=SLACK_CLIENT) -> dict:
+    client_name: str, webhook_url: str, *args, slack_client=SLACK_CLIENT
+) -> dict:
     """
     Performs a protected attempt to send slack message about an error.
     Wraps try blocks for assurance that the message will not further break the system.

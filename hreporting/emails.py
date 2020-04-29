@@ -42,6 +42,30 @@ class SendGridSummaryEmail:
 
 
 class SendGridTemplateEmail(SendGridSummaryEmail):
+    def construct_mail(self, emails, client_name: str, body) -> Mail:
+        current_date = date.today().strftime("%B %d, %Y")
+        subject = Subject(
+            f"{client_name} usage of DevOps Now hours as of {current_date} "
+        )
+
+        content = Content("text/plain", body)
+
+        return Mail(Email(self.from_email), list(emails), subject, content)
+
+    def email_send(self, emails, client_name: str, body) -> dict:
+        if emails:
+            mail = self.construct_mail(emails, client_name, body)
+
+            response = self.sg_client.client.mail.send.post(request_body=mail.get())
+
+            return response
+
+        logging.warning("No Email addresses were found for %s", client_name)
+
+        return dict()
+
+
+class SendGridTemplateEmail(SendGridSummaryEmail):
     def construct_mail(self, emails, client_name: str, template_variables) -> Mail:
 
         to_emails = [Email(email) for email in emails]

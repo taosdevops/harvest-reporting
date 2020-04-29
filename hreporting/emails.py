@@ -2,8 +2,8 @@ import logging
 from datetime import date
 
 import sendgrid
-from sendgrid.helpers.mail import (Content, Email, Header, Mail, Section,
-                                   Subject, TemplateId, To)
+from sendgrid.helpers.mail import (Content, Email, Header, Mail, Subject,
+                                   Substitution, TemplateId, To)
 
 from hreporting import config
 
@@ -19,19 +19,19 @@ class SendGridSummaryEmail:
         self.sg_client = sg_client
         self.from_email = from_email
 
-    def construct_mail(self, emails, client_name: str, body) -> Mail:
+    def construct_mail(self, emails, client_name: str, content) -> Mail:
         current_date = date.today().strftime("%B %d, %Y")
         subject = Subject(
             f"{client_name} usage of DevOps Now hours as of {current_date} "
         )
 
-        content = Content("text/plain", body)
+        content = Content("text/plain", content)
 
         return Mail(Email(self.from_email), list(emails), subject, content)
 
-    def email_send(self, emails, client_name: str, body) -> dict:
+    def email_send(self, emails, client_name: str, content) -> dict:
         if emails:
-            mail = self.construct_mail(emails, client_name, body)
+            mail = self.construct_mail(emails, client_name, content)
 
             response = self.sg_client.client.mail.send.post(request_body=mail.get())
 
@@ -47,15 +47,16 @@ class SendGridTemplateEmail(SendGridSummaryEmail):
     Provides interface to use dynamic templates from SendGrid
     """
 
-    def construct_mail(self, emails, client_name: str, template_variables) -> Mail:
+    def construct_mail(self, emails, client_name: str, content) -> Mail:
         """
-        Constructs email from template_variables.
+        Constructs email from content.
 
         Replaces variables in the SendGrid email template such as
         My replacement goes here: {{value}}.
         Replacements happen everywhere {{replacement2}}
         ---
-        template_variables = {
+        content = {
+            'template_id': '563533b6-b2df-4f29-8c54-06fc802bb115',
             'body': {
                 'key': 'value',
                 'replacement2': 'My replacement Value'
@@ -68,17 +69,19 @@ class SendGridTemplateEmail(SendGridSummaryEmail):
 
         message = Mail()
 
-        message.template_id = TemplateId(template_variables.template_id)
+        message.template_id = TemplateId(content["template_id"])
         message.to = [To(email) for email in emails]
 
-        if "body" in template_variables.keys():
-            message.sections = [
-                Section(key, value) for key, value in template_variables["body"]
+        if "body" in content.keys():
+            message.substitution = [
+                Substitution(key=key, value=value)
+
+                for key, value in content["body"].items()
             ]
 
-        if "header" in template_variables.keys():
+        if "header" in content.keys():
             message.header = [
-                Header(key, value) for key, value in template_variables["header"]
+                Header(key, value) for key, value in content["header"].items()
             ]
 
         return message

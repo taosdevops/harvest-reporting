@@ -147,10 +147,8 @@ def channel_post(
     if webhook_url:
         post_format = (  # Identify Type of payload
             "teams"
-
             if webhook_url.startswith("https://outlook.office.com")
             else "email"
-
             if re.match(r"[^@]+@[^@]+\.[^@]+", webhook_url)
             else "slack"
         )

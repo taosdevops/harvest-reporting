@@ -36,7 +36,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Harvest Emails Module" href="emails.html" />
-    <link rel="prev" title="Harvest Reporting Config" href="config.html" /> 
+    <link rel="prev" title="Harvest Reporting Environment Config Variables" href="config.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -85,7 +85,8 @@
 <li class="toctree-l1"><a class="reference internal" href="cloudfunction.html">Harvest Messenger</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cli.html">CLI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="client.html">Harvest Client</a></li>
-<li class="toctree-l1"><a class="reference internal" href="config.html">Harvest Reporting Config</a></li>
+<li class="toctree-l1"><a class="reference internal" href="client_config.html">Harvest Client Configuration File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config.html">Harvest Reporting Environment Config Variables</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Utility Functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="emails.html">Harvest Emails Module</a></li>
 </ul>
@@ -156,13 +157,20 @@
 <span id="utility-functions"></span><h1>Utility Functions<a class="headerlink" href="#module-hreporting.utils" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="hreporting.utils.channel_post">
-<code class="sig-prename descclassname">hreporting.utils.</code><code class="sig-name descname">channel_post</code><span class="sig-paren">(</span><em class="sig-param">webhook_url: str</em>, <em class="sig-param">used</em>, <em class="sig-param">client_name</em>, <em class="sig-param">percent</em>, <em class="sig-param">left</em><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="_modules/hreporting/utils.html#channel_post"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.utils.channel_post" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">hreporting.utils.</code><code class="sig-name descname">channel_post</code><span class="sig-paren">(</span><em class="sig-param">webhook_url: str</em>, <em class="sig-param">used</em>, <em class="sig-param">client_name</em>, <em class="sig-param">percent</em>, <em class="sig-param">left</em>, <em class="sig-param">slack_client=&lt;taosdevopsutils.slack.Slack object&gt;</em>, <em class="sig-param">sg_client=&lt;hreporting.emails.SendGridSummaryEmail object&gt;</em><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="_modules/hreporting/utils.html#channel_post"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.utils.channel_post" title="Permalink to this definition">¶</a></dt>
 <dd><p>Posts payload to webhook provided</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="hreporting.utils.completion_notification">
+<code class="sig-prename descclassname">hreporting.utils.</code><code class="sig-name descname">completion_notification</code><span class="sig-paren">(</span><em class="sig-param">hook: str</em>, <em class="sig-param">active_clients: list</em>, <em class="sig-param">slack_client=&lt;taosdevopsutils.slack.Slack object&gt;</em><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="_modules/hreporting/utils.html#completion_notification"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.utils.completion_notification" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simple send to add a completion notice to the end of the client send.
+Makes it easy to see at the end of a notification block that all clients were sent.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="hreporting.utils.exception_channel_post">
-<code class="sig-prename descclassname">hreporting.utils.</code><code class="sig-name descname">exception_channel_post</code><span class="sig-paren">(</span><em class="sig-param">exception</em>, <em class="sig-param">client</em>, <em class="sig-param">webhook_url</em><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="_modules/hreporting/utils.html#exception_channel_post"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.utils.exception_channel_post" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">hreporting.utils.</code><code class="sig-name descname">exception_channel_post</code><span class="sig-paren">(</span><em class="sig-param">client_name: str</em>, <em class="sig-param">webhook_url: str</em>, <em class="sig-param">*args</em>, <em class="sig-param">slack_client=&lt;taosdevopsutils.slack.Slack object&gt;</em><span class="sig-paren">)</span> &#x2192; dict<a class="reference internal" href="_modules/hreporting/utils.html#exception_channel_post"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.utils.exception_channel_post" title="Permalink to this definition">¶</a></dt>
 <dd><p>Performs a protected attempt to send slack message about an error.
 Wraps try blocks for assurance that the message will not further break the system.</p>
 </dd></dl>
@@ -170,6 +178,11 @@ Wraps try blocks for assurance that the message will not further break the syste
 <dl class="function">
 <dt id="hreporting.utils.get_color_code_for_utilization">
 <code class="sig-prename descclassname">hreporting.utils.</code><code class="sig-name descname">get_color_code_for_utilization</code><span class="sig-paren">(</span><em class="sig-param">percent</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/hreporting/utils.html#get_color_code_for_utilization"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.utils.get_color_code_for_utilization" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="hreporting.utils.get_email_payload">
+<code class="sig-prename descclassname">hreporting.utils.</code><code class="sig-name descname">get_email_payload</code><span class="sig-paren">(</span><em class="sig-param">used</em>, <em class="sig-param">client_name</em>, <em class="sig-param">percent</em>, <em class="sig-param">left</em>, <em class="sig-param">*args</em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/hreporting/utils.html#get_email_payload"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#hreporting.utils.get_email_payload" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -230,7 +243,7 @@ Wraps try blocks for assurance that the message will not further break the syste
         <a href="emails.html" class="btn btn-neutral float-right" title="Harvest Emails Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="config.html" class="btn btn-neutral float-left" title="Harvest Reporting Config" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="config.html" class="btn btn-neutral float-left" title="Harvest Reporting Environment Config Variables" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

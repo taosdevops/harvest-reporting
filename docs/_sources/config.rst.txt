@@ -1,7 +1,7 @@
 .. _config-reference-label:
 
-Harvest Reporting Config
-========================
+Harvest Reporting Environment Config Variables
+==============================================
 
 .. automodule:: hreporting.config
    :members:

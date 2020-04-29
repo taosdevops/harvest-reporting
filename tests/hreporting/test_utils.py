@@ -2,7 +2,6 @@ import re
 from unittest import TestCase
 from unittest.mock import MagicMock
 
-from requests.exceptions import MissingSchema
 from vcr_unittest import VCRTestCase
 
 from hreporting.utils import (
@@ -54,5 +53,5 @@ class TestExceptionChannel(VCRTestCase):
     def test_exception_channel_post(self):
         """ Verification that a throw will cause an error """
 
-        with self.assertRaises(MissingSchema):
+        with self.assertRaises(Exception):
             exception_channel_post(self.exception, self.client, self.webhook_url)

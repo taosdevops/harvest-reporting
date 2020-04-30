@@ -10,6 +10,7 @@ from hreporting.emails import SendGridSummaryEmail, SendGridTemplateEmail
 
 class TestSummaryEmail(VCRTestCase):
     def setUp(self):
+        self.client = {"hours_used": 60, "name": "DSC", "percent": 50, "hours_left": 30}
 
         self.client_name = "My Client Under Test"
         self.emails = ["emailToCheck@test.com", "GlobalEmailToTest@example.com"]
@@ -30,7 +31,7 @@ class TestSummaryEmail(VCRTestCase):
         patterns = self.emails
 
         email_under_test = self.sg_email.construct_mail(
-            emails=self.emails, content=self.test_body, client_name=self.client_name
+            self.emails, self.client, self.test_body
         )
 
         for personalization in email_under_test.personalizations:
@@ -43,13 +44,20 @@ class TestSummaryEmail(VCRTestCase):
 
     def test_email_send_returns_if_missing_emails(self):
         email_under_test = self.sg_email.send(
-            emails=[], client_name=self.client_name, content=self.test_body
+            emails=[], client=self.client, config=self.test_body
         )
         self.assertEqual({}, email_under_test)
 
 
 class TestTemplateEmail(VCRTestCase):
     def setUp(self):
+        self.client = {
+            "hours_used": 60,
+            "name": "DSC",
+            "percent": 50,
+            "hours_left": 30,
+            "template_id": "bogus sendgrid id",
+        }
 
         self.client_name = "My Template Email Under Test"
         self.emails = ["emailToCheck@test.com", "GlobalEmailToTest@example.com"]
@@ -65,7 +73,7 @@ class TestTemplateEmail(VCRTestCase):
 
         self.sg_email = SendGridTemplateEmail()
         self.email_under_test = self.sg_email.construct_mail(
-            emails=self.emails, content=self.content, client_name=self.client_name
+            emails=self.emails, client=self.client, content={}
         )
 
     def test_to_emails(self):
@@ -81,9 +89,7 @@ class TestTemplateEmail(VCRTestCase):
                 )
 
     def test_email_send_returns_if_missing_emails(self):
-        email_under_test = self.sg_email.send(
-            emails=[], client_name=self.client_name, content=self.content
-        )
+        email_under_test = self.sg_email.send(emails=[], client=self.client, config={})
         self.assertEqual({}, email_under_test)
 
     def test_substution_working(self):

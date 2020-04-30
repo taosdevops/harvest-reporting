@@ -11,22 +11,29 @@ logging.getLogger("harvest_reports")
 
 
 class NotificationManager:
-    def __init__(self, from_email, emailTemplateId):
-        self.from_email = from_email
+    SLACK_CLIENT = Slack()
+
+    def __init__(
+        self, fromEmail, exceptionHooks, harvestClient, clients, emailTemplateId=None
+    ):
+
+        self.clients = clients
         self.emailTemplateId = emailTemplateId
-        self.slack_client = Slack()
+        self.exception_hooks = exceptionHooks
+        self.from_email = fromEmail
+        self.harvest_client = harvestClient
 
         self.emailer = (
             SendGridTemplateEmail() if self.emailTemplateId else SendGridSummaryEmail()
         )
 
-    def send(self, harvest_client, client, exception_hooks=None) -> None:
+    def _client_data(self, client) -> dict:
 
-        clientId = client["id"]
-        clientName = client["name"]
+        client_id = client["id"]
+        client_name = client["name"]
 
-        hours_used = harvest_client.get_client_time_used(clientId)
-        total_hours = harvest_client.get_client_time_allotment(clientName)
+        hours_used = self.harvest_client.get_client_time_used(client_id)
+        total_hours = self.harvest_client.get_client_time_allotment(client_name)
         hours_left = total_hours - hours_used
 
         used = truncate(hours_used, 2)
@@ -34,22 +41,40 @@ class NotificationManager:
 
         percent = used / total_hours * 100
 
-        print_verify(used, clientName, percent, left)
+        print_verify(used, client_name, percent, left)
 
-        client_hooks = harvest_client.get_client_hooks(clientName)
+        client_hooks = self.harvest_client.get_client_hooks(client_name)
 
-        for hook in client_hooks["hooks"]:
+        return {
+            "id": client_id,
+            "name": client_name,
+            "hours_used": hours_used,
+            "total_hours": total_hours,
+            "hours_left": hours_left,
+            "percent": percent,
+            "hooks": client_hooks,
+        }
+
+    def _hooks_send(self, client):
+        for hook in client["hooks"]:
             try:
-                self.channel_post(hook, used, clientName, percent, left)
+                self.channel_post(hook, client)
             except Exception:
-                if exception_hooks:
-                    for ehook in exception_hooks:
+                if self.exception_hooks:
+                    for ehook in self.exception_hooks:
                         self.exception_channel_post(
-                            clientName, ehook, f"Original Hook:{hook}\n"
+                            client["name"], ehook, f"Original Hook:{hook}\n"
                         )
 
+    def send(self) -> None:
+
+        client_data = [self._client_data(client) for client in self.clients]
+
+        for client in client_data:
+            self._hooks_send(client)
+
     # Post to channel/workspace
-    def channel_post(self, webhook_url: str, used, client_name, percent, left) -> dict:
+    def channel_post(self, webhook_url: str, client: dict) -> dict:
         """ Posts payload to webhook provided """
 
         if webhook_url:
@@ -63,18 +88,20 @@ class NotificationManager:
                 else "slack"
             )
 
-            data = get_payload(used, client_name, percent, left, _format=post_format)
+            data = get_payload(client, _format=post_format)
 
             if post_format == "email":
-                response = self.emailer.send([webhook_url], client_name, data)
+                response = self.emailer.send(webhook_url, client, data)
             else:
-                response = self.slack_client.post_slack_message(webhook_url, data)
+                response = NotificationManager.SLACK_CLIENT.post_slack_message(
+                    webhook_url, data
+                )
 
             logging.info(response)
 
             return response
 
-        logging.warning("No webhook url found for %client_name", client_name)
+        logging.warning("No webhook url found for %client_name", client["client_name"])
 
         return dict()
 
@@ -94,19 +121,22 @@ class NotificationManager:
             ]
         }
 
-        response = self.slack_client.post_slack_message(webhook_url, data)
+        response = NotificationManager.SLACK_CLIENT.post_slack_message(
+            webhook_url, data
+        )
         logging.error(response)
 
         return response
 
-    def completion_notification(self, hook: str, active_clients: list) -> dict:
+    @classmethod
+    def send_completion(cls, verification_hook, clients: list) -> dict:
         """
         Simple send to add a completion notice to the end of the client send.
         Makes it easy to see at the end of a notification block that all clients were sent.
         """
 
-        active_client_count = str(len(active_clients))
-        active_client_names = "\n".join([client["name"] for client in active_clients])
+        active_client_count = str(len(clients))
+        active_client_names = "\n".join([client["name"] for client in clients])
 
         data = {
             "attachments": [
@@ -125,6 +155,8 @@ class NotificationManager:
             ]
         }
 
-        response = self.slack_client.post_slack_message(hook, data)
+        response = NotificationManager.SLACK_CLIENT.post_slack_message(
+            verification_hook, data
+        )
 
         return response

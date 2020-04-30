@@ -19,14 +19,10 @@ def client_is_filtered(client, filter_list=None):
 
 
 def main_method(
-    bearer_token, harvest_account, client_config, from_email, exception_hooks=None
+    bearer_token, harvest_account, global_config, from_email, exception_hooks=None
 ):
-    harvest_client = HarvestClient(bearer_token, harvest_account, client_config)
-    client_filter = client_config.get("client_filter", [])
-
-    notification = NotificationManager(
-        from_email, client_config.get("emailTemplateId", None)
-    )
+    harvest_client = HarvestClient(bearer_token, harvest_account, global_config)
+    client_filter = global_config.get("client_filter", [])
 
     active_clients = [
         client
@@ -36,13 +32,20 @@ def main_method(
         if client_is_filtered(client, filter_list=client_filter)
     ]
 
-    for client in active_clients:
-        notification.send(harvest_client, client, exception_hooks)
+    notifications = NotificationManager(
+        activeClients=active_clients,
+        fromEmail=from_email,
+        exceptionHooks=global_config.get("exceptionHook"),
+        emailTemplateId=global_config.get("emailTemplateId", None),
+        harvestClient=harvest_client,
+    )
 
-    if client_config.get("sendVerificationHook"):
-        notification.completion_notification(
-            client_config.get("sendVerificationHook"), active_clients=active_clients
-        )
+    notifications.send()
+
+    notifications.send_completion(
+        verification_hook=global_config.get("sendVerificationHook"),
+        clients=active_clients,
+    )
 
 
 def harvest_reports(*args):
@@ -52,7 +55,7 @@ def harvest_reports(*args):
     harvest_account = config.HARVEST_ACCOUNT
     from_email = config.ORIGIN_EMAIL_ADDRESS
 
-    client_config = (
+    global_config = (
         load_yaml_file(config_path)
 
         if not bucket
@@ -62,9 +65,8 @@ def harvest_reports(*args):
     return main_method(
         bearer_token=bearer_token,
         harvest_account=harvest_account,
-        client_config=client_config,
+        global_config=global_config,
         from_email=from_email,
-        exception_hooks=client_config.get("exceptionHook"),
     )
 
 

@@ -19,25 +19,25 @@ class SendGridSummaryEmail:
         self.sg_client = sg_client
         self.from_email = from_email
 
-    def construct_mail(self, emails, client_name: str, content) -> Mail:
+    def construct_mail(self, emails: list, client: dict, content) -> Mail:
         current_date = date.today().strftime("%B %d, %Y")
         subject = Subject(
-            f"{client_name} usage of DevOps Now hours as of {current_date} "
+            f"{client['name']} usage of DevOps Now hours as of {current_date} "
         )
 
         content = Content("text/plain", content)
 
         return Mail(Email(self.from_email), list(emails), subject, content)
 
-    def send(self, emails, client_name: str, content) -> dict:
+    def send(self, emails: list, client, config) -> dict:
         if emails:
-            mail = self.construct_mail(emails, client_name, content)
+            mail = self.construct_mail(emails, client, config)
 
             response = self.sg_client.client.mail.send.post(request_body=mail.get())
 
             return response
 
-        logging.warning("No Email addresses were found for %s", client_name)
+        logging.warning("No Email addresses were found for %s", client["name"])
 
         return dict()
 
@@ -47,7 +47,7 @@ class SendGridTemplateEmail(SendGridSummaryEmail):
     Provides interface to use dynamic templates from SendGrid
     """
 
-    def construct_mail(self, emails, client_name: str, content) -> Mail:
+    def construct_mail(self, emails: list, client: dict, content) -> Mail:
         """
         Constructs email from content.
 
@@ -55,7 +55,7 @@ class SendGridTemplateEmail(SendGridSummaryEmail):
         My replacement goes here: {{value}}.
         Replacements happen everywhere {{replacement2}}
         ---
-        content = {
+        client = {
             'template_id': '563533b6-b2df-4f29-8c54-06fc802bb115',
             'body': {
                 'key': 'value',
@@ -69,19 +69,19 @@ class SendGridTemplateEmail(SendGridSummaryEmail):
 
         message = Mail()
 
-        message.template_id = TemplateId(content["template_id"])
+        message.template_id = TemplateId(client["template_id"])
         message.to = [To(email) for email in emails]
 
-        if "body" in content.keys():
+        if "body" in client.keys():
             message.substitution = [
                 Substitution(key=key, value=value)
 
-                for key, value in content["body"].items()
+                for key, value in client["body"].items()
             ]
 
-        if "header" in content.keys():
+        if "header" in client.keys():
             message.header = [
-                Header(key, value) for key, value in content["header"].items()
+                Header(key, value) for key, value in client["header"].items()
             ]
 
         return message

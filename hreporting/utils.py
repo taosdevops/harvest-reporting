@@ -1,12 +1,7 @@
 import logging
-import re
-import traceback
 
 import yaml
 from google.cloud import storage
-from slack.errors import SlackApiError
-
-from hreporting.emails import SendGridSummaryEmail
 
 logging.getLogger("harvest_reports")
 
@@ -70,7 +65,7 @@ def get_color_code_for_utilization(percent) -> str:
 
 
 # Define types of payloads
-def get_payload(used, client_name, percent, left, _format="slack") -> dict:
+def get_payload(client, _format="slack") -> dict:
     """ Get payload for every type of format"""
     try:
 
@@ -78,7 +73,12 @@ def get_payload(used, client_name, percent, left, _format="slack") -> dict:
             "slack": get_slack_payload,
             "teams": get_teams_payload,
             "email": get_email_payload,
-        }[_format](used, client_name, percent, left)
+        }[_format](
+            client["hours_used"],
+            client["name"],
+            client["percent"],
+            client["hours_left"],
+        )
 
     except KeyError:
         raise Exception(f"Invalid Payload format {_format}")

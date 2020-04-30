@@ -6,22 +6,23 @@ from python_http_client.exceptions import BadRequestsError, UnauthorizedError
 from taosdevopsutils.slack import Slack
 
 from hreporting import config, utils
-from hreporting.emails import SendGridSummaryEmail
+from hreporting.emails import SendGridSummaryEmail, SendGridTemplateEmail
 from hreporting.harvest_client import HarvestClient
-from hreporting.utils import (channel_post, completion_notification,
-                              exception_channel_post, load_yaml,
-                              load_yaml_file, print_verify, read_cloud_storage,
-                              truncate)
+from hreporting.notifications import NotificationManager
+from hreporting.utils import (load_yaml, load_yaml_file, print_verify,
+                              read_cloud_storage, truncate)
 
 logging.getLogger("harvest_reports")
 logging.basicConfig(format="%(asctime)s %(message)s")
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
+
 def client_is_filtered(client, filter_list=None):
     if not filter_list:
-        return client['is_active']
+        return client["is_active"]
     else:
-        return client['is_active'] and client['name'] in filter_list
+        return client["is_active"] and client["name"] in filter_list
+
 
 def main_method(
     bearer_token, harvest_account, client_config, from_email, exception_hooks=None
@@ -29,49 +30,25 @@ def main_method(
     harvest_client = HarvestClient(bearer_token, harvest_account, client_config)
     client_filter = client_config.get("client_filter", [])
 
+    notification = NotificationManager(
+        from_email, client_config.get("emailTemplateId", None)
+    )
+
     active_clients = [
-        client for client in harvest_client.list_clients() if
-        client_is_filtered(client, filter_list=client_filter)
+        client
+
+        for client in harvest_client.list_clients()
+
+        if client_is_filtered(client, filter_list=client_filter)
     ]
 
     for client in active_clients:
-        _send_notifications(harvest_client, client, from_email, exception_hooks)
+        notification.send(harvest_client, client, exception_hooks)
 
     if client_config.get("sendVerificationHook"):
-        completion_notification(
+        notification.completion_notification(
             client_config.get("sendVerificationHook"), active_clients=active_clients
         )
-
-
-def _send_notifications(
-    harvest_client, client, from_email, exception_hooks=None
-) -> None:
-
-    clientId = client["id"]
-    clientName = client["name"]
-
-    hours_used = harvest_client.get_client_time_used(clientId)
-    total_hours = harvest_client.get_client_time_allotment(clientName)
-    hours_left = total_hours - hours_used
-
-    used = truncate(hours_used, 2)
-    left = truncate(hours_left, 2)
-
-    percent = used / total_hours * 100
-
-    print_verify(used, clientName, percent, left)
-
-    client_hooks = harvest_client.get_client_hooks(clientName)
-
-    for hook in client_hooks["hooks"]:
-        try:
-            channel_post(hook, used, clientName, percent, left)
-        except Exception:
-            if exception_hooks:
-                for ehook in exception_hooks:
-                    utils.exception_channel_post(
-                        clientName, ehook, f"Original Hook:{hook}\n"
-                    )
 
 
 def harvest_reports(*args):

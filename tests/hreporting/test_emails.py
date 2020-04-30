@@ -24,16 +24,8 @@ class TestSummaryEmail(VCRTestCase):
 
         self.sg_email = SendGridSummaryEmail()
 
-        # self.client_name,
-        # self.emails,
-        # self.left,
-        # self.percet,
-        # self.sg_client,
-        # self.used,
-        # "BadEmail@exmaple.com",
-        # )
-
     def test_to_emails(self):
+
         # Excluding @ and .com for regex issues. Checking for the prefix is just as effective
         patterns = self.emails
 
@@ -50,7 +42,7 @@ class TestSummaryEmail(VCRTestCase):
                 )
 
     def test_email_send_returns_if_missing_emails(self):
-        email_under_test = self.sg_email.email_send(
+        email_under_test = self.sg_email.send(
             emails=[], client_name=self.client_name, content=self.test_body
         )
         self.assertEqual({}, email_under_test)
@@ -89,7 +81,7 @@ class TestTemplateEmail(VCRTestCase):
                 )
 
     def test_email_send_returns_if_missing_emails(self):
-        email_under_test = self.sg_email.email_send(
+        email_under_test = self.sg_email.send(
             emails=[], client_name=self.client_name, content=self.content
         )
         self.assertEqual({}, email_under_test)

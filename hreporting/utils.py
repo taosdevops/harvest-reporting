@@ -5,12 +5,8 @@ import traceback
 import yaml
 from google.cloud import storage
 from slack.errors import SlackApiError
-from taosdevopsutils.slack import Slack
 
 from hreporting.emails import SendGridSummaryEmail
-
-SENDGRID_EMAILER = SendGridSummaryEmail()
-SLACK_CLIENT = Slack()
 
 logging.getLogger("harvest_reports")
 
@@ -132,105 +128,11 @@ def get_email_payload(used, client_name, percent, left, *args) -> str:
     """
 
 
-# Post to channel/workspace
-def channel_post(
-    webhook_url: str,
-    used,
-    client_name,
-    percent,
-    left,
-    slack_client=SLACK_CLIENT,
-    sg_client=SENDGRID_EMAILER,
-) -> dict:
-    """ Posts payload to webhook provided """
-
-    if webhook_url:
-        post_format = (  # Identify Type of payload
-            "teams"
-            if webhook_url.startswith("https://outlook.office.com")
-            else "email"
-            if re.match(r"[^@]+@[^@]+\.[^@]+", webhook_url)
-            else "slack"
-        )
-
-        data = get_payload(used, client_name, percent, left, _format=post_format)
-
-        if post_format == "email":
-            response = sg_client.email_send([webhook_url], client_name, data)
-        else:
-            response = slack_client.post_slack_message(webhook_url, data)
-
-        logging.info(response)
-
-        return response
-
-    logging.warning("No webhook url found for %client_name", client_name)
-
-    return dict()
-
-
 def read_cloud_storage(bucket_name, file_name) -> str:
     """ Returns file contents from provided bucket and file names """
     client = storage.Client()
     bucket = client.get_bucket(bucket_name)
     blob = bucket.get_blob(file_name)
     response = blob.download_as_string()
-
-    return response
-
-
-def completion_notification(
-    hook: str, active_clients: list, slack_client=SLACK_CLIENT
-) -> dict:
-    """
-    Simple send to add a completion notice to the end of the client send.
-    Makes it easy to see at the end of a notification block that all clients were sent.
-    """
-
-    active_client_count = str(len(active_clients))
-    active_client_names = "\n".join([client["name"] for client in active_clients])
-
-    data = {
-        "attachments": [
-            {
-                "color": "#ff00ff",
-                "title": "Client Daily Hour reporting completed.",
-                "text": "Clients in the list %s" % active_client_count,
-                "fields": [
-                    {
-                        "title": "Clients contacted",
-                        "value": active_client_names,
-                        "short": "true",
-                    }
-                ],
-            }
-        ]
-    }
-
-    response = slack_client.post_slack_message(hook, data)
-
-    return response
-
-
-def exception_channel_post(
-    client_name: str, webhook_url: str, *args, slack_client=SLACK_CLIENT
-) -> dict:
-    """
-    Performs a protected attempt to send slack message about an error.
-    Wraps try blocks for assurance that the message will not further break the system.
-    """
-
-    data = {
-        "attachments": [
-            {
-                "color": "#ff0000",
-                "title": f"Exception while processing {client_name}",
-                "text": "".join([*args, traceback.format_exc(limit=3)]),
-            }
-        ]
-    }
-
-    response = slack_client.post_slack_message(webhook_url, data)
-    logging.error(response)
 
     return response

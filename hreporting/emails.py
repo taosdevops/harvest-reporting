@@ -29,7 +29,7 @@ class SendGridSummaryEmail:
 
         return Mail(Email(self.from_email), list(emails), subject, content)
 
-    def email_send(self, emails, client_name: str, content) -> dict:
+    def send(self, emails, client_name: str, content) -> dict:
         if emails:
             mail = self.construct_mail(emails, client_name, content)
 

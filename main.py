@@ -1,16 +1,10 @@
 import logging
-import os
 import sys
 
-from python_http_client.exceptions import BadRequestsError, UnauthorizedError
-from taosdevopsutils.slack import Slack
-
-from hreporting import config, utils
-from hreporting.emails import SendGridSummaryEmail, SendGridTemplateEmail
+from hreporting import config
 from hreporting.harvest_client import HarvestClient
 from hreporting.notifications import NotificationManager
-from hreporting.utils import (load_yaml, load_yaml_file, print_verify,
-                              read_cloud_storage, truncate)
+from hreporting.utils import load_yaml, load_yaml_file, read_cloud_storage
 
 logging.getLogger("harvest_reports")
 logging.basicConfig(format="%(asctime)s %(message)s")
@@ -20,8 +14,8 @@ logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 def client_is_filtered(client, filter_list=None):
     if not filter_list:
         return client["is_active"]
-    else:
-        return client["is_active"] and client["name"] in filter_list
+
+    return client["is_active"] and client["name"] in filter_list
 
 
 def main_method(

@@ -57,6 +57,8 @@ class TestTemplateEmail(VCRTestCase):
             "percent": 50,
             "hours_left": 30,
             "template_id": "bogus sendgrid id",
+            "body": {"first": "check", "second": "mate"},
+            "header": {"into": "goal", "for": "win"},
         }
 
         self.client_name = "My Template Email Under Test"
@@ -65,11 +67,6 @@ class TestTemplateEmail(VCRTestCase):
         self.percet = 28.4
         self.sg_client = MagicMock()
         self.used = 100
-        self.content = {
-            "template_id": "563533b6-b2df-4f29-8c54-06fc802bb115",
-            "body": {"first": "check", "second": "mate"},
-            "header": {"into": "goal", "for": "win"},
-        }
 
         self.sg_email = SendGridTemplateEmail()
         self.email_under_test = self.sg_email.construct_mail(
@@ -93,7 +90,7 @@ class TestTemplateEmail(VCRTestCase):
         self.assertEqual({}, email_under_test)
 
     def test_substution_working(self):
-        expected_subs = self.content["body"]
+        expected_subs = self.client["body"]
 
         for subs_under_test in self.email_under_test.personalizations:
 

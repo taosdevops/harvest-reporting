@@ -10,6 +10,11 @@ def _get_current_month():  # Maybe move ??
 
     return f"{dm:02}"
 
+def _get_current_year():  # Maybe move ??
+    dm = datetime.datetime.today().year
+
+    return f"{dm:04}"
+
 
 class HarvestClient:
     """ Harvest Client """
@@ -73,7 +78,9 @@ class HarvestClient:
         return entries
 
     def get_client_time_used(
-        self, client_id: str, month: str = _get_current_month()
+        self, client_id: str,
+        month: str = _get_current_month(),
+        year: str  = _get_current_year(),
     ) -> float:
         """ returns sum of client time used for the given month """
         regex = re.compile("([0-9]{4})-([0-9]{2})-([0-9]{2})")
@@ -84,7 +91,8 @@ class HarvestClient:
 
                 for item in self.get_client_time(client_id)
 
-                if regex.search(item["spent_date"]).group(2) == month
+                if regex.search(item["spent_date"]).group(2) == month and
+                   regex.search(item["spent_date"]).group(1) == year
             ]
         )
 

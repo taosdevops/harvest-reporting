@@ -23,7 +23,7 @@ class TestHarvestClient(VCRTestCase):
 
     def test_get_client_time_used(self):
         time_used = HarvestClient(btoken, account).get_client_time_used(
-            8544728, month="09"
+            8544728, month="09", year="2019"
         )
         self.assertEqual(
             self.cassette.requests[0].uri,

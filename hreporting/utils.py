@@ -73,58 +73,66 @@ def get_payload(client, _format="slack") -> dict:
             "slack": get_slack_payload,
             "teams": get_teams_payload,
             "email": get_email_payload,
-        }[_format](
-            client["hours_used"],
-            client["name"],
-            client["percent"],
-            client["hours_left"],
-        )
+            "templateEmail": get_email_template_payload,
+        }[_format](client)
 
     except KeyError:
         raise Exception(f"Invalid Payload format {_format}")
 
 
-def get_slack_payload(used, client_name, percent, left, *args) -> dict:
+def get_slack_payload(client, *args) -> dict:
     """ Format JSON body for Slack channel posting"""
 
     return {
         "attachments": [
             {
-                "color": get_color_code_for_utilization(percent),
-                "title": client_name,
-                "text": "%d%%" % (percent),
+                "color": get_color_code_for_utilization(client.percent),
+                "title": client.name,
+                "text": "%d%%" % (client.percent),
                 "fields": [
-                    {"title": "Hours Used", "value": used, "short": "true"},
-                    {"title": "Hours Remaining", "value": left, "short": "true"},
+                    {
+                        "title": "Hours Used",
+                        "value": client.hours_used,
+                        "short": "true",
+                    },
+                    {
+                        "title": "Hours Remaining",
+                        "value": client.hours_left,
+                        "short": "true",
+                    },
                 ],
             }
         ]
     }
 
 
-def get_teams_payload(used, client_name, percent, left, *args) -> dict:
+def get_email_template_payload(client) -> dict:
+    pass
+
+
+def get_teams_payload(client, *args) -> dict:
     """ Format JSON body for MS Teams channel post"""
 
     return {
         "@type": "MessageCard",
         "@context": "https://schema.org/extensions",
-        "themeColor": get_color_code_for_utilization(percent),
+        "themeColor": get_color_code_for_utilization(client.percent),
         "title": "DevOps Time Reports",
-        "text": client_name,
+        "text": client.name,
         "sections": [
-            {"text": "%d%%" % (percent)},
-            {"activityTitle": "Hours Used", "activitySubtitle": used},
-            {"activityTitle": "Hours Remaining", "activitySubtitle": left},
+            {"text": "%d%%" % (client.percent)},
+            {"activityTitle": "Hours Used", "activitySubtitle": client.hours_used},
+            {"activityTitle": "Hours Remaining", "activitySubtitle": client.hours_left},
         ],
     }
 
 
-def get_email_payload(used, client_name, percent, left, *args) -> str:
+def get_email_payload(client, *args) -> str:
     return f"""
-    Client:           {client_name}
-    Used Hours:       {used}
-    Remaining Hours:  {left}
-    Percent:          {percent}
+    Client:           {client.name}
+    Used Hours:       {client.hours_used}
+    Remaining Hours:  {client.hours_left}
+    Percent:          {client.percent}
     """
 
 

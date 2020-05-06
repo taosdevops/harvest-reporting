@@ -70,7 +70,17 @@ class SendGridTemplateEmail(SendGridSummaryEmail):
         message = Mail()
 
         message.template_id = TemplateId(client["template_id"])
-        message.to = [To(email) for email in emails]
+
+        # TODO We shouldn't need this check
+        # Fix this hack
+
+        if isinstance(emails, list):
+            message.to = [To(email) for email in emails]
+        else:
+            message.to = To(emails)
+
+        # TODO did i configure the pass through generations?
+        # I don't thin i have any configs that are being passed
 
         if "body" in client.keys():
             message.substitution = [

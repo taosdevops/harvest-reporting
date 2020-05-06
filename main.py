@@ -26,14 +26,12 @@ def main_method(
 
     active_clients = [
         client
-
         for client in harvest_client.list_clients()
-
         if client_is_filtered(client, filter_list=client_filter)
     ]
 
     notifications = NotificationManager(
-        activeClients=active_clients,
+        clients=active_clients,
         fromEmail=from_email,
         exceptionHooks=global_config.get("exceptionHook"),
         emailTemplateId=global_config.get("emailTemplateId", None),
@@ -57,7 +55,6 @@ def harvest_reports(*args):
 
     global_config = (
         load_yaml_file(config_path)
-
         if not bucket
         else load_yaml(read_cloud_storage(bucket, config_path))
     )

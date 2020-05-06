@@ -4,6 +4,7 @@ import traceback
 
 from taosdevopsutils.slack import Slack
 
+from hreporting.client import HarvestClient
 from hreporting.emails import SendGridSummaryEmail, SendGridTemplateEmail
 from hreporting.utils import get_payload, print_verify, truncate
 
@@ -17,7 +18,7 @@ class NotificationManager:
         self, fromEmail, exceptionHooks, harvestClient, clients, emailTemplateId=None
     ):
 
-        self.clients = clients
+        self.clients = [self._build_client(client) for client in clients]
         self.emailTemplateId = emailTemplateId
         self.exception_hooks = exceptionHooks
         self.from_email = fromEmail
@@ -27,7 +28,7 @@ class NotificationManager:
             SendGridTemplateEmail() if self.emailTemplateId else SendGridSummaryEmail()
         )
 
-    def _client_data(self, client) -> dict:
+    def _build_client(self, client) -> HarvestClient:
 
         client_id = client["id"]
         client_name = client["name"]
@@ -35,46 +36,48 @@ class NotificationManager:
         hours_used = self.harvest_client.get_client_time_used(client_id)
         total_hours = self.harvest_client.get_client_time_allotment(client_name)
         hours_left = total_hours - hours_used
+        percent = hours_used / total_hours * 100
 
-        used = truncate(hours_used, 2)
-        left = truncate(hours_left, 2)
-
-        percent = used / total_hours * 100
-
-        print_verify(used, client_name, percent, left)
+        print_verify(hours_used, client_name, percent, hours_left)
 
         client_hooks = self.harvest_client.get_client_hooks(client_name)
 
-        return {
-            "id": client_id,
-            "name": client_name,
-            "hours_used": hours_used,
-            "total_hours": total_hours,
-            "hours_left": hours_left,
-            "percent": percent,
-            "hooks": client_hooks,
-        }
+        client_hooks = (
+            client_hooks if isinstance(client_hooks, list) else list(client_hooks)
+        )
 
-    def _hooks_send(self, client):
-        for hook in client["hooks"]:
+        return HarvestClient(
+            clientId=client_id,
+            hooks=client_hooks,
+            hoursLeft=hours_left,
+            hoursTotal=total_hours,
+            hoursUsed=hours_used,
+            name=client_name,
+            percent=percent,
+            templateId=self.emailTemplateId,
+        )
+
+    def _hooks_send(self, client: HarvestClient):
+
+        for hook in client.hooks:
             try:
+                import pudb
+
+                pudb.set_trace()
                 self.channel_post(hook, client)
             except Exception:
                 if self.exception_hooks:
                     for ehook in self.exception_hooks:
                         self.exception_channel_post(
-                            client["name"], ehook, f"Original Hook:{hook}\n"
+                            client.name, ehook, f"Original Hook:{hook}\n"
                         )
 
     def send(self) -> None:
-
-        client_data = [self._client_data(client) for client in self.clients]
-
-        for client in client_data:
+        for client in self.clients:
             self._hooks_send(client)
 
     # Post to channel/workspace
-    def channel_post(self, webhook_url: str, client: dict) -> dict:
+    def channel_post(self, webhook_url: str, client: HarvestClient) -> dict:
         """ Posts payload to webhook provided """
 
         if webhook_url:
@@ -82,6 +85,9 @@ class NotificationManager:
                 "teams"
 
                 if webhook_url.startswith("https://outlook.office.com")
+                else "templateEmail"
+
+                if re.match(r"[^@]+@[^@]+\.[^@]+", webhook_url) and self.emailTemplateId
                 else "email"
 
                 if re.match(r"[^@]+@[^@]+\.[^@]+", webhook_url)
@@ -101,7 +107,7 @@ class NotificationManager:
 
             return response
 
-        logging.warning("No webhook url found for %client_name", client["client_name"])
+        logging.warning("No webhook url found for %client_name", client.client_name)
 
         return dict()
 

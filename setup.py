@@ -11,10 +11,10 @@ setup(
     version="0.1.1",
     url="https://github.com/taosmountain/harvest-reporting",
     install_requires=[
-        "Click~=7",
-        "colorama~=0.4",
-        "PyYAML~=5.1",
-        "requests~=2.22",
+        "Click>=7.0",
+        "colorama>=0.4",
+        "PyYAML>=5.1",
+        "requests>=2.22",
         "sendgrid>=6.2",
     ],
     entry_points="""

@@ -1,8 +1,6 @@
 import re
-from unittest import TestCase
 from unittest.mock import MagicMock
 
-import sendgrid
 from vcr_unittest import VCRTestCase
 
 from hreporting.emails import SendGridSummaryEmail
@@ -23,15 +21,6 @@ class TestEmail(VCRTestCase):
         """
 
         self.sg_email = SendGridSummaryEmail()
-
-        # self.client_name,
-        # self.emails,
-        # self.left,
-        # self.percet,
-        # self.sg_client,
-        # self.used,
-        # "BadEmail@exmaple.com",
-        # )
 
     def test_to_emails(self):
         # Excluding @ and .com for regex issues. Checking for the prefix is just as effective

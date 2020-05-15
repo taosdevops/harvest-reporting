@@ -14,8 +14,9 @@ from hreporting.utils import (channel_post, completion_notification,
                               truncate)
 
 logging.getLogger("harvest_reports")
-logging.basicConfig(format="%(asctime)s %(message)s")
-logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+logging.basicConfig(
+    stream=sys.stdout, level=logging.DEBUG, format="%(asctime)s %(message)s"
+)
 
 
 def client_is_filtered(client, filter_list=None):
@@ -40,7 +41,9 @@ def main_method(
     ]
 
     for client in active_clients:
-        _send_notifications(harvest_client, client, from_email, exception_hooks)
+        client["result"] = _send_notifications(
+            harvest_client, client, from_email, exception_hooks
+        )
 
     if client_config.get("sendVerificationHook"):
         completion_notification(
@@ -70,7 +73,7 @@ def _send_notifications(
 
     for hook in client_hooks["hooks"]:
         try:
-            channel_post(hook, used, clientName, percent, left)
+            return channel_post(hook, used, clientName, percent, left)
         except Exception:
             if exception_hooks:
                 for ehook in exception_hooks:

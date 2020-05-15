@@ -4,6 +4,7 @@ import traceback
 
 import yaml
 from google.cloud import storage
+from python_http_client.client import Response
 from slack.errors import SlackApiError
 from taosdevopsutils.slack import Slack
 
@@ -192,19 +193,26 @@ def completion_notification(
     active_client_count = str(len(active_clients))
     active_client_names = "\n".join([client["name"] for client in active_clients])
 
+    fields = [
+        {
+            "title": "Client contacts attempted",
+            "value": active_client_names,
+            "short": "true",
+        }
+    ]
+
+    for client in active_clients:
+        fields.append(
+            {"title": client["name"], "value": success_check(client), "short": "true"}
+        )
+
     data = {
         "attachments": [
             {
                 "color": "#ff00ff",
                 "title": "Client Daily Hour reporting completed.",
                 "text": "Clients in the list %s" % active_client_count,
-                "fields": [
-                    {
-                        "title": "Clients contacted",
-                        "value": active_client_names,
-                        "short": "true",
-                    }
-                ],
+                "fields": fields,
             }
         ]
     }
@@ -212,6 +220,18 @@ def completion_notification(
     response = slack_client.post_slack_message(hook, data)
 
     return response
+
+
+def success_check(client: dict) -> str:
+    question = client["result"]
+
+    if type(question) is dict:
+        return question["status_code"]
+
+    if type(question) is Response:
+        return question.status_code
+
+    return f"{client['name']}: Caused an unexpected response"
 
 
 def exception_channel_post(

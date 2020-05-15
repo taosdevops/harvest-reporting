@@ -17,11 +17,13 @@ logging.getLogger("harvest_reports")
 logging.basicConfig(format="%(asctime)s %(message)s")
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
+
 def client_is_filtered(client, filter_list=None):
     if not filter_list:
-        return client['is_active']
+        return client["is_active"]
     else:
-        return client['is_active'] and client['name'] in filter_list
+        return client["is_active"] and client["name"] in filter_list
+
 
 def main_method(
     bearer_token, harvest_account, client_config, from_email, exception_hooks=None
@@ -30,8 +32,11 @@ def main_method(
     client_filter = client_config.get("client_filter", [])
 
     active_clients = [
-        client for client in harvest_client.list_clients() if
-        client_is_filtered(client, filter_list=client_filter)
+        client
+
+        for client in harvest_client.list_clients()
+
+        if client_is_filtered(client, filter_list=client_filter)
     ]
 
     for client in active_clients:

@@ -232,7 +232,10 @@ def exception_channel_post(
         ]
     }
 
-    response = slack_client.post_slack_message(webhook_url, data)
-    logging.error(response)
+    try:
+        response = slack_client.post_slack_message(webhook_url, data)
+        logging.error(response)
 
-    return response
+        return response
+    except Exception:
+        logging.error(traceback.format_exc(limit=3))

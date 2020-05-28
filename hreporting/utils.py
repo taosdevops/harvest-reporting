@@ -1,11 +1,9 @@
 import logging
-import re
 import traceback
 
 import yaml
 from google.cloud import storage
 from python_http_client.client import Response
-from slack.errors import SlackApiError
 from taosdevopsutils.slack import Slack
 
 from hreporting.emails import SendGridSummaryEmail
@@ -75,7 +73,7 @@ def get_color_code_for_utilization(percent) -> str:
 
 
 # Define types of payloads
-def get_payload(used, client_name, percent, left, _format="slack") -> dict:
+def get_payload(client, _format="slack") -> dict:
     """ Get payload for every type of format"""
     try:
 
@@ -83,93 +81,67 @@ def get_payload(used, client_name, percent, left, _format="slack") -> dict:
             "slack": get_slack_payload,
             "teams": get_teams_payload,
             "email": get_email_payload,
-        }[_format](used, client_name, percent, left)
+            "templateEmail": get_email_template_payload,
+        }[_format](client)
 
     except KeyError:
         raise Exception(f"Invalid Payload format {_format}")
 
 
-def get_slack_payload(used, client_name, percent, left, *args) -> dict:
+def get_slack_payload(client, *args) -> dict:
     """ Format JSON body for Slack channel posting"""
 
     return {
         "attachments": [
             {
-                "color": get_color_code_for_utilization(percent),
-                "title": client_name,
-                "text": "%d%%" % (percent),
+                "color": get_color_code_for_utilization(client.percent),
+                "title": client.name,
+                "text": "%d%%" % (client.percent),
                 "fields": [
-                    {"title": "Hours Used", "value": used, "short": "true"},
-                    {"title": "Hours Remaining", "value": left, "short": "true"},
+                    {
+                        "title": "Hours Used",
+                        "value": client.hours_used,
+                        "short": "true",
+                    },
+                    {
+                        "title": "Hours Remaining",
+                        "value": client.hours_left,
+                        "short": "true",
+                    },
                 ],
             }
         ]
     }
 
 
-def get_teams_payload(used, client_name, percent, left, *args) -> dict:
+def get_email_template_payload(client) -> dict:
+    pass
+
+
+def get_teams_payload(client, *args) -> dict:
     """ Format JSON body for MS Teams channel post"""
 
     return {
         "@type": "MessageCard",
         "@context": "https://schema.org/extensions",
-        "themeColor": get_color_code_for_utilization(percent),
+        "themeColor": get_color_code_for_utilization(client.percent),
         "title": "DevOps Time Reports",
-        "text": client_name,
+        "text": client.name,
         "sections": [
-            {"text": "%d%%" % (percent)},
-            {"activityTitle": "Hours Used", "activitySubtitle": used},
-            {"activityTitle": "Hours Remaining", "activitySubtitle": left},
+            {"text": "%d%%" % (client.percent)},
+            {"activityTitle": "Hours Used", "activitySubtitle": client.hours_used},
+            {"activityTitle": "Hours Remaining", "activitySubtitle": client.hours_left},
         ],
     }
 
 
-def get_email_payload(used, client_name, percent, left, *args) -> str:
+def get_email_payload(client, *args) -> str:
     return f"""
-    Client:           {client_name}
-    Used Hours:       {used}
-    Remaining Hours:  {left}
-    Percent:          {percent}
+    Client:           {client.name}
+    Used Hours:       {client.hours_used}
+    Remaining Hours:  {client.hours_left}
+    Percent:          {client.percent}
     """
-
-
-# Post to channel/workspace
-def channel_post(
-    webhook_url: str,
-    used,
-    client_name,
-    percent,
-    left,
-    slack_client=SLACK_CLIENT,
-    sg_client=SENDGRID_EMAILER,
-) -> dict:
-    """ Posts payload to webhook provided """
-
-    if webhook_url:
-        post_format = (  # Identify Type of payload
-            "teams"
-
-            if webhook_url.startswith("https://outlook.office.com")
-            else "email"
-
-            if re.match(r"[^@]+@[^@]+\.[^@]+", webhook_url)
-            else "slack"
-        )
-
-        data = get_payload(used, client_name, percent, left, _format=post_format)
-
-        if post_format == "email":
-            response = sg_client.email_send([webhook_url], client_name, data)
-        else:
-            response = slack_client.post_slack_message(webhook_url, data)
-
-        logging.info(response)
-
-        return response
-
-    logging.warning("No webhook url found for %client_name", client_name)
-
-    return dict()
 
 
 def read_cloud_storage(bucket_name, file_name) -> str:

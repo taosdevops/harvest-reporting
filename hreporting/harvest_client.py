@@ -109,13 +109,9 @@ class HarvestClient:
         """ Returns list of webhooks and emails registered for client. """
         client_config = self._get_client_config(client_name)
 
-        return {
-            "hooks": [
-                *client_config.get("hooks", []),
-                *self.config.get("globalHooks", []),
-            ],
-            "emails": [
-                *client_config.get("emails", []),
-                *self.config.get("globalEmails", []),
-            ],
-        }
+        return [
+            *client_config.get("hooks", []),
+            *self.config.get("globalHooks", []),
+            *client_config.get("emails", []),
+            *self.config.get("globalEmails", []),
+        ]

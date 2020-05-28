@@ -9,13 +9,15 @@ as a time management solution with other applications.
    :maxdepth: 2
    :caption: Contents:
 
-   cloudfunction
    cli
    client
    client_config
+   cloudfunction
    config
-   utils
    emails
+   notifications
+   utils
+
 
 Indices and tables
 ==================

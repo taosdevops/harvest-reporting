@@ -1,5 +1,6 @@
 import re
 from unittest import TestCase
+from unittest.mock import MagicMock
 
 from hreporting.utils import get_color_code_for_utilization, get_payload
 
@@ -14,7 +15,9 @@ class TestUtilsColorCode(TestCase):
 
 class TestGetPayload(TestCase):
     def setUp(self):
-        self.client = {"hours_used": 60, "name": "DSC", "percent": 50, "hours_left": 30}
+        self.client = MagicMock()
+        self.client.percent = 50
+        # {"hours_used": 60, "name": "DSC", "percent": 50, "hours_left": 30}
 
     def test_returns_slack_payload(self):
         payload_under_test = get_payload(self.client)

@@ -4,13 +4,23 @@ from unittest.mock import MagicMock
 
 from vcr_unittest import VCRTestCase
 
+from hreporting.client import HarvestClient
 from hreporting.notifications import NotificationManager
 from hreporting.utils import get_color_code_for_utilization, get_payload
 
 
 class TestExceptionChannel(VCRTestCase):
     def setUp(self):
-        self.client = {"hours_used": 60, "name": "DSC", "percent": 50, "hours_left": 30}
+        self.client = HarvestClient(
+            hoursUsed=60,
+            hoursLeft=40,
+            hoursTotal=100,
+            name="DSC",
+            percent=50,
+            clientId="TestingId",
+            templateId=None,
+            hooks=[],
+        )
         self.clients = [self.client]
         self.from_email = "DevOpsNow@test.com"
 
@@ -18,6 +28,8 @@ class TestExceptionChannel(VCRTestCase):
         self.exception = MagicMock()
         self.webhook_url = MagicMock()
         self.harvest_client = MagicMock()
+        self.harvest_client.get_client_time_allotment = MagicMock(return_value=30)
+        self.harvest_client.get_client_time_used = MagicMock(return_value=15)
 
         self.notifier = NotificationManager(
             fromEmail=self.from_email,

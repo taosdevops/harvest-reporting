@@ -18,20 +18,20 @@ class NotificationManager:
         self, fromEmail, exceptionHooks, harvestClient, clients, emailTemplateId=None
     ):
 
-        self.clients = [self._build_client(client) for client in clients]
+        self.harvest_client = harvestClient
         self.emailTemplateId = emailTemplateId
         self.exception_hooks = exceptionHooks
         self.from_email = fromEmail
-        self.harvest_client = harvestClient
 
+        self.clients = [self._build_client(client) for client in clients]
         self.emailer = (
             SendGridTemplateEmail() if self.emailTemplateId else SendGridSummaryEmail()
         )
 
     def _build_client(self, client) -> HarvestClient:
 
-        client_id = client["id"]
-        client_name = client["name"]
+        client_id = client.client_id
+        client_name = client.name
 
         hours_used = self.harvest_client.get_client_time_used(client_id)
         total_hours = self.harvest_client.get_client_time_allotment(client_name)
@@ -61,9 +61,6 @@ class NotificationManager:
 
         for hook in client.hooks:
             try:
-                import pudb
-
-                pudb.set_trace()
                 self.channel_post(hook, client)
             except Exception:
                 if self.exception_hooks:

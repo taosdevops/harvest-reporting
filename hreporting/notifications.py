@@ -30,8 +30,8 @@ class NotificationManager:
 
     def _build_client(self, client) -> HarvestClient:
 
-        client_id = client.client_id
-        client_name = client.name
+        client_id = client["id"]
+        client_name = client["name"]
 
         hours_used = self.harvest_client.get_client_time_used(client_id)
         total_hours = self.harvest_client.get_client_time_allotment(client_name)

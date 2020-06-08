@@ -4,8 +4,13 @@ import sys
 from hreporting import config
 from hreporting.harvest_client import HarvestClient
 from hreporting.notifications import NotificationManager
-from hreporting.utils import (load_yaml, load_yaml_file, print_verify,
-                              read_cloud_storage, truncate)
+from hreporting.utils import (
+    load_yaml,
+    load_yaml_file,
+    print_verify,
+    read_cloud_storage,
+    truncate,
+)
 
 logging.getLogger("harvest_reports")
 logging.basicConfig(
@@ -21,16 +26,18 @@ def client_is_filtered(client, filter_list=None):
 
 
 def main_method(
-    bearer_token, harvest_account, global_config, from_email, exception_hooks=None
+    bearer_token: str,
+    harvest_account: str,
+    global_config: str,
+    from_email: str,
+    exception_hooks: str = None,
 ):
     harvest_client = HarvestClient(bearer_token, harvest_account, global_config)
     client_filter = global_config.get("client_filter", [])
 
     active_clients = [
         client
-
         for client in harvest_client.list_clients()
-
         if client_is_filtered(client, filter_list=client_filter)
     ]
 
@@ -70,12 +77,10 @@ def harvest_reports(*args):
     harvest_account = config.HARVEST_ACCOUNT
     from_email = config.ORIGIN_EMAIL_ADDRESS
 
-    global_config = (
-        load_yaml_file(config_path)
-
-        if not bucket
-        else load_yaml(read_cloud_storage(bucket, config_path))
-    )
+    if not bucket:
+        global_config = load_yaml_file(config_path)
+    else:
+        global_config = load_yaml(read_cloud_storage(bucket, config_path))
 
     return main_method(
         bearer_token=bearer_token,

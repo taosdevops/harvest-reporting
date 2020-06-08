@@ -2,8 +2,16 @@ import logging
 from datetime import date
 
 import sendgrid
-from sendgrid.helpers.mail import (Content, Email, Header, Mail, Subject,
-                                   Substitution, TemplateId, To)
+from sendgrid.helpers.mail import (
+    Content,
+    Email,
+    Header,
+    Mail,
+    Subject,
+    Substitution,
+    TemplateId,
+    To,
+)
 
 from hreporting import config
 
@@ -14,7 +22,9 @@ SENDGRID_CLIENT = sendgrid.SendGridAPIClient(api_key=config.SENDGRID_API_KEY)
 
 class SendGridSummaryEmail:
     def __init__(
-        self, sg_client=SENDGRID_CLIENT, from_email: str = config.ORIGIN_EMAIL_ADDRESS
+        self,
+        sg_client: sendgrid.SendGridAPIClient = SENDGRID_CLIENT,
+        from_email: str = config.ORIGIN_EMAIL_ADDRESS,
     ):
         self.sg_client = sg_client
         self.from_email = from_email
@@ -85,7 +95,6 @@ class SendGridTemplateEmail(SendGridSummaryEmail):
         if "body" in client.keys():
             message.substitution = [
                 Substitution(key=key, value=value)
-
                 for key, value in client["body"].items()
             ]
 

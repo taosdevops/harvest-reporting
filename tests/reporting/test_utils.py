@@ -2,7 +2,7 @@ import re
 from unittest import TestCase
 from unittest.mock import MagicMock
 
-from hreporting.utils import get_color_code_for_utilization, get_payload
+from reporting.utils import get_color_code_for_utilization, get_payload
 
 
 class TestUtilsColorCode(TestCase):

@@ -4,9 +4,9 @@ import traceback
 
 from taosdevopsutils.slack import Slack
 
-from hreporting.client import HarvestClient
-from hreporting.emails import SendGridSummaryEmail, SendGridTemplateEmail
-from hreporting.utils import get_payload, print_verify, truncate
+from harvestapi.client import HarvestCustomer
+from sendgridapi.emails import SendGridSummaryEmail, SendGridTemplateEmail
+from reporting.utils import get_payload, print_verify, truncate
 
 logging.getLogger("harvest_reports")
 
@@ -15,10 +15,15 @@ class NotificationManager:
     SLACK_CLIENT = Slack()
 
     def __init__(
-        self, fromEmail, exceptionHooks, harvestClient, clients, emailTemplateId=None
+        self,
+        fromEmail,
+        exceptionHooks,
+        harvestapi_client,
+        clients,
+        emailTemplateId=None,
     ):
 
-        self.harvest_client = harvestClient
+        self.harvestapi_client = harvestapi_client
         self.emailTemplateId = emailTemplateId
         self.exception_hooks = exceptionHooks
         self.from_email = fromEmail
@@ -28,24 +33,24 @@ class NotificationManager:
             SendGridTemplateEmail() if self.emailTemplateId else SendGridSummaryEmail()
         )
 
-    def _build_client(self, client: dict) -> HarvestClient:
+    def _build_client(self, client: dict) -> HarvestCustomer:
         client_id = client["id"]
         client_name = client["name"]
 
-        hours_used = self.harvest_client.get_client_time_used(client_id)
-        total_hours = self.harvest_client.get_client_time_allotment(client_name)
+        hours_used = self.harvestapi_client.get_client_time_used(client_id)
+        total_hours = self.harvestapi_client.get_client_time_allotment(client_name)
         hours_left = total_hours - hours_used
         percent = hours_used / total_hours * 100
 
         print_verify(hours_used, client_name, percent, hours_left)
 
-        client_hooks = self.harvest_client.get_client_hooks(client_name)
+        client_hooks = self.harvestapi_client.get_client_hooks(client_name)
 
         client_hooks = (
             client_hooks if isinstance(client_hooks, list) else list(client_hooks)
         )
 
-        return HarvestClient(
+        return HarvestCustomer(
             clientId=client_id,
             hooks=client_hooks,
             hoursLeft=hours_left,
@@ -56,7 +61,7 @@ class NotificationManager:
             templateId=self.emailTemplateId,
         )
 
-    def _hooks_send(self, client: HarvestClient):
+    def _hooks_send(self, client: HarvestCustomer):
 
         for hook in client.hooks:
             try:
@@ -73,7 +78,7 @@ class NotificationManager:
             self._hooks_send(client)
 
     # Post to channel/workspace
-    def channel_post(self, webhook_url: str, client: HarvestClient) -> dict:
+    def channel_post(self, webhook_url: str, client: HarvestCustomer) -> dict:
         """ Posts payload to webhook provided """
 
         if webhook_url:

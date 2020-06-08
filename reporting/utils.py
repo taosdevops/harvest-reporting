@@ -6,7 +6,7 @@ from google.cloud import storage
 from python_http_client.client import Response
 from taosdevopsutils.slack import Slack
 
-from hreporting.emails import SendGridSummaryEmail
+from sendgridapi.emails import SendGridSummaryEmail
 
 SENDGRID_EMAILER = SendGridSummaryEmail()
 SLACK_CLIENT = Slack()

@@ -1,8 +1,8 @@
 import click
 
-from hreporting import config
-from hreporting.harvest_client import HarvestClient
-from hreporting.utils import load_yaml, print_verify, truncate
+from reporting import config
+from harvestapi.client import HarvestClient
+from reporting.utils import load_yaml, print_verify, truncate
 
 
 @click.group()

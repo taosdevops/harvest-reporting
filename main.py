@@ -1,10 +1,10 @@
 import logging
 import sys
 
-from hreporting import config
-from hreporting.harvest_client import HarvestClient
-from hreporting.notifications import NotificationManager
-from hreporting.utils import (
+from reporting import config
+from harvestapi.client import HarvestAPIClient
+from reporting.notifications import NotificationManager
+from reporting.utils import (
     load_yaml,
     load_yaml_file,
     print_verify,
@@ -32,17 +32,17 @@ def main_method(
     from_email: str,
     exception_hooks: str = None,
 ):
-    harvest_client = HarvestClient(bearer_token, harvest_account, global_config)
+    harvestapi_client = HarvestAPIClient(bearer_token, harvest_account, global_config)
     client_filter = global_config.get("client_filter", [])
 
     active_clients = [
         client
-        for client in harvest_client.list_clients()
+        for client in harvestapi_client.list_clients()
         if client_is_filtered(client, filter_list=client_filter)
     ]
 
     _send_notifications(
-        harvest_client=harvest_client,
+        harvestapi_client=harvestapi_client,
         active_clients=active_clients,
         from_email=from_email,
         global_config=global_config,
@@ -51,7 +51,7 @@ def main_method(
 
 
 def _send_notifications(
-    harvest_client, active_clients, from_email, global_config, exception_hooks=None
+    harvestapi_client, active_clients, from_email, global_config, exception_hooks=None
 ) -> None:
 
     notifications = NotificationManager(
@@ -59,7 +59,7 @@ def _send_notifications(
         fromEmail=from_email,
         exceptionHooks=global_config.get("exceptionHook"),
         emailTemplateId=global_config.get("emailTemplateId", None),
-        harvestClient=harvest_client,
+        harvestapi_client=harvestapi_client,
     )
 
     notifications.send()

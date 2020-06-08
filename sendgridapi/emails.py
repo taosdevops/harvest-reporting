@@ -13,7 +13,7 @@ from sendgrid.helpers.mail import (
     To,
 )
 
-from hreporting import config
+from reporting import config
 
 logging.getLogger("harvest_reports")
 

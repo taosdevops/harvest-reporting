@@ -17,7 +17,7 @@ def _get_current_year():  # Maybe move ??
     return f"{dm:04}"
 
 
-class HarvestClient:
+class HarvestAPIClient:
     """ Harvest Client """
 
     _base_url = "https://api.harvestapp.com/v2/"
@@ -113,3 +113,26 @@ class HarvestClient:
             *client_config.get("emails", []),
             *self.config.get("globalEmails", []),
         ]
+
+
+class HarvestCustomer(object):
+    def __init__(
+        self,
+        clientId,
+        hooks,
+        hoursLeft,
+        hoursTotal,
+        hoursUsed,
+        name,
+        percent,
+        templateId,
+    ):
+
+        self.client_id = clientId
+        self.hooks = hooks
+        self.hours_left = hoursLeft
+        self.hours_total = hoursTotal
+        self.hours_used = hoursUsed
+        self.name = name
+        self.percent = percent
+        self.template_id = templateId

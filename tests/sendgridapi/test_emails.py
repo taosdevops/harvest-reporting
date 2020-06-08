@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 
 from vcr_unittest import VCRTestCase
 
-from hreporting.emails import SendGridSummaryEmail, SendGridTemplateEmail
+from sendgridapi.emails import SendGridSummaryEmail, SendGridTemplateEmail
 
 
 class TestSummaryEmail(VCRTestCase):

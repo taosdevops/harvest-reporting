@@ -3,15 +3,15 @@ from unittest import TestCase
 import vcr
 from vcr_unittest import VCRTestCase
 
-from hreporting.harvest_client import HarvestClient
+from harvestapi.client import HarvestAPIClient
 
 account = "1121001"
 btoken = "SomeBearerToken"
 
 
-class TestHarvestClient(VCRTestCase):
+class TestHarvestAPIClient(VCRTestCase):
     def test_list_clients_calls_uri(self):
-        account_list = HarvestClient(btoken, account).list_clients()
+        account_list = HarvestAPIClient(btoken, account).list_clients()
 
         self.assertEqual(
             self.cassette.requests[0].uri, "https://api.harvestapp.com/v2/clients"
@@ -22,7 +22,7 @@ class TestHarvestClient(VCRTestCase):
         self.assertEqual(len(account_list), 9)
 
     def test_get_client_time_used(self):
-        time_used = HarvestClient(btoken, account).get_client_time_used(
+        time_used = HarvestAPIClient(btoken, account).get_client_time_used(
             8544728, month="09", year="2019"
         )
         self.assertEqual(
@@ -34,7 +34,7 @@ class TestHarvestClient(VCRTestCase):
     def test_get_client_hooks_gets_named_hook(self):
         hook_url = "http://123.com"
         config = {"clients": [{"name": "dsc", "hooks": [hook_url]}]}
-        client = HarvestClient(btoken, account, config)
+        client = HarvestAPIClient(btoken, account, config)
         hooks = client.get_client_hooks("dsc")
         self.assertEqual(hooks, [hook_url])
 
@@ -45,18 +45,18 @@ class TestHarvestClient(VCRTestCase):
             "clients": [{"name": "dsc", "hooks": [hook_url]}],
             "globalHooks": [global_hook],
         }
-        client = HarvestClient(btoken, account, config)
+        client = HarvestAPIClient(btoken, account, config)
         hooks = client.get_client_hooks("dsc")
         self.assertEqual(hooks, [hook_url, global_hook])
 
     def test_get_time_alloted(self):
         config = {"clients": [{"name": "dsc", "hours": 60}]}
-        client = HarvestClient(btoken, account, config)
+        client = HarvestAPIClient(btoken, account, config)
         allotment = client.get_client_time_allotment("dsc")
         self.assertEqual(allotment, 60)
 
     def test_get_time_alloted_defaults_to_80(self):
         config = {"clients": [{"name": "dsc"}]}
-        client = HarvestClient(btoken, account, config)
+        client = HarvestAPIClient(btoken, account, config)
         allotment = client.get_client_time_allotment("dsc")
         self.assertEqual(allotment, 80)

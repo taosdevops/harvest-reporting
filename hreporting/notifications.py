@@ -28,10 +28,10 @@ class NotificationManager:
             SendGridTemplateEmail() if self.emailTemplateId else SendGridSummaryEmail()
         )
 
-    def _build_client(self, client) -> HarvestClient:
+    def _build_client(self, client: HarvestClient) -> HarvestClient:
 
-        client_id = client["id"]
-        client_name = client["name"]
+        client_id = client.client_id
+        client_name = client.name
 
         hours_used = self.harvest_client.get_client_time_used(client_id)
         total_hours = self.harvest_client.get_client_time_allotment(client_name)
@@ -80,13 +80,10 @@ class NotificationManager:
         if webhook_url:
             post_format = (  # Identify Type of payload
                 "teams"
-
                 if webhook_url.startswith("https://outlook.office.com")
                 else "templateEmail"
-
                 if re.match(r"[^@]+@[^@]+\.[^@]+", webhook_url) and self.emailTemplateId
                 else "email"
-
                 if re.match(r"[^@]+@[^@]+\.[^@]+", webhook_url)
                 else "slack"
             )

@@ -10,6 +10,7 @@ def _get_current_month():  # Maybe move ??
 
     return f"{dm:02}"
 
+
 def _get_current_year():  # Maybe move ??
     dm = datetime.datetime.today().year
 
@@ -34,9 +35,7 @@ class HarvestClient:
         try:
             return [
                 client_entry
-
                 for client_entry in self.config.get("clients", [])
-
                 if client_entry["name"] == client_name
             ][0]
         except IndexError:
@@ -78,9 +77,10 @@ class HarvestClient:
         return entries
 
     def get_client_time_used(
-        self, client_id: str,
+        self,
+        client_id: str,
         month: str = _get_current_month(),
-        year: str  = _get_current_year(),
+        year: str = _get_current_year(),
     ) -> float:
         """ returns sum of client time used for the given month """
         regex = re.compile("([0-9]{4})-([0-9]{2})-([0-9]{2})")
@@ -88,11 +88,9 @@ class HarvestClient:
         return sum(
             [
                 item["hours"]
-
                 for item in self.get_client_time(client_id)
-
-                if regex.search(item["spent_date"]).group(2) == month and
-                   regex.search(item["spent_date"]).group(1) == year
+                if regex.search(item["spent_date"]).group(2) == month
+                and regex.search(item["spent_date"]).group(1) == year
             ]
         )
 
@@ -109,13 +107,9 @@ class HarvestClient:
         """ Returns list of webhooks and emails registered for client. """
         client_config = self._get_client_config(client_name)
 
-        return {
-            "hooks": [
-                *client_config.get("hooks", []),
-                *self.config.get("globalHooks", []),
-            ],
-            "emails": [
-                *client_config.get("emails", []),
-                *self.config.get("globalEmails", []),
-            ],
-        }
+        return [
+            *client_config.get("hooks", []),
+            *self.config.get("globalHooks", []),
+            *client_config.get("emails", []),
+            *self.config.get("globalEmails", []),
+        ]

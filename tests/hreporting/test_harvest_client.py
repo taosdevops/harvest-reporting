@@ -36,7 +36,7 @@ class TestHarvestClient(VCRTestCase):
         config = {"clients": [{"name": "dsc", "hooks": [hook_url]}]}
         client = HarvestClient(btoken, account, config)
         hooks = client.get_client_hooks("dsc")
-        self.assertEqual(hooks, {"hooks": [hook_url], "emails": []})
+        self.assertEqual(hooks, [hook_url])
 
     def test_get_client_hooks_compiles_global_hooks(self):
         hook_url = "http://123.com"
@@ -47,7 +47,7 @@ class TestHarvestClient(VCRTestCase):
         }
         client = HarvestClient(btoken, account, config)
         hooks = client.get_client_hooks("dsc")
-        self.assertEqual(hooks, {"hooks": [hook_url, global_hook], "emails": []})
+        self.assertEqual(hooks, [hook_url, global_hook])
 
     def test_get_time_alloted(self):
         config = {"clients": [{"name": "dsc", "hours": 60}]}

@@ -28,10 +28,9 @@ class NotificationManager:
             SendGridTemplateEmail() if self.emailTemplateId else SendGridSummaryEmail()
         )
 
-    def _build_client(self, client: HarvestClient) -> HarvestClient:
-
-        client_id = client.client_id
-        client_name = client.name
+    def _build_client(self, client: dict) -> HarvestClient:
+        client_id = client["id"]
+        client_name = client["name"]
 
         hours_used = self.harvest_client.get_client_time_used(client_id)
         total_hours = self.harvest_client.get_client_time_allotment(client_name)

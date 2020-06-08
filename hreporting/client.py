@@ -19,8 +19,3 @@ class HarvestClient(object):
         self.name = name
         self.percent = percent
         self.template_id = templateId
-
-
-class SendGridClient(HarvestClient):
-    def template_variables(self) -> dict:
-        pass

@@ -113,6 +113,10 @@ venv.bak/
 #vscode settings
 .vscode
 .devcontainer
+*.code-workspace
 
 # Harvest configurations
 harvest-clients.yaml
+
+# gcloud
+.gcloudignore

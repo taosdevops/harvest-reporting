@@ -13,18 +13,20 @@ from sendgrid.helpers.mail import (
     To,
 )
 
-from reporting import config
+from reporting.config import EnvironmentConfiguration
 
-logging.getLogger("harvest_reports")
 
-SENDGRID_CLIENT = sendgrid.SendGridAPIClient(api_key=config.SENDGRID_API_KEY)
+logger = logging.getLogger(__name__)
+
+ENV_CONFIG = EnvironmentConfiguration()
+SENDGRID_CLIENT = sendgrid.SendGridAPIClient(api_key=ENV_CONFIG.sendgrid_api_key)
 
 
 class SendGridSummaryEmail:
     def __init__(
         self,
         sg_client: sendgrid.SendGridAPIClient = SENDGRID_CLIENT,
-        from_email: str = config.ORIGIN_EMAIL_ADDRESS,
+        from_email: str = ENV_CONFIG.origin_email_address,
     ):
         self.sg_client = sg_client
         self.from_email = from_email
@@ -47,7 +49,7 @@ class SendGridSummaryEmail:
 
             return response
 
-        logging.warning("No Email addresses were found for %s", client["name"])
+        logger.warning("No Email addresses were found for %s", client["name"])
 
         return dict()
 

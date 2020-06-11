@@ -1,92 +1,38 @@
 import logging
 import re
 import traceback
+import sys
+from typing import List
 
 from taosdevopsutils.slack import Slack
 
-from harvestapi.client import HarvestCustomer
+from harvest.harvest import Client
 from sendgridapi.emails import SendGridSummaryEmail, SendGridTemplateEmail
-from reporting.utils import get_payload, print_verify, truncate
 
-logging.getLogger("harvest_reports")
+from harvestapi.customer import HarvestCustomer
+from .config import Recipients
+
+
+logger = logging.getLogger(__name__)
 
 
 class NotificationManager:
     SLACK_CLIENT = Slack()
 
-    def __init__(
-        self,
-        fromEmail,
-        exceptionHooks,
-        harvestapi_client,
-        clients,
-        emailTemplateId=None,
-    ):
-
-        self.harvestapi_client = harvestapi_client
-        self.emailTemplateId = emailTemplateId
-        self.exception_hooks = exceptionHooks
-        self.from_email = fromEmail
-
-        self.clients = [self._build_client(client) for client in clients]
-        self.emailer = (
-            SendGridTemplateEmail() if self.emailTemplateId else SendGridSummaryEmail()
-        )
-
-    def _build_client(self, client: dict) -> HarvestCustomer:
-        client_id = client["id"]
-        client_name = client["name"]
-
-        hours_used = self.harvestapi_client.get_client_time_used(client_id)
-        total_hours = self.harvestapi_client.get_client_time_allotment(client_name)
-        hours_left = total_hours - hours_used
-        percent = hours_used / total_hours * 100
-
-        print_verify(hours_used, client_name, percent, hours_left)
-
-        client_hooks = self.harvestapi_client.get_client_hooks(client_name)
-
-        client_hooks = (
-            client_hooks if isinstance(client_hooks, list) else list(client_hooks)
-        )
-
-        return HarvestCustomer(
-            clientId=client_id,
-            hooks=client_hooks,
-            hoursLeft=hours_left,
-            hoursTotal=total_hours,
-            hoursUsed=hours_used,
-            name=client_name,
-            percent=percent,
-            templateId=self.emailTemplateId,
-        )
-
-    def _hooks_send(self, client: HarvestCustomer):
-
-        for hook in client.hooks:
-            try:
-                self.channel_post(hook, client)
-            except Exception:
-                if self.exception_hooks:
-                    for ehook in self.exception_hooks:
-                        self.exception_channel_post(
-                            client.name, ehook, f"Original Hook:{hook}\n"
-                        )
-
-    def send(self) -> None:
-        for client in self.clients:
-            self._hooks_send(client)
+    def __init__(self, clients: List[Client], recipients: List[Recipients]):
+        self.clients = clients
+        self.recipients = recipients
 
     # Post to channel/workspace
-    def channel_post(self, webhook_url: str, client: HarvestCustomer) -> dict:
+    def send_channel_post(self) -> dict:
         """ Posts payload to webhook provided """
-
         if webhook_url:
             post_format = (  # Identify Type of payload
                 "teams"
                 if webhook_url.startswith("https://outlook.office.com")
                 else "templateEmail"
-                if re.match(r"[^@]+@[^@]+\.[^@]+", webhook_url) and self.emailTemplateId
+                if re.match(r"[^@]+@[^@]+\.[^@]+", webhook_url)
+                and self.email_template_id
                 else "email"
                 if re.match(r"[^@]+@[^@]+\.[^@]+", webhook_url)
                 else "slack"
@@ -101,15 +47,15 @@ class NotificationManager:
                     webhook_url, data
                 )
 
-            logging.info(response)
+            logger.info(response)
 
             return response
 
-        logging.warning("No webhook url found for %client_name", client.client_name)
+        logger.warning("No webhook url found for %client_name", client.client_name)
 
         return dict()
 
-    def exception_channel_post(self, client_name: str, webhook_url: str, *args) -> dict:
+    def _exception_channel_post(self, customer: HarvestCustomer, target: str) -> dict:
         """
         Performs a protected attempt to send slack message about an error.
         Wraps try blocks for assurance that the message will not further break the system.
@@ -128,7 +74,7 @@ class NotificationManager:
         response = NotificationManager.SLACK_CLIENT.post_slack_message(
             webhook_url, data
         )
-        logging.error(response)
+        logger.error(response)
 
         return response
 

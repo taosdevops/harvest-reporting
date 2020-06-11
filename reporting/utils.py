@@ -5,35 +5,16 @@ import yaml
 from google.cloud import storage
 from python_http_client.client import Response
 from taosdevopsutils.slack import Slack
-
 from sendgridapi.emails import SendGridSummaryEmail
+from dacite import from_dict
+from .config import ReporterConfig, EnvironmentConfiguration
 
 SENDGRID_EMAILER = SendGridSummaryEmail()
 SLACK_CLIENT = Slack()
+ENV_CONFIG = EnvironmentConfiguration()
 
-logging.getLogger("harvest_reports")
 
-
-def print_verify(used, client_name, percent, left) -> None:
-    """ Print Details for verification """
-
-    hour_report_template = """
-    Client:           {name}
-    Used Hours:       {used}
-    Remaining Hours:  {left}
-    Color:            {color}
-    Percent:          {percent}
-    """
-    logging.info(
-        str.format(
-            hour_report_template,
-            name=client_name,
-            used=used,
-            left=left,
-            percent="%d%%" % (percent),
-            color=get_color_code_for_utilization(percent),
-        )
-    )
+logger = logging.getLogger(__name__)
 
 
 # Define decimal place to truncate
@@ -42,12 +23,16 @@ def truncate(n, decimals=0) -> float:
     return int(n * multiplier) / multiplier
 
 
-def load_yaml_file(file_handle):
-    return yaml.load(open(file_handle), Loader=yaml.Loader)
+def load_yaml_file(file_handle) -> ReporterConfig:
+    return from_dict(
+        data_class=ReporterConfig, data=yaml.load(open(file_handle), Loader=yaml.Loader)
+    )
 
 
-def load_yaml(yaml_string):
-    return yaml.load(yaml_string, Loader=yaml.Loader)
+def load_yaml(yaml_string) -> ReporterConfig:
+    return from_dict(
+        data_class=ReporterConfig, data=yaml.load(yaml_string, Loader=yaml.Loader)
+    )
 
 
 def get_color_code_for_utilization(percent) -> str:
@@ -146,7 +131,7 @@ def get_email_payload(client, *args) -> str:
 
 def read_cloud_storage(bucket_name, file_name) -> str:
     """ Returns file contents from provided bucket and file names """
-    client = storage.Client()
+    client = storage.Client(project=ENV_CONFIG.project_id)
     bucket = client.get_bucket(bucket_name)
     blob = bucket.get_blob(file_name)
     response = blob.download_as_string()

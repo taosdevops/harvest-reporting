@@ -10,7 +10,7 @@ from google.cloud import secretmanager
 from harvest.harvest import Client, Clients, Harvest
 from harvest.harvestdataclasses import PersonalAccessToken
 
-from harvestapi.customer import HarvestCustomer
+from harvestapi.customer import HarvestCustomer, get_recipients_from_config
 from reporting.config import ReporterConfig, EnvironmentConfiguration
 from reporting.notifications import NotificationManager
 from reporting.utils import load_yaml, load_yaml_file, read_cloud_storage, truncate
@@ -24,7 +24,7 @@ ENV_CONFIG = EnvironmentConfiguration()
 
 
 def setup_logging():
-    log_level = EnvironmentConfiguration.log_level
+    log_level = ENV_CONFIG.log_level
     stdout = logging.StreamHandler(sys.stdout)
     formatter = logging.Formatter(
         "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
@@ -78,39 +78,19 @@ def main_method(
         for customer in global_config.customers:
             if active_customer.name == customer.name:
                 harvest_customers.append(
-                    HarvestCustomer(client, customer, active_customer)
+                    HarvestCustomer(
+                        client,
+                        customer,
+                        get_recipients_from_config(customer, global_config),
+                        active_customer,
+                    )
                 )
 
-    for customer in harvest_customers:
-        LOGGER.info(customer.time_used())
+    notifications = NotificationManager(
+        customers=harvest_customers, global_recipients=global_config.recipients
+    )
 
-    # _send_notifications(
-    #     harvestapi_client=harvestapi_client,
-    #     active_clients=active_clients,
-    #     from_email=from_email,
-    #     global_config=global_config,
-    #     exception_hooks=exception_hooks,
-    # )
-
-
-# def _send_notifications(
-#     harvestapi_client, active_clients, from_email, global_config, exception_hooks=None
-# ) -> None:
-
-#     notifications = NotificationManager(
-#         clients=active_clients,
-#         fromEmail=from_email,
-#         exceptionHooks=global_config.get("exceptionHook"),
-#         emailTemplateId=global_config.get("emailTemplateId", None),
-#         harvestapi_client=harvestapi_client,
-#     )
-
-#     notifications.send()
-
-#     notifications.send_completion(
-#         verification_hook=global_config.get("sendVerificationHook"),
-#         clients=active_clients,
-#     )
+    notifications.send()
 
 
 def harvest_reports(*args):

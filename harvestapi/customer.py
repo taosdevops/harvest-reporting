@@ -1,15 +1,14 @@
-from typing import List
-import re
 import datetime
+import logging
+import re
+from typing import List
 
 from harvest import Harvest
 from harvest.harvestdataclasses import Client, TimeEntry
 
-from reporting.config import Customer
+from reporting.config import Customer, Recipients, ReporterConfig
 
-import logging
-
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 def _get_current_month():  # Maybe move ??
@@ -25,9 +24,17 @@ def _get_current_year():  # Maybe move ??
 
 
 class HarvestCustomer(object):
-    def __init__(self, client: Harvest, config: Customer, customer: Client):
+    def __init__(
+        self,
+        client: Harvest,
+        config: Customer,
+        recipients: Recipients,
+        customer: Client,
+    ):
         self.client = client
+        self.config = config
         self.data = customer
+        self.recipients = recipients
         self.time_entries = self._time_entries()
 
     def _time_entries(self) -> List[TimeEntry]:
@@ -57,3 +64,23 @@ class HarvestCustomer(object):
                 and regex.search(entry.spent_date).group(1) == year
             ]
         )
+
+    def time_remaining(
+        self, month: str = _get_current_month(), year: str = _get_current_year(),
+    ) -> float:
+        regex = re.compile("([0-9]{4})-([0-9]{2})-([0-9]{2})")
+
+        return self.config.hours - self.time_used()
+
+    def percentage_hours_used(self) -> int:
+        return self.time_used() / self.config.hours
+
+
+def get_recipients_from_config(customer: Client, config: ReporterConfig) -> Recipients:
+    for config_customer in config.customers:
+        if customer.name == config_customer.name:
+            LOGGER.debug(
+                f"Matched customer {customer.name} to recipients {config_customer.recipients}"
+            )
+            return config_customer.recipients
+    return Recipients()

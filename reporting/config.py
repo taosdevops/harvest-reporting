@@ -16,6 +16,7 @@ class MissingEnvironmentVariable(BaseException):
         super().__init__(f"Missing environment variable {env_var}")
 
 
+# TODO: This needs to be a singleton. There's no point in fetching the secrets every time this class is instantiated.
 class EnvironmentConfiguration(object):
     def __init__(self):
         self.secrets_client = SecretManagerServiceClient()
@@ -125,9 +126,16 @@ class EnvironmentConfiguration(object):
 
 
 @dataclass
+class VerificationConfig(object):
+    email: Optional[List[str]]
+    slack: Optional[str]
+    teams: Optional[str]
+
+
+@dataclass
 class RecipientsConfig(object):
     templateId: Optional[str]
-    sendVerificationHook: Optional[Recipients]
+    sendVerificationConfig: Optional[VerificationConfig]
 
 
 @dataclass

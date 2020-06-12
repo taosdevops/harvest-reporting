@@ -3,7 +3,8 @@ colorama==0.4.1
 google-cloud-logging==1.15.0
 google-cloud-secret-manager==1.0.0
 google-cloud-storage>=1.19.1
-python-harvest-apiv2==1.0.1
+pymsteams==0.1.13
+python-harvest-apiv2==1.0.2
 PyYAML==5.1.2
 requests==2.22.0
 sendgrid==6.2.1

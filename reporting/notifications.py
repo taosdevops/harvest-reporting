@@ -224,7 +224,7 @@ class NotificationManager:
                 f"""Client:           {customer.data.name}
 Used Hours:       {customer.time_used()}
 Remaining Hours:  {customer.time_remaining()}
-Percent:          {customer.percentage_hours_used()}
+Percent:          {customer.percentage_hours_used()}%
 
 """
                 for customer in customers

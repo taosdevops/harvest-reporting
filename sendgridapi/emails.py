@@ -43,7 +43,12 @@ class SendGridSummaryEmail:
         to_emails = [To(email=email) for email in emails]
         from_email = Email(self.from_email)
 
-        message = Mail(from_email=from_email, to_emails=to_emails, subject, content,)
+        message = Mail(
+            from_email=from_email,
+            to_emails=to_emails,
+            subject=subject,
+            plain_text_content=content,
+        )
         # message.template_id = TemplateId(self.templateId)
 
         return message

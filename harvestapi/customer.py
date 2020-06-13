@@ -1,5 +1,6 @@
 import datetime
 import logging
+import math
 import re
 from typing import List
 
@@ -73,7 +74,7 @@ class HarvestCustomer(object):
         return self.config.hours - self.time_used()
 
     def percentage_hours_used(self) -> int:
-        return self.time_used() / self.config.hours
+        return int(math.ceil((self.time_used() / self.config.hours) * 100))
 
 
 def get_recipients_from_config(customer: Client, config: ReporterConfig) -> Recipients:

@@ -3,26 +3,15 @@ from unittest import TestCase
 import vcr
 from vcr_unittest import VCRTestCase
 
-from harvestapi.client import HarvestAPIClient
+from harvestapi.customer import HarvestCustomer
 
 account = "1121001"
 btoken = "SomeBearerToken"
 
 
-class TestHarvestAPIClient(VCRTestCase):
-    def test_list_clients_calls_uri(self):
-        account_list = HarvestAPIClient(btoken, account).list_clients()
-
-        self.assertEqual(
-            self.cassette.requests[0].uri, "https://api.harvestapp.com/v2/clients"
-        )
-        self.assertEqual(
-            self.cassette.requests[0].headers["Harvest-Account-ID"], "1121001"
-        )
-        self.assertEqual(len(account_list), 9)
-
+class TestHarvestCustomer:
     def test_get_client_time_used(self):
-        time_used = HarvestAPIClient(btoken, account).get_client_time_used(
+        time_used = HarvestCustomer().get_client_time_used(
             8544728, month="09", year="2019"
         )
         self.assertEqual(

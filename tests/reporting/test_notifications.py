@@ -4,9 +4,8 @@ from unittest.mock import MagicMock
 
 from vcr_unittest import VCRTestCase
 
-from harvestapi.client import HarvestCustomer
+from harvestapi.customer import HarvestCustomer
 from reporting.notifications import NotificationManager
-from reporting.utils import get_color_code_for_utilization, get_payload
 
 
 class TestExceptionChannel(VCRTestCase):
@@ -54,3 +53,26 @@ class TestExceptionChannel(VCRTestCase):
             self.notifier.channel_post(
                 webhook_url="https://outlook.office.com/", client=None
             )
+
+    def test_get_color_returns_red_for_over_100(self):
+        self.assertEqual(
+            NotificationManager()._get_color_code_for_utilization(101), "#ff0000"
+        )
+
+    def test_returns_slack_payload(self):
+        payload_under_test = NotificationManager(self.client)
+        pattern = "attachments"
+        expectation = re.search(pattern, str(payload_under_test))
+        self.assertTrue(expectation)
+
+    def test_returns_teams_payload(self):
+        payload_under_test = NotificationManager()._get_payload(
+            self.client, _format="teams"
+        )
+        pattern = "MessageCard"
+        expectation = re.search(pattern, str(payload_under_test))
+        self.assertTrue(expectation)
+
+    def test_returns_raise_exeption(self):
+        with self.assertRaises(Exception):
+            NotificationManager()._get_payload(self.client, _format="expected failure")

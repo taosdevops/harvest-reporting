@@ -13,7 +13,7 @@ from harvest.harvestdataclasses import PersonalAccessToken
 from harvestapi.customer import HarvestCustomer, get_recipients_from_config
 from reporting.config import ReporterConfig, EnvironmentConfiguration
 from reporting.notifications import NotificationManager
-from reporting.utils import load_yaml, load_yaml_file, read_cloud_storage, truncate
+from reporting.utils import load_yaml, load_yaml_file, read_cloud_storage
 
 from typing import List
 import sys
@@ -87,7 +87,9 @@ def main_method(
                 )
 
     notifications = NotificationManager(
-        customers=harvest_customers, global_recipients=global_config.recipients, exception_config=global_config.exceptions
+        customers=harvest_customers,
+        global_recipients=global_config.recipients,
+        exception_config=global_config.exceptions,
     )
 
     notifications.send()

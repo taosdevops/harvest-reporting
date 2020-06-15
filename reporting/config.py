@@ -28,8 +28,6 @@ class EnvironmentConfiguration(object):
         self.bucket = self._get_bucket()
         self.config_path = self._get_config_path()
         self.project_id = self._get_project_id()
-        self.function_region = self._get_function_region()
-        self.function_name = self._get_function_name()
 
     def _get_bearer_token(self) -> str:
         if os.getenv("BEARER_TOKEN"):
@@ -109,20 +107,8 @@ class EnvironmentConfiguration(object):
             raise MissingEnvironmentVariable("GCP_PROJECT")
         return project_id
 
-    def _get_function_region(self) -> str:
-        region = os.getenv("FUNCTION_REGION")
-        if not region and not self.bearer_token and not self.log_stdout:
-            raise MissingEnvironmentVariable("FUNCTION_REGION")
-        return region
-
-    def _get_function_name(self) -> str:
-        name = os.getenv("FUNCTION_NAME")
-        if not name and not self.bearer_token and not self.log_stdout:
-            raise MissingEnvironmentVariable("FUNCTION_NAME")
-        return name
-
     def _get_log_level(self) -> str:
-        return os.getenv("LOG_LEVEL", "false")
+        return os.getenv("LOG_LEVEL", "info")
 
 
 @dataclass
@@ -152,6 +138,7 @@ class Customer(object):
     name: str
     hours: Optional[int] = ""
     recipients: Optional[Recipients] = None
+
 
 @dataclass
 class ReporterConfig(object):

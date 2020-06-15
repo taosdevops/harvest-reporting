@@ -87,7 +87,7 @@ def main_method(
                 )
 
     notifications = NotificationManager(
-        customers=harvest_customers, global_recipients=global_config.recipients
+        customers=harvest_customers, global_recipients=global_config.recipients, exception_config=global_config.exceptions
     )
 
     notifications.send()

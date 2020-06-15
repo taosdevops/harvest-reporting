@@ -28,11 +28,14 @@ class SendGridSummaryEmail:
         self,
         sg_client: sendgrid.SendGridAPIClient = SENDGRID_CLIENT,
         from_email: str = ENV_CONFIG.origin_email_address,
-        templateId: str = "",
+        template_id: str = "",
     ):
         self.sg_client = sg_client
         self.from_email = from_email
-        self.templateId = templateId
+        # TODO: templateId is all piped in but it's not used anywhere.
+        # Support for specifying a template ID should be verified and
+        # added.
+        self.template_id = template_id
 
     def construct_mail(self, emails: List[str], content: str) -> Mail:
         current_date = date.today().strftime("%B %d, %Y")

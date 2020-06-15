@@ -1,5 +1,5 @@
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 from typing import List, Optional
 import logging
@@ -127,35 +127,35 @@ class EnvironmentConfiguration(object):
 
 @dataclass
 class VerificationConfig(object):
-    email: Optional[List[str]]
-    slack: Optional[str]
-    teams: Optional[str]
+    email: Optional[List[str]] = field(default_factory=list)
+    slack: Optional[str] = ""
+    teams: Optional[str] = ""
 
 
 @dataclass
 class RecipientsConfig(object):
-    templateId: Optional[str]
-    sendVerificationConfig: Optional[VerificationConfig]
+    templateId: Optional[str] = ""
+    sendVerificationConfig: Optional[VerificationConfig] = None
 
 
 @dataclass
 class Recipients(object):
-    config: Optional[RecipientsConfig]
-    emails: List[str]
-    slack: List[str]
-    teams: List[str]
+    config: Optional[RecipientsConfig] = None
+    emails: Optional[List[str]] = field(default_factory=list)
+    slack: Optional[List[str]] = field(default_factory=list)
+    teams: Optional[List[str]] = field(default_factory=list)
 
 
 @dataclass
 class Customer(object):
-    name: str
-    hours: Optional[int]
-    recipients: Optional[Recipients]
 
+    name: str
+    hours: Optional[int] = ""
+    recipients: Optional[Recipients] = None
 
 @dataclass
 class ReporterConfig(object):
     customers: List[Customer]
-    customer_filter: Optional[List[str]]
     recipients: Recipients
     exceptions: Recipients
+    customer_filter: Optional[List[str]] = field(default_factory=list)

@@ -29,7 +29,7 @@ def read_cloud_storage(bucket_name, file_name) -> str:
     """ Returns file contents from provided bucket and file names """
     client = storage.Client(project=ENV_CONFIG.project_id)
     bucket = client.bucket(bucket_name)
-    blob = bucket.get_blob(file_name)
+    blob = bucket.blob(file_name)
     response = blob.download_as_string()
 
     LOGGER.debug("Fetched config from Cloud Storage")

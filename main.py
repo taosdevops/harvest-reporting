@@ -1,92 +1,127 @@
 import logging
+import os
 import sys
 
-from hreporting import config
-from hreporting.harvest_client import HarvestClient
-from hreporting.notifications import NotificationManager
-from hreporting.utils import (
-    load_yaml,
-    load_yaml_file,
-    print_verify,
-    read_cloud_storage,
-    truncate,
-)
+import google.cloud.logging as cloud_logging
+import harvest
+from google.cloud.logging.handlers import CloudLoggingHandler
+from google.cloud.logging.resource import Resource
+from google.cloud import secretmanager
+from harvest.harvest import Client, Clients, Harvest
+from harvest.harvestdataclasses import PersonalAccessToken
 
-logging.getLogger("harvest_reports")
-logging.basicConfig(
-    stream=sys.stdout, level=logging.DEBUG, format="%(asctime)s %(message)s"
-)
+from harvestapi.customer import HarvestCustomer, get_recipients_from_config
+from reporting.config import ReporterConfig, EnvironmentConfiguration
+from reporting.notifications import NotificationManager
+from reporting.utils import load_yaml, load_yaml_file, read_cloud_storage
+
+from typing import List
+import sys
+
+HARVEST_ENDPOINT = "https://api.harvestapp.com/api/v2"
+LOGGER = logging.getLogger()
+ENV_CONFIG = EnvironmentConfiguration()
 
 
-def client_is_filtered(client, filter_list=None):
-    if not filter_list:
-        return client["is_active"]
+def setup_logging():
+    log_level = ENV_CONFIG.log_level
+    stdout = logging.StreamHandler(sys.stdout)
+    formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
+    stdout.setFormatter(formatter)
+    LOGGER.addHandler(stdout)
 
-    return client["is_active"] and client["name"] in filter_list
+    if log_level == "debug":
+        LOGGER.setLevel(logging.DEBUG)
+    elif log_level == "warning":
+        LOGGER.setLevel(logging.WARNING)
+    elif log_level == "error":
+        LOGGER.setLevel(logging.ERROR)
+    else:
+        LOGGER.setLevel(logging.INFO)
+
+
+def filter_customers(clients: Clients, customer_filter: list = None) -> List[Client]:
+    if not customer_filter:
+        return [customer for customer in clients.clients if customer.is_active]
+
+    return [
+        customer
+        for customer in clients.clients
+        if customer.is_active and customer.name in customer_filter
+    ]
 
 
 def main_method(
     bearer_token: str,
     harvest_account: str,
-    global_config: str,
+    global_config: ReporterConfig,
     from_email: str,
     exception_hooks: str = None,
 ):
-    harvest_client = HarvestClient(bearer_token, harvest_account, global_config)
-    client_filter = global_config.get("client_filter", [])
 
-    active_clients = [
-        client
-        for client in harvest_client.list_clients()
-        if client_is_filtered(client, filter_list=client_filter)
-    ]
+    personal_access_token = PersonalAccessToken(harvest_account, bearer_token)
+    client = harvest.Harvest(HARVEST_ENDPOINT, personal_access_token)
 
-    _send_notifications(
-        harvest_client=harvest_client,
-        active_clients=active_clients,
-        from_email=from_email,
-        global_config=global_config,
-        exception_hooks=exception_hooks,
-    )
+    customer_filter = global_config.customer_filter
 
+    customers = client.clients()
+    active_customers = filter_customers(customers, customer_filter=customer_filter)
 
-def _send_notifications(
-    harvest_client, active_clients, from_email, global_config, exception_hooks=None
-) -> None:
+    harvest_customers = []
+
+    # Finds all active customers with a corresponding config in the config file.
+    # If the config exists, create a new HarvestCustomer to tie the config and
+    # Harvest API data together.
+    for active_customer in active_customers:
+        for customer in global_config.customers:
+            if active_customer.name == customer.name:
+                harvest_customers.append(
+                    HarvestCustomer(
+                        client,
+                        customer,
+                        get_recipients_from_config(customer, global_config),
+                        active_customer,
+                    )
+                )
 
     notifications = NotificationManager(
-        clients=active_clients,
-        fromEmail=from_email,
-        exceptionHooks=global_config.get("exceptionHook"),
-        emailTemplateId=global_config.get("emailTemplateId", None),
-        harvestClient=harvest_client,
+        customers=harvest_customers,
+        global_recipients=global_config.recipients,
+        exception_config=global_config.exceptions,
+        sendgrid_api_key=ENV_CONFIG.sendgrid_api_key,
+        from_email=ENV_CONFIG.origin_email_address,
     )
 
     notifications.send()
 
-    notifications.send_completion(
-        verification_hook=global_config.get("sendVerificationHook"),
-        clients=active_clients,
-    )
-
 
 def harvest_reports(*args):
-    bearer_token = config.BEARER_TOKEN
-    bucket = config.BUCKET
-    config_path = config.CONFIG_PATH
-    harvest_account = config.HARVEST_ACCOUNT
-    from_email = config.ORIGIN_EMAIL_ADDRESS
+    setup_logging()
 
-    if not bucket:
-        global_config = load_yaml_file(config_path)
+    LOGGER.debug("Loading config")
+
+    ENV_CONFIG = EnvironmentConfiguration()
+
+    if not ENV_CONFIG.bucket:
+        LOGGER.debug(f"Fetching config from file system: {ENV_CONFIG.config_path}")
+        global_config = load_yaml_file(ENV_CONFIG.config_path)
     else:
-        global_config = load_yaml(read_cloud_storage(bucket, config_path))
+        LOGGER.debug(
+            f"Fetching config from GCS bucket: gs://{ENV_CONFIG.bucket}/{ENV_CONFIG.config_path}"
+        )
+        global_config = load_yaml(
+            read_cloud_storage(ENV_CONFIG.bucket, ENV_CONFIG.config_path)
+        )
+
+    LOGGER.info(f"Effective config: {global_config}")
 
     return main_method(
-        bearer_token=bearer_token,
-        harvest_account=harvest_account,
+        bearer_token=ENV_CONFIG.bearer_token,
+        harvest_account=ENV_CONFIG.harvest_account,
         global_config=global_config,
-        from_email=from_email,
+        from_email=ENV_CONFIG.origin_email_address,
     )
 
 

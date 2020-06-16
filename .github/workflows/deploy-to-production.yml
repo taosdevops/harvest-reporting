@@ -20,10 +20,9 @@ jobs:
 
     - name: Deploy Cloud Function
       run: |-
-        TMP_FILE=$(mktemp) && echo ${{ secrets.ENV_VARS }} > ${TMP_FILE}
         gcloud functions deploy harvest-reports --runtime python37 \
                                                 --region us-central1 \
                                                 --entry-point harvest_reports \
                                                 --trigger-topic ${{ secrets.TRIGGER_TOPIC }} \
-                                                --env-vars-file ${TMP_FILE} \
+                                                --set-env-vars BEARER_TOKEN=${{ secrets.BEARER_TOKEN_SECRET }},HARVEST_ACCOUNT_ID=${{ secrets.HARVEST_ACCOUNT_ID }},BUCKET=${{ secrests.BUCKET }},CONFIG_PATH=${{ secrets.CONFIG_PATH }},SENDGRID_API_KEY_SECRET=${{ secrets.SENDGRID_API_KEY_SECRET }},SLACK_API_KEY_SECRET=${{ secrets.SLACK_API_KEY_SECRET }},LOG_LEVEL=${{ secrets.LOG_LEVEL }} \
                                                 --service-account ${{ secrets.RUNNER_SERVICE_ACCOUNT_EMAIL }}

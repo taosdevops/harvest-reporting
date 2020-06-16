@@ -20,9 +20,10 @@ jobs:
 
     - name: Deploy Cloud Function
       run: |-
+        TMP_FILE=$(mktemp) && echo ${{ secrets.ENV_VARS }} > ${TMP_FILE}
         gcloud functions deploy harvest-reports --runtime python37 \
                                                 --region us-central1 \
                                                 --entry-point harvest_reports \
                                                 --trigger-topic ${{ secrets.TRIGGER_TOPIC }} \
-                                                --env-vars-file ${{ secrets.ENV_VARS }} \
+                                                --env-vars-file ${TMP_FILE} \
                                                 --service-account ${{ secrets.RUNNER_SERVICE_ACCOUNT_EMAIL }}

@@ -41,17 +41,20 @@ class EmailSendError(BaseException):
 
 
 class NotificationManager:
-    SLACK_CLIENT = Slack()
-
     def __init__(
         self,
         customers: List[HarvestCustomer],
         global_recipients: Recipients,
         exception_config: Recipients,
+        sendgrid_api_key: str,
+        from_email: str,
     ):
+        self.slack_client = Slack()
+        self.sendgrid_api_key = sendgrid_api_key
         self.customers = customers
         self.recipients = global_recipients
         self.exception_config = exception_config
+        self.from_email = from_email
 
     def send(self):
         for customer in self.customers:
@@ -144,7 +147,7 @@ class NotificationManager:
     def _send_slack_channels(self, channels: List[str], msg: str):
         for channel in channels:
             LOGGER.debug("Sending slack notification")
-            response = NotificationManager.SLACK_CLIENT.post_slack_message(channel, msg)
+            response = self.slack_client.post_slack_message(channel, msg)
             if response["status_code"] != 200:
                 raise SlackSendError(channel, response["status_code"])
 
@@ -178,9 +181,15 @@ class NotificationManager:
         LOGGER.debug("Sending email notifications")
 
         if template_id:
-            email = SendGridSummaryEmail(template_id=template_id)
+            email = SendGridSummaryEmail(
+                api_key=self.sendgrid_api_key,
+                from_email=self.from_email,
+                template_id=template_id,
+            )
         else:
-            email = SendGridSummaryEmail()
+            email = SendGridSummaryEmail(
+                api_key=self.sendgrid_api_key, from_email=self.from_email
+            )
 
         response = email.send(channels, customers, msg)
 

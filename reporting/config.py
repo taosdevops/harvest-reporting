@@ -65,6 +65,10 @@ class EnvironmentConfiguration(object):
             self._sendgrid_api_key = self._get_sendgrid_api_key()
         return self._sendgrid_api_key
 
+    @sendgrid_api_key.setter
+    def sendgrid_api_key(self, key):
+        self._sendgrid_api_key = key
+
     @property
     def bucket(self):
         if self._bucket == None:
@@ -87,8 +91,6 @@ class EnvironmentConfiguration(object):
         if os.getenv("BEARER_TOKEN"):
             return os.getenv("BEARER_TOKEN")
         else:
-            self.secrets_client = SecretManagerServiceClient()
-
             # Use the project ID function since self.project_id hasn't been
             # instantiated yet
             bearer_token_secret = os.getenv("BEARER_TOKEN_SECRET")

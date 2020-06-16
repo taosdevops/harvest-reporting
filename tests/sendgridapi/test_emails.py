@@ -1,4 +1,5 @@
 import re
+import os
 from unittest.mock import MagicMock
 
 from vcr_unittest import VCRTestCase
@@ -8,6 +9,7 @@ from sendgridapi.emails import SendGridSummaryEmail
 
 class TestSummaryEmail(VCRTestCase):
     def setUp(self):
+
         self.customers = {
             "hours_used": 60,
             "name": "DSC",
@@ -26,7 +28,9 @@ class TestSummaryEmail(VCRTestCase):
         This is a test body
         """
 
-        self.sg_email = SendGridSummaryEmail()
+        self.sg_email = SendGridSummaryEmail(
+            api_key="testymctestface", from_email="test@example.com"
+        )
 
     def test_to_emails(self):
 

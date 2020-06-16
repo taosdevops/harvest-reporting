@@ -90,6 +90,8 @@ def main_method(
         customers=harvest_customers,
         global_recipients=global_config.recipients,
         exception_config=global_config.exceptions,
+        sendgrid_api_key=ENV_CONFIG.sendgrid_api_key,
+        from_email=ENV_CONFIG.origin_email_address,
     )
 
     notifications.send()

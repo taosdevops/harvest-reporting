@@ -19,18 +19,12 @@ from harvestapi.customer import HarvestCustomer
 
 LOGGER = logging.getLogger(__name__)
 
-ENV_CONFIG = EnvironmentConfiguration()
-SENDGRID_CLIENT = sendgrid.SendGridAPIClient(api_key=ENV_CONFIG.sendgrid_api_key)
-
 
 class SendGridSummaryEmail:
     def __init__(
-        self,
-        sg_client: sendgrid.SendGridAPIClient = SENDGRID_CLIENT,
-        from_email: str = ENV_CONFIG.origin_email_address,
-        template_id: str = "",
+        self, api_key: str, from_email: str, template_id: str = "",
     ):
-        self.sg_client = sg_client
+        self.sg_client = sendgrid.SendGridAPIClient(api_key=api_key)
         self.from_email = from_email
         # TODO: templateId is all piped in but it's not used anywhere.
         # Support for specifying a template ID should be verified and

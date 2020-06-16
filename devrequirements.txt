@@ -1,7 +1,6 @@
 black==19.3b0
 Click==7.0
 colorama==0.4.1
-google-cloud-logging==1.15.0
 google-cloud-secret-manager==1.0.0
 google-cloud-storage>=1.19.1
 pylint==2.3.1

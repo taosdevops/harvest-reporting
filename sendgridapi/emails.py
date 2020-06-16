@@ -17,7 +17,7 @@ from reporting.config import EnvironmentConfiguration
 from harvestapi.customer import HarvestCustomer
 
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 ENV_CONFIG = EnvironmentConfiguration()
 SENDGRID_CLIENT = sendgrid.SendGridAPIClient(api_key=ENV_CONFIG.sendgrid_api_key)
@@ -62,7 +62,7 @@ class SendGridSummaryEmail:
         if emails:
             mail = self.construct_mail(emails, content)
 
-            logger.debug(mail)
+            LOGGER.debug(mail)
 
             response = self.sg_client.client.mail.send.post(request_body=mail.get())
 

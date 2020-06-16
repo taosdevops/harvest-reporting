@@ -20,7 +20,9 @@ class SlackSendError(BaseException):
     def __init__(self, channel, status_code):
         self.channel = channel
         self.status_code = status_code
-        super().__init__(f"Failed to send webhook to Slack channel {self.channel}. Status code: {self.status_code}")
+        super().__init__(
+            f"Failed to send webhook to Slack channel {self.channel}. Status code: {self.status_code}"
+        )
 
 
 class TeamsSendError(BaseException):
@@ -33,20 +35,27 @@ class EmailSendError(BaseException):
     def __init__(self, channels, status_code):
         self.channels = channels
         self.status_code = status_code
-        super().__init__(f"Failed to send webhook to email addresses {self.channels}. Status code: {self.status_code}")
+        super().__init__(
+            f"Failed to send webhook to email addresses {self.channels}. Status code: {self.status_code}"
+        )
 
 
 class NotificationManager:
     SLACK_CLIENT = Slack()
 
-    def __init__(self, customers: List[HarvestCustomer], global_recipients: Recipients, exception_config: Recipients):
+    def __init__(
+        self,
+        customers: List[HarvestCustomer],
+        global_recipients: Recipients,
+        exception_config: Recipients,
+    ):
         self.customers = customers
         self.recipients = global_recipients
         self.exception_config = exception_config
 
     def send(self):
         for customer in self.customers:
-            logging.debug(f"Starting to process notifications for {customer.data.name}")
+            LOGGER.debug(f"Starting to process notifications for {customer.data.name}")
 
             self._send_customer_notifications(customer)
 
@@ -57,13 +66,17 @@ class NotificationManager:
         if customer.recipients:
             if len(customer.recipients.slack) > 0:
                 try:
-                    self._send_slack_channels(self.recipients.slack,  self._get_slack_payload([customer]))
+                    self._send_slack_channels(
+                        self.recipients.slack, self._get_slack_payload([customer])
+                    )
                 except SlackSendError as e:
                     self._send_exception_channels(e, customer)
 
             if len(customer.recipients.teams) > 0:
                 try:
-                    self._send_teams_channels(self.recipients.teams,  self._get_teams_sections([customer]))
+                    self._send_teams_channels(
+                        self.recipients.teams, self._get_teams_sections([customer])
+                    )
                 except TeamsSendError as e:
                     self._send_exception_channels(e, customer)
 
@@ -78,16 +91,19 @@ class NotificationManager:
                 except EmailSendError as e:
                     self._send_exception_channels(e, customer)
 
-
     def _send_global_notifications(self):
         if self.recipients.slack:
             try:
-                self._send_slack_channels(self.recipients.slack, self._get_slack_payload(self.customers))
+                self._send_slack_channels(
+                    self.recipients.slack, self._get_slack_payload(self.customers)
+                )
             except Exception as e:
                 self._send_exception_channels(e)
         if self.recipients.teams:
             try:
-                self._send_teams_channels(self.recipients.teams, self._get_teams_sections(self.customers))
+                self._send_teams_channels(
+                    self.recipients.teams, self._get_teams_sections(self.customers)
+                )
             except Exception as e:
                 self._send_exception_channels(e)
         if self.recipients.emails:
@@ -101,7 +117,6 @@ class NotificationManager:
             except Exception as e:
                 self._send_exception_channels(e)
 
-
     def _send_exception_channels(self, e: Exception, customer: HarvestCustomer = None):
         if customer:
             err = f"Error sending report for {customer.data.name}: {str(e)}"
@@ -109,7 +124,9 @@ class NotificationManager:
             err = str(e)
 
         if self.exception_config.teams:
-            self._send_teams_channels(self.exception_config.teams, self._get_teams_exception_sections(err))
+            self._send_teams_channels(
+                self.exception_config.teams, self._get_teams_exception_sections(err)
+            )
         if self.exception_config.emails:
             if self.exception_config.config:
                 self._send_email_channels(
@@ -119,30 +136,22 @@ class NotificationManager:
                 )
             else:
                 self._send_email_channels(
-                    self.exception_config.emails,
-                    [customer],
-                    err,
+                    self.exception_config.emails, [customer], err,
                 )
         if self.exception_config.slack:
             self._send_slack_channels(self.exception_config.slack, err)
 
-    def _send_slack_channels(
-        self, channels: List[str], msg: str
-    ):
+    def _send_slack_channels(self, channels: List[str], msg: str):
         for channel in channels:
             LOGGER.debug("Sending slack notification")
-            response = NotificationManager.SLACK_CLIENT.post_slack_message(
-                channel, msg
-            )
+            response = NotificationManager.SLACK_CLIENT.post_slack_message(channel, msg)
             if response["status_code"] != 200:
                 raise SlackSendError(channel, response["status_code"])
 
             LOGGER.debug(f"Sent slack notification")
             LOGGER.debug(f"Response: {response}")
 
-    def _send_teams_channels(
-        self, channels: List[str], msg: List[dict]
-    ):
+    def _send_teams_channels(self, channels: List[str], msg: List[dict]):
         for channel in channels:
             LOGGER.debug("Sending Teams notification")
 
@@ -227,10 +236,7 @@ class NotificationManager:
         return sections
 
     def _get_teams_exception_sections(self, err) -> List[dict]:
-        sections = [{
-            "activityTitle": f"ERROR",
-            "text": err
-        }]
+        sections = [{"activityTitle": f"ERROR", "text": err}]
 
         return sections
 

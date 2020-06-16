@@ -1,22 +1,17 @@
 import logging
 import os
 import sys
+from typing import List
 
-import google.cloud.logging as cloud_logging
 import harvest
-from google.cloud.logging.handlers import CloudLoggingHandler
-from google.cloud.logging.resource import Resource
 from google.cloud import secretmanager
 from harvest.harvest import Client, Clients, Harvest
 from harvest.harvestdataclasses import PersonalAccessToken
 
 from harvestapi.customer import HarvestCustomer, get_recipients_from_config
-from reporting.config import ReporterConfig, EnvironmentConfiguration
+from reporting.config import EnvironmentConfiguration, ReporterConfig
 from reporting.notifications import NotificationManager
 from reporting.utils import load_yaml, load_yaml_file, read_cloud_storage
-
-from typing import List
-import sys
 
 HARVEST_ENDPOINT = "https://api.harvestapp.com/api/v2"
 LOGGER = logging.getLogger()

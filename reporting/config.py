@@ -136,7 +136,7 @@ class Recipients(object):
 class Customer(object):
 
     name: str
-    hours: Optional[int] = ""
+    hours: Optional[int] = 80
     recipients: Optional[Recipients] = None
 
 

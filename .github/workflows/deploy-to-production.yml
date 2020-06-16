@@ -20,7 +20,8 @@ jobs:
 
     - name: Deploy Cloud Function
       run: |-
-        gcloud functions deploy harvest-reports --runtime python37 \
+        gcloud functions deploy harvest-reports --project ${{ secrets.GCP_PROJECT }} \
+                                                --runtime python37 \
                                                 --region us-central1 \
                                                 --entry-point harvest_reports \
                                                 --trigger-topic ${{ secrets.TRIGGER_TOPIC }} \

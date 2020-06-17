@@ -85,12 +85,16 @@ class NotificationManager:
 
             if len(customer.recipients.emails) > 0:
                 try:
-                    self._send_email_channels(
-                        self.recipients.emails,
-                        customer,
-                        self._get_email_payload([customer]),
-                        template_id=self.recipients.config.templateId,
-                    )
+                    if self.recipients.config:
+                        self._send_email_channels(
+                            self.recipients.emails,
+                            self._get_email_payload([customer]),
+                            self.recipients.config.templateId,
+                        )
+                    else:
+                        self._send_email_channels(
+                            self.recipients.emails, self._get_email_payload([customer]),
+                        )
                 except EmailSendError as e:
                     self._send_exception_channels(e, customer)
 
@@ -111,12 +115,16 @@ class NotificationManager:
                 self._send_exception_channels(e)
         if self.recipients.emails:
             try:
-                self._send_email_channels(
-                    self.recipients.emails,
-                    self.customers,
-                    self._get_email_payload(self.customers),
-                    template_id=self.recipients.config.templateId,
-                )
+                if self.recipients.config:
+                    self._send_email_channels(
+                        self.recipients.emails,
+                        self._get_email_payload(self.customers),
+                        self.recipients.config.templateId,
+                    )
+                else:
+                    self._send_email_channels(
+                        self.recipients.emails, self._get_email_payload(self.customers),
+                    )
             except Exception as e:
                 self._send_exception_channels(e)
 
@@ -139,7 +147,7 @@ class NotificationManager:
                 )
             else:
                 self._send_email_channels(
-                    self.exception_config.emails, [customer], err,
+                    self.exception_config.emails, err,
                 )
         if self.exception_config.slack:
             self._send_slack_channels(self.exception_config.slack, err)
@@ -171,11 +179,7 @@ class NotificationManager:
             LOGGER.debug(f"Sent Teams notification to {channel}")
 
     def _send_email_channels(
-        self,
-        channels: List[str],
-        customers: List[HarvestCustomer],
-        msg: str,
-        template_id: str = "",
+        self, channels: List[str], msg: str, template_id: str = "",
     ):
 
         LOGGER.debug("Sending email notifications")
@@ -191,7 +195,7 @@ class NotificationManager:
                 api_key=self.sendgrid_api_key, from_email=self.from_email
             )
 
-        response = email.send(channels, customers, msg)
+        response = email.send(channels, msg)
 
         if response.status_code > 299:
             raise EmailSendError(channels, response.status_code)

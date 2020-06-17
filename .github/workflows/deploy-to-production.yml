@@ -25,5 +25,6 @@ jobs:
                                                 --region us-central1 \
                                                 --entry-point harvest_reports \
                                                 --trigger-topic ${{ secrets.TRIGGER_TOPIC }} \
-                                                --set-env-vars BEARER_TOKEN=${{ secrets.BEARER_TOKEN_SECRET }},HARVEST_ACCOUNT_ID=${{ secrets.HARVEST_ACCOUNT_ID }},BUCKET=${{ secrets.BUCKET }},CONFIG_PATH=${{ secrets.CONFIG_PATH }},SENDGRID_API_KEY_SECRET=${{ secrets.SENDGRID_API_KEY_SECRET }},SLACK_API_KEY_SECRET=${{ secrets.SLACK_API_KEY_SECRET }},LOG_LEVEL=${{ secrets.LOG_LEVEL }} \
-                                                --service-account ${{ secrets.RUNNER_SERVICE_ACCOUNT_EMAIL }}
+                                                --set-env-vars BEARER_TOKEN=${{ secrets.BEARER_TOKEN_SECRET }},HARVEST_ACCOUNT_ID=${{ secrets.HARVEST_ACCOUNT_ID }},BUCKET=${{ secrets.BUCKET }},CONFIG_PATH=${{ secrets.CONFIG_PATH }},SENDGRID_API_KEY_SECRET=${{ secrets.SENDGRID_API_KEY_SECRET }},SLACK_API_KEY_SECRET=${{ secrets.SLACK_API_KEY_SECRET }},LOG_LEVEL=${{ secrets.LOG_LEVEL }},ORIGIN_EMAIL_ADDRESS=${{ secrets.ORIGIN_EMAIL_ADDRESS }} \
+                                                --service-account ${{ secrets.RUNNER_SERVICE_ACCOUNT_EMAIL }} \
+                                                --timeout 500

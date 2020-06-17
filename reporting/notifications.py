@@ -5,7 +5,7 @@ import traceback
 from typing import List
 
 import pymsteams
-from harvest.harvest import Client
+from harvest.harvestdataclasses import Client
 from taosdevopsutils.slack import Slack
 
 from harvestapi.customer import HarvestCustomer

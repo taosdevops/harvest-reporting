@@ -5,8 +5,8 @@ from typing import List
 
 import harvest
 from google.cloud import secretmanager
-from harvest.harvest import Client, Clients, Harvest
-from harvest.harvestdataclasses import PersonalAccessToken
+from harvest.harvest import Harvest
+from harvest.harvestdataclasses import Client, Clients, PersonalAccessToken
 
 from harvestapi.customer import HarvestCustomer, get_recipients_from_config
 from reporting.config import EnvironmentConfiguration, ReporterConfig

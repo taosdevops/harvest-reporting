@@ -4,7 +4,7 @@ import math
 import re
 from typing import List
 
-from harvest import Harvest
+from harvest.harvest import Harvest
 from harvest.harvestdataclasses import Client, TimeEntry
 
 from reporting.config import Customer, Recipients, ReporterConfig

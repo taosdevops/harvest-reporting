@@ -50,9 +50,7 @@ class SendGridSummaryEmail:
 
         return message
 
-    def send(
-        self, emails: List[str], customers: List[HarvestCustomer], content: str
-    ) -> dict:
+    def send(self, emails: List[str], content: str) -> dict:
         if emails:
             mail = self.construct_mail(emails, content)
 

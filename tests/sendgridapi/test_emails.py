@@ -50,7 +50,5 @@ class TestSummaryEmail(VCRTestCase):
                 )
 
     def test_email_send_returns_if_missing_emails(self):
-        email_under_test = self.sg_email.send(
-            emails=[], customers=self.customers, content=self.test_body
-        )
+        email_under_test = self.sg_email.send(emails=[], content=self.test_body)
         self.assertEqual({}, email_under_test)

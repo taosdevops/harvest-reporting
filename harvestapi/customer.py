@@ -36,9 +36,15 @@ class HarvestCustomer(object):
         self.config = config
         self.data = customer
         self.recipients = recipients
-        self.time_entries = self._time_entries()
+        self._time_entries = None
 
-    def _time_entries(self) -> List[TimeEntry]:
+    @property
+    def time_entries(self) -> List[TimeEntry]:
+        if self._time_entries == None:
+            self._time_entries = self._get_time_entries()
+        return self._time_entries
+
+    def _get_time_entries(self) -> List[TimeEntry]:
         page = 1
         te = []
         while page:

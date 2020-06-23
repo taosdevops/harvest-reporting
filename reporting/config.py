@@ -10,13 +10,26 @@ from google.cloud.secretmanager import SecretManagerServiceClient
 LOGGER = logging.getLogger(__name__)
 
 
+HARVEST_ACCOUNT_ID = "HARVEST_ACCOUNT_ID"
+BEARER_TOKEN = "BEARER_TOKEN"
+BEARER_TOKEN_SECRET = "BEARER_TOKEN_SECRET"
+BEARER_TOKEN_SECRET_VERSION = "BEARER_TOKEN_VERSION"
+ORIGIN_EMAIL_ADDRESS = "ORIGIN_EMAIL_ADDRESS"
+SENDGRID_API_KEY = "SENDGRID_API_KEY"
+SENDGRID_API_KEY_SECRET = "SENDGRID_API_KEY_SECRET"
+SENDGRID_API_KEY_SECRET_VERSION = "SENDGRID_API_KEY_SECRET_VERSION"
+BUCKET = "BUCKET"
+CONFIG_PATH = "CONFIG_PATH"
+GCP_PROJECT = "GCP_PROJECT"
+LOG_LEVEL = "LOG_LEVEL"
+
+
 class MissingEnvironmentVariable(BaseException):
     def __init__(self, env_var):
         self.env_var = env_var
         super().__init__(f"Missing environment variable {env_var}")
 
 
-# TODO: This needs to be a singleton. There's no point in fetching the secrets every time this class is instantiated.
 class EnvironmentConfiguration(object):
     def __init__(self):
         self._secrets_client = None
@@ -34,6 +47,10 @@ class EnvironmentConfiguration(object):
         if self._secrets_client == None:
             self._secrets_client = SecretManagerServiceClient()
         return self._secrets_client
+
+    @secrets_client.setter
+    def secrets_client(self, client):
+        self._secrets_client = client
 
     @property
     def log_level(self):
@@ -65,10 +82,6 @@ class EnvironmentConfiguration(object):
             self._sendgrid_api_key = self._get_sendgrid_api_key()
         return self._sendgrid_api_key
 
-    @sendgrid_api_key.setter
-    def sendgrid_api_key(self, key):
-        self._sendgrid_api_key = key
-
     @property
     def bucket(self):
         if self._bucket == None:
@@ -88,17 +101,17 @@ class EnvironmentConfiguration(object):
         return self._project_id
 
     def _get_bearer_token(self) -> str:
-        if os.getenv("BEARER_TOKEN"):
-            return os.getenv("BEARER_TOKEN")
+        if os.getenv(BEARER_TOKEN):
+            return os.getenv(BEARER_TOKEN)
         else:
             # Use the project ID function since self.project_id hasn't been
             # instantiated yet
-            bearer_token_secret = os.getenv("BEARER_TOKEN_SECRET")
+            bearer_token_secret = os.getenv(BEARER_TOKEN_SECRET)
 
             if not bearer_token_secret:
-                raise MissingEnvironmentVariable("BEARER_TOKEN_SECRET")
+                raise MissingEnvironmentVariable(BEARER_TOKEN_SECRET)
 
-            bearer_token_version = os.getenv("BEARER_TOKEN_VERSION", "latest")
+            bearer_token_version = os.getenv(BEARER_TOKEN_SECRET_VERSION, "latest")
 
             version = self.secrets_client.secret_version_path(
                 self._get_project_id(), bearer_token_secret, bearer_token_version
@@ -111,31 +124,33 @@ class EnvironmentConfiguration(object):
             return secret.payload.data.decode("UTF-8")
 
     def _get_harvest_account(self) -> str:
-        harvest_account = os.getenv("HARVEST_ACCOUNT_ID")
+        harvest_account = os.getenv(HARVEST_ACCOUNT_ID)
         if not harvest_account:
-            raise MissingEnvironmentVariable("HARVEST_ACCOUNT_ID")
+            raise MissingEnvironmentVariable(HARVEST_ACCOUNT_ID)
 
         return harvest_account
 
     def _get_origin_email_address(self) -> str:
-        email = os.getenv("ORIGIN_EMAIL_ADDRESS")
+        email = os.getenv(ORIGIN_EMAIL_ADDRESS)
         if not email:
-            raise MissingEnvironmentVariable("ORIGIN_EMAIL_ADDRESS")
+            raise MissingEnvironmentVariable(ORIGIN_EMAIL_ADDRESS)
 
         return email
 
     def _get_sendgrid_api_key(self) -> str:
-        if os.getenv("SENDGRID_API_TOKEN"):
-            return os.getenv("SENDGRID_API_TOKEN")
+        if os.getenv(SENDGRID_API_KEY):
+            return os.getenv(SENDGRID_API_KEY)
         else:
             # Use the project ID function since self.project_id hasn't been
             # instantiated yet
-            sendgrid_api_key_secret = os.getenv("SENDGRID_API_KEY_SECRET")
+            sendgrid_api_key_secret = os.getenv(SENDGRID_API_KEY_SECRET)
 
             if not sendgrid_api_key_secret:
-                raise MissingEnvironmentVariable("SENDGRID_API_KEY_SECRET")
+                raise MissingEnvironmentVariable(SENDGRID_API_KEY_SECRET)
 
-            sendgrid_api_key_version = os.getenv("SENDGRID_API_KEY_VERSION", "latest")
+            sendgrid_api_key_version = os.getenv(
+                SENDGRID_API_KEY_SECRET_VERSION, "latest"
+            )
 
             version = self.secrets_client.secret_version_path(
                 self._get_project_id(),
@@ -152,19 +167,19 @@ class EnvironmentConfiguration(object):
             return secret.payload.data.decode("UTF-8")
 
     def _get_bucket(self) -> str:
-        return os.getenv("BUCKET")
+        return os.getenv(BUCKET)
 
     def _get_config_path(self) -> str:
-        return os.getenv("CONFIG_PATH", "config/clients.yaml")
+        return os.getenv(CONFIG_PATH, "config/clients.yaml")
 
     def _get_project_id(self) -> str:
-        project_id = os.getenv("GCP_PROJECT")
+        project_id = os.getenv(GCP_PROJECT)
         if not project_id:
-            raise MissingEnvironmentVariable("GCP_PROJECT")
+            raise MissingEnvironmentVariable(GCP_PROJECT)
         return project_id
 
     def _get_log_level(self) -> str:
-        return os.getenv("LOG_LEVEL", "info")
+        return os.getenv(LOG_LEVEL, "info")
 
 
 @dataclass

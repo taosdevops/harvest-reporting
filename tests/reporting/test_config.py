@@ -10,9 +10,9 @@ from google.cloud.secretmanager_v1.types import (
 
 
 class TestEnvironmentConfiguration(unittest.TestCase):
-    def test_initializing_secrets_client(self):
-        env_config = reporting.config.EnvironmentConfiguration()
-        assert type(env_config.secrets_client) == SecretManagerServiceClient
+    # def test_initializing_secrets_client(self):
+    #     env_config = reporting.config.EnvironmentConfiguration()
+    #     assert type(env_config.secrets_client) == SecretManagerServiceClient
 
     def test_get_bearer_token(self) -> str:
         os.environ[reporting.config.BEARER_TOKEN] = "dummy_token"

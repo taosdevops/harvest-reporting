@@ -64,15 +64,40 @@ class TestHarvestCustomer(VCRTestCase):
 
 
     def test_get_recipients_from_config(self):
+        # Client object to use to search against test configs
+        test_client = Client(name="Testy McTest", address="Test")
+
         cust_recipients = Recipients(emails=["test@example.com"], slack=["https://test.slack.com/webhook"])
-        cust = Customer(name="Testy McTest", hours=80, recipients=cust_recipients)
+        cust_with_recipients = Customer(name="Testy McTest", hours=80, recipients=cust_recipients)
         global_recipients = Recipients(emails=["global@example.com"], slack=["https://globaltest.slack.com/webhook"])
 
         config = ReporterConfig(
-            customers=[cust],
+            customers=[cust_with_recipients],
             recipients=global_recipients,
             exceptions=Recipients()
         )
 
-        assert customer.get_recipients_from_config(cust, config) == cust_recipients
+        assert customer.get_recipients_from_config(test_client, config) == cust_recipients
+
+        # No recipients for customer in recipients config
+        cust_without_recipients = Customer(name="Testy McTest", hours=80)
+
+        config = ReporterConfig(
+            customers=[cust_without_recipients],
+            recipients=global_recipients,
+            exceptions=Recipients()
+        )
+
+        assert customer.get_recipients_from_config(test_client, config) == Recipients()
+
+        # Customer not matching any in recipients config
+        cust_not_matching = Customer(name="McTester Test", hours=80, recipients=cust_recipients)
+
+        config = ReporterConfig(
+            customers=[cust_not_matching],
+            recipients=global_recipients,
+            exceptions=Recipients()
+        )
+
+        assert customer.get_recipients_from_config(test_client, config) == Recipients()
 

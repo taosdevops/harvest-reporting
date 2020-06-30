@@ -192,12 +192,12 @@ class VerificationConfig(object):
 @dataclass
 class RecipientsConfig(object):
     templateId: Optional[str] = ""
-    sendVerificationConfig: Optional[VerificationConfig] = None
+    sendVerificationConfig: Optional[VerificationConfig] = VerificationConfig()
 
 
 @dataclass
 class Recipients(object):
-    config: Optional[RecipientsConfig] = None
+    config: Optional[RecipientsConfig] = RecipientsConfig()
     emails: Optional[List[str]] = field(default_factory=list)
     slack: Optional[List[str]] = field(default_factory=list)
     teams: Optional[List[str]] = field(default_factory=list)
@@ -208,7 +208,7 @@ class Customer(object):
 
     name: str
     hours: Optional[int] = 80
-    recipients: Optional[Recipients] = None
+    recipients: Optional[Recipients] = Recipients()
 
 
 @dataclass

@@ -75,7 +75,6 @@ class HarvestCustomer(object):
     def time_remaining(
         self, month: str = _get_current_month(), year: str = _get_current_year(),
     ) -> float:
-        regex = re.compile("([0-9]{4})-([0-9]{2})-([0-9]{2})")
 
         return self.config.hours - self.time_used()
 

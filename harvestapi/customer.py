@@ -76,10 +76,12 @@ class HarvestCustomer(object):
         self, month: str = _get_current_month(), year: str = _get_current_year(),
     ) -> float:
 
-        return self.config.hours - self.time_used()
+        return self.config.hours - self.time_used(month=month, year=year)
 
-    def percentage_hours_used(self) -> int:
-        return int(math.ceil((self.time_used() / self.config.hours) * 100))
+    def percentage_hours_used(
+        self, month: str = _get_current_month(), year: str = _get_current_year()
+    ) -> int:
+        return int(math.ceil((self.time_used(month=month, year=year) / self.config.hours) * 100))
 
 
 def get_recipients_from_config(customer: Client, config: ReporterConfig) -> Recipients:

@@ -42,7 +42,6 @@ class TestHarvestCustomer(VCRTestCase):
 
     @VCR.use_cassette
     def test_time_used(self):
-        print(self.customer.time_used())
         assert self.customer.time_used() == 46.629999999999995
 
     @VCR.use_cassette
@@ -56,7 +55,6 @@ class TestHarvestCustomer(VCRTestCase):
 
     @VCR.use_cassette
     def test_time_remaining(self):
-        print(self.customer.time_remaining(month="06", year="2020"))
         assert self.customer.time_remaining(month="06", year="2020") == 33.370000000000005
 
     @VCR.use_cassette

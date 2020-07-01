@@ -1,5 +1,5 @@
-import re
 import os
+import re
 from unittest.mock import MagicMock
 
 from vcr_unittest import VCRTestCase

@@ -9,17 +9,14 @@ from harvest.harvest import Harvest
 from harvest.harvestdataclasses import Client, Clients, PersonalAccessToken
 
 from harvestapi.customer import HarvestCustomer, get_recipients_from_config
-from reporting.config import EnvironmentConfiguration, ReporterConfig
+import reporting.config
 from reporting.notifications import NotificationManager
-from reporting.utils import load_yaml, load_yaml_file, read_cloud_storage
 
 HARVEST_ENDPOINT = "https://api.harvestapp.com/api/v2"
 LOGGER = logging.getLogger()
-ENV_CONFIG = EnvironmentConfiguration()
 
 
-def setup_logging():
-    log_level = ENV_CONFIG.log_level
+def setup_logging(log_level):
     stdout = logging.StreamHandler(sys.stdout)
     formatter = logging.Formatter(
         "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
@@ -48,15 +45,18 @@ def filter_customers(clients: Clients, customer_filter: list = None) -> List[Cli
     ]
 
 
-def main_method(
-    bearer_token: str,
-    harvest_account: str,
-    global_config: ReporterConfig,
-    from_email: str,
-    exception_hooks: str = None,
-):
+def harvest_reports(*args):
+    ENV_CONFIG = reporting.config.EnvironmentConfiguration()
+    setup_logging(ENV_CONFIG.log_level)
 
-    personal_access_token = PersonalAccessToken(harvest_account, bearer_token)
+
+    LOGGER.debug("Loading config")
+
+    global_config = reporting.config.load(ENV_CONFIG.config_path, bucket=ENV_CONFIG.bucket, project=ENV_CONFIG.project_id)
+
+    LOGGER.info(f"Effective config: {global_config}")
+
+    personal_access_token = PersonalAccessToken(ENV_CONFIG.harvest_account, ENV_CONFIG.bearer_token)
     client = harvest.Harvest(HARVEST_ENDPOINT, personal_access_token)
 
     customer_filter = global_config.customer_filter
@@ -90,35 +90,6 @@ def main_method(
     )
 
     notifications.send()
-
-
-def harvest_reports(*args):
-    setup_logging()
-
-    LOGGER.debug("Loading config")
-
-    ENV_CONFIG = EnvironmentConfiguration()
-
-    if not ENV_CONFIG.bucket:
-        LOGGER.debug(f"Fetching config from file system: {ENV_CONFIG.config_path}")
-        global_config = load_yaml_file(ENV_CONFIG.config_path)
-    else:
-        LOGGER.debug(
-            f"Fetching config from GCS bucket: gs://{ENV_CONFIG.bucket}/{ENV_CONFIG.config_path}"
-        )
-        global_config = load_yaml(
-            read_cloud_storage(ENV_CONFIG.bucket, ENV_CONFIG.config_path)
-        )
-
-    LOGGER.info(f"Effective config: {global_config}")
-
-    return main_method(
-        bearer_token=ENV_CONFIG.bearer_token,
-        harvest_account=ENV_CONFIG.harvest_account,
-        global_config=global_config,
-        from_email=ENV_CONFIG.origin_email_address,
-    )
-
 
 if __name__ == "__main__":
     harvest_reports()

@@ -1,15 +1,15 @@
+import logging
 import os
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import List, Optional
-import logging
 
+import yaml
+from dacite import from_dict
+from google.cloud import storage as storage
 from google.cloud.secretmanager import SecretManagerServiceClient
 
-
 LOGGER = logging.getLogger(__name__)
-
-
 HARVEST_ACCOUNT_ID = "HARVEST_ACCOUNT_ID"
 BEARER_TOKEN = "BEARER_TOKEN"
 BEARER_TOKEN_SECRET = "BEARER_TOKEN_SECRET"
@@ -217,3 +217,26 @@ class ReporterConfig(object):
     recipients: Recipients
     exceptions: Recipients
     customer_filter: Optional[List[str]] = field(default_factory=list)
+
+def load(fname: str, bucket=None, project=None) -> ReporterConfig:
+    if bucket:
+        f = load_from_gcs(bucket, project, fname)
+    else:
+        with open(fname, "r") as f_obj:
+            f = f_obj.read()
+
+    return from_dict(
+        data_class=ReporterConfig, data=yaml.load(f, Loader=yaml.Loader)
+    )
+
+
+def load_from_gcs(bucket: str, project: str, fname: str) -> str:
+    """ Returns file contents from provided bucket and file names"""
+    client = storage.Client(project=project)
+    bucket = client.bucket(bucket)
+    blob = bucket.blob(fname)
+    response = blob.download_as_string()
+
+    LOGGER.debug("Fetched config from Cloud Storage")
+
+    return response

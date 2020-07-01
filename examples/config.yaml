@@ -45,7 +45,7 @@ recipients:
       teams:
         - <teams_webhook_url>
   emails:
-    - dseymour@taos.com
+    - test@example.com
   slack:
     - <slack_webhook_url>
   teams:
@@ -54,7 +54,7 @@ recipients:
 # Configuration on where to alert on error
 exceptions:
   emails:
-    - dseymour@taos.com
+    - test@example.com
   slack:
     - <slack_webhook_url>
   teams:

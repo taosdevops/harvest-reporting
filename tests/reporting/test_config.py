@@ -1,12 +1,12 @@
+import os
 import unittest
 import unittest.mock
-import os
-import reporting.config
+
 from google.cloud.secretmanager import SecretManagerServiceClient
-from google.cloud.secretmanager_v1.types import (
-    AccessSecretVersionResponse,
-    SecretPayload,
-)
+from google.cloud.secretmanager_v1.types import (AccessSecretVersionResponse,
+                                                 SecretPayload)
+
+import reporting.config
 
 
 class TestEnvironmentConfiguration(unittest.TestCase):

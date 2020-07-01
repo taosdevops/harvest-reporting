@@ -1,21 +1,13 @@
 import logging
 from datetime import date
 from typing import List
+
 import sendgrid
-from sendgrid.helpers.mail import (
-    Content,
-    Email,
-    Header,
-    Mail,
-    Subject,
-    Substitution,
-    TemplateId,
-    To,
-)
+from sendgrid.helpers.mail import (Content, Email, Header, Mail, Subject,
+                                   Substitution, TemplateId, To)
 
-from reporting.config import EnvironmentConfiguration
 from harvestapi.customer import HarvestCustomer
-
+from reporting.config import EnvironmentConfiguration
 
 LOGGER = logging.getLogger(__name__)
 

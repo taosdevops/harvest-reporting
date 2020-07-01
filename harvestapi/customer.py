@@ -63,23 +63,25 @@ class HarvestCustomer(object):
     ) -> float:
         regex = re.compile("([0-9]{4})-([0-9]{2})-([0-9]{2})")
 
-        return sum(
+        return round(sum(
             [
                 entry.hours
                 for entry in self.time_entries
                 if regex.search(entry.spent_date).group(2) == month
                 and regex.search(entry.spent_date).group(1) == year
             ]
-        )
+        ), 1)
 
     def time_remaining(
         self, month: str = _get_current_month(), year: str = _get_current_year(),
     ) -> float:
 
-        return self.config.hours - self.time_used()
+        return round((self.config.hours - self.time_used(month=month, year=year)), 1)
 
-    def percentage_hours_used(self) -> int:
-        return int(math.ceil((self.time_used() / self.config.hours) * 100))
+    def percentage_hours_used(
+        self, month: str = _get_current_month(), year: str = _get_current_year()
+    ) -> int:
+        return round(((self.time_used(month=month, year=year) / self.config.hours) * 100), 1)
 
 
 def get_recipients_from_config(customer: Client, config: ReporterConfig) -> Recipients:

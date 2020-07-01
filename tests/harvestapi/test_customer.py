@@ -8,7 +8,7 @@ from harvest.harvestdataclasses import Client, TimeEntries, TimeEntry
 from vcr_unittest import VCRTestCase
 import gzip
 from dacite import from_dict
-import yamlj
+import yaml
 
 import harvestapi.customer as customer
 import reporting.config
@@ -41,7 +41,7 @@ class TestHarvestCustomer(VCRTestCase):
 
     @VCR.use_cassette
     def test_time_used(self):
-        assert self.customer.time_used(month="06", year="2020") == 46.629999999999995
+        assert self.customer.time_used(month="06", year="2020") == 46.6
 
     @VCR.use_cassette
     def test_get_time_entries(self):
@@ -54,11 +54,11 @@ class TestHarvestCustomer(VCRTestCase):
 
     @VCR.use_cassette
     def test_time_remaining(self):
-        assert self.customer.time_remaining(month="06", year="2020") == 33.370000000000005
+        assert self.customer.time_remaining(month="06", year="2020") == 33.4
 
     @VCR.use_cassette
     def test_percentage_hours_used(self):
-        assert self.customer.percentage_hours_used(month="06", year="2020") == 59
+        assert self.customer.percentage_hours_used(month="06", year="2020") == 58.2
 
     def test_get_recipients_from_config(self):
         # Client object to use to search against test configs

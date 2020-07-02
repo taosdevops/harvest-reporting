@@ -46,8 +46,6 @@ class SendGridSummaryEmail:
         if emails:
             mail = self.construct_mail(emails, content)
 
-            LOGGER.debug(mail)
-
             response = self.sg_client.client.mail.send.post(request_body=mail.get())
 
             return response

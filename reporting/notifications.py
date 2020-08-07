@@ -17,11 +17,11 @@ LOGGER = logging.getLogger(__name__)
 
 
 class SlackSendError(BaseException):
-    def __init__(self, channel, status_code):
+    def __init__(self, channel, message):
         self.channel = channel
-        self.status_code = status_code
+        self.message = message
         super().__init__(
-            f"Failed to send webhook to Slack channel {self.channel}. Status code: {self.status_code}"
+            f"Failed to send webhook to Slack channel {self.channel}. {self.message}"
         )
 
 
@@ -32,11 +32,11 @@ class TeamsSendError(BaseException):
 
 
 class EmailSendError(BaseException):
-    def __init__(self, channels, status_code):
+    def __init__(self, channels, message):
         self.channels = channels
-        self.status_code = status_code
+        self.message = message
         super().__init__(
-            f"Failed to send webhook to email addresses {self.channels}. Status code: {self.status_code}"
+            f"Failed to send webhook to email addresses {self.channels}. {self.message}"
         )
 
 
@@ -106,6 +106,7 @@ class NotificationManager:
                 )
             except Exception as e:
                 self._send_exception_channels(e)
+
         if self.recipients.teams:
             try:
                 self._send_teams_channels(
@@ -113,6 +114,7 @@ class NotificationManager:
                 )
             except Exception as e:
                 self._send_exception_channels(e)
+
         if self.recipients.emails:
             try:
                 if self.recipients.config:
@@ -155,9 +157,16 @@ class NotificationManager:
     def _send_slack_channels(self, channels: List[str], msg: str):
         for channel in channels:
             LOGGER.debug("Sending slack notification")
-            response = self.slack_client.post_slack_message(channel, msg)
+
+            try:
+                response = self.slack_client.post_slack_message(channel, msg)
+            except Exception as e:
+                raise SlackSendError(channel, e)
+
             if response["status_code"] != 200:
-                raise SlackSendError(channel, response["status_code"])
+                raise SlackSendError(
+                    channel, "Status code: {}".format(response["status_code"])
+                )
 
             LOGGER.debug(f"Sent slack notification")
             LOGGER.debug(f"Response: {response}")
@@ -173,8 +182,11 @@ class NotificationManager:
                 "sections": msg,
             }
 
-            if not message.send():
-                raise TeamsSendError(channel)
+            try:
+                if not message.send():
+                    raise TeamsSendError(channel)
+            except Exception as e:
+                raise TeamsSendError(f"{channel}. Error: {e}")
 
             LOGGER.debug(f"Sent Teams notification to {channel}")
 
@@ -195,10 +207,15 @@ class NotificationManager:
                 api_key=self.sendgrid_api_key, from_email=self.from_email
             )
 
-        response = email.send(channels, msg)
+        try:
+            response = email.send(channels, msg)
+        except Exception as e:
+            raise EmailSendError(channels, e)
 
         if response.status_code > 299:
-            raise EmailSendError(channels, response.status_code)
+            raise EmailSendError(
+                channels, "Status code: {}".format(response.status_code)
+            )
 
         LOGGER.debug(f"Sent email notification to {channels}")
 

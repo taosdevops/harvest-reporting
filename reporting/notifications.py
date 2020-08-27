@@ -85,16 +85,9 @@ class NotificationManager:
 
             if len(customer.recipients.emails) > 0:
                 try:
-                    if self.recipients.config:
-                        self._send_email_channels(
-                            self.recipients.emails,
-                            self._get_email_payload([customer]),
-                            self.recipients.config.templateId,
-                        )
-                    else:
-                        self._send_email_channels(
-                            self.recipients.emails, self._get_email_payload([customer]),
-                        )
+                    self._send_email_channels(
+                        customer.recipients.emails, self._get_email_payload([customer]),
+                    )
                 except EmailSendError as e:
                     self._send_exception_channels(e, customer)
 

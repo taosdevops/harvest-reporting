@@ -34,7 +34,9 @@ class SendGridSummaryEmail:
             content (str): String of content to add to the email body
 
             Mail: Completed Mail object capable of being sent
+
         Returns:
+            sendgrid.helpers.mail.Mail()
         """
         current_date = date.today().strftime("%B %d, %Y")
         subject = Subject(f"DevOps Now hours usage as of {current_date}")

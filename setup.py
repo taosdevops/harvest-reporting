@@ -11,12 +11,25 @@ setup(
     version="0.1.1",
     url="https://github.com/taosmountain/harvest-reporting",
     install_requires=[
-        "Click>=7.0",
-        "colorama>=0.4",
-        "PyYAML>=5.1",
-        "requests>=2.22",
-        "sendgrid>=6.2",
+        "Click",
+        "colorama",
+        "google-cloud-secret-manager",
+        "google-cloud-storage",
+        "pymsteams",
+        "python-harvest-apiv2",
+        "PyYAML",
+        "requests",
+        "sendgrid",
+        "taosdevopsutils"
     ],
+    extras_require={
+        "docs": [
+            "recommonmark",
+            "sphinx",
+            "sphinx_click",
+            "sphinx_rtd_theme"
+        ]
+    },
     entry_points="""
         [console_scripts]
         harvestcli=hreporting.cli:main

@@ -1,5 +1,4 @@
-
-Harvest Reporting
+Reporting
 =================
 
 This project is to increase the integration of Harvest
@@ -10,13 +9,12 @@ as a time management solution with other applications.
    :caption: Contents:
 
    cli
-   client
    client_config
    cloudfunction
    config
+   customer
    emails
    notifications
-   utils
 
 
 Indices and tables

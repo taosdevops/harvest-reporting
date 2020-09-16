@@ -1,8 +1,8 @@
 
-Harvest Emails Module
+Emails
 ---------------------
 
-.. automodule:: hreporting.emails
+.. automodule:: sendgridapi.emails
    :members:
    :undoc-members:
    :show-inheritance:

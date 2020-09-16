@@ -3,5 +3,5 @@
 Harvest Reporting Environment Config Variables
 ==============================================
 
-.. automodule:: hreporting.config
+.. automodule:: reporting.config
    :members:

@@ -33,6 +33,6 @@ HARVEST_CONFIG       --config-path
 CLI Module
 ==========
 
-.. click:: hreporting.cli:main
+.. click:: reporting.config:main
    :prog: harvestcli
    :show-nested:

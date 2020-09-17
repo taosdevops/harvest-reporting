@@ -5,3 +5,6 @@ coverage:
       target: auto
       base: auto
       threshold: 2%
+
+ignore:
+  - "setup.py"

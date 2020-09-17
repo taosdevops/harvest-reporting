@@ -1,4 +1,6 @@
 from setuptools import find_packages, setup
+import pathlib
+import os
 
 setup(
     author="TAOS DevopsNow",
@@ -8,7 +10,7 @@ setup(
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     packages=find_packages(exclude=["contrib", "docs", "tests"]),
-    version="0.1.1",
+    version=open(os.path.join(".", "VERSION")).read().strip(),
     url="https://github.com/taosmountain/harvest-reporting",
     install_requires=[
         "Click",
@@ -24,7 +26,6 @@ setup(
     ],
     extras_require={
         "docs": [
-            "recommonmark",
             "sphinx",
             "sphinx_click",
             "sphinx_rtd_theme"

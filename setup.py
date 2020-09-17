@@ -13,14 +13,11 @@ setup(
     version=open(os.path.join(".", "VERSION")).read().strip(),
     url="https://github.com/taosmountain/harvest-reporting",
     install_requires=[
-        "Click",
-        "colorama",
+        "dacite",
         "google-cloud-secret-manager",
-        "google-cloud-storage",
+        "harvest",
         "pymsteams",
-        "python-harvest-apiv2",
         "PyYAML",
-        "requests",
         "sendgrid",
         "taosdevopsutils"
     ],
@@ -31,10 +28,10 @@ setup(
             "sphinx_rtd_theme"
         ]
     },
-    entry_points="""
-        [console_scripts]
-        harvestcli=hreporting.cli:main
-    """,
+    # entry_points="""
+    #     [console_scripts]
+    #     harvestcli=hreporting.cli:main
+    # """,
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",

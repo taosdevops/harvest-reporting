@@ -102,10 +102,10 @@ Install Dev dependencies
 
 Install the devrequirements to install sphinx and its dependencies then run
 
-`sphinx-build .docs docs`
+`cd docsrc && make github`
 
 #### Hosting the docs
 
-`cd docs && python -m http.server`
+`cd PROJECT_ROOT && python -m http.server`
 
 This will host the docs [locally on 8000](http://localhost:8000)

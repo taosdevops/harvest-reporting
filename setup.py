@@ -24,14 +24,9 @@ setup(
     extras_require={
         "docs": [
             "sphinx",
-            "sphinx_click",
             "sphinx_rtd_theme"
         ]
     },
-    # entry_points="""
-    #     [console_scripts]
-    #     harvestcli=hreporting.cli:main
-    # """,
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",

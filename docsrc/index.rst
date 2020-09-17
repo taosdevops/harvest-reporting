@@ -8,13 +8,13 @@ as a time management solution with other applications.
    :maxdepth: 2
    :caption: Contents:
 
-   cli
+   getting_started
    client_config
    cloudfunction
-   config
-   customer
-   emails
-   notifications
+   reporting.config
+   harvestapi.customer
+   sendgridapi.emails
+   reporting.notifications
 
 
 Indices and tables

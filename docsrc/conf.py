@@ -18,11 +18,11 @@ sys.path.insert(0, os.path.abspath(".."))
 
 # -- Project information -----------------------------------------------------
 project = "Harvest Reporting"
-copyright = "2019, Austin Earl, Adam McChesney, Robert R. Meyer"
-author = "Austin Earl, Adam McChesney, Robert R. Meyer"
+copyright = "2020, Taos LLC."
+author = "DevOpsNow"
 
 # The full version, including alpha/beta/rc tags
-release = "0.1.1"
+release = open(os.path.join("..", "VERSION")).read().strip()
 
 # -- General configuration ---------------------------------------------------
 
@@ -30,7 +30,6 @@ release = "0.1.1"
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    "recommonmark",
     "sphinx.ext.autodoc",
     "sphinx.ext.githubpages",
     "sphinx.ext.ifconfig",

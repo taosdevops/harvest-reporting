@@ -1,6 +1,3 @@
-CLI
-+++
-
 Getting started
 ===============
 
@@ -29,10 +26,3 @@ BEARER_TOKEN         -b, --bearer-token
 HARVEST_ACCOUNT_ID   --account-id
 HARVEST_CONFIG       --config-path
 ==================  ====================
-
-CLI Module
-==========
-
-.. click:: reporting.config:main
-   :prog: harvestcli
-   :show-nested:

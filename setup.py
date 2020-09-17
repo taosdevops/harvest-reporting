@@ -25,6 +25,11 @@ setup(
         "docs": [
             "sphinx",
             "sphinx_rtd_theme"
+        ],
+        "tests": [
+            "vcrpy",
+            "vcrpy-unittest",
+            "pytest-vcr"
         ]
     },
     classifiers=[

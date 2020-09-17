@@ -35,7 +35,6 @@ extensions = [
     "sphinx.ext.ifconfig",
     "sphinx.ext.intersphinx",
     "sphinx.ext.viewcode",
-    "sphinx_click.ext",
     "sphinx_rtd_theme",
 ]
 

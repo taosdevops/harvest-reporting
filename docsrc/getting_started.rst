@@ -19,10 +19,14 @@ Environment Variables
 When using the cli Environment Variables can be used as an alternative to
 providing the input via command line flags.
 
-==================  ====================
-  Variable            Option
-==================  ====================
-BEARER_TOKEN         -b, --bearer-token
-HARVEST_ACCOUNT_ID   --account-id
-HARVEST_CONFIG       --config-path
-==================  ====================
+======================= ====================
+  Variable                DESCRIPTION
+======================= ====================
+BEARER_TOKEN_SECRET     -b, --bearer-token
+BUCKET
+CONFIG_PATH             --config-path
+LOG_LEVEL
+SENDGRID_API_KEY_SECRET
+ORIGIN_EMAIL_ADDRESS
+HARVEST_ACCOUNT_ID      --account-id       
+==================      ====================

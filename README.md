@@ -109,3 +109,9 @@ Install the devrequirements to install sphinx and its dependencies then run
 `cd PROJECT_ROOT && python -m http.server`
 
 This will host the docs [locally on 8000](http://localhost:8000)
+
+#### Testing
+
+To test, you will need the following environment variables set:
+
+

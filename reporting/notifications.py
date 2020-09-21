@@ -11,7 +11,7 @@ from taosdevopsutils.slack import Slack
 from harvestapi.customer import HarvestCustomer
 from sendgridapi.emails import SendGridSummaryEmail
 
-from .config import Recipients
+from harvestapi.reporting.config import Recipients
 
 LOGGER = logging.getLogger(__name__)
 
@@ -71,7 +71,7 @@ class NotificationManager:
                 try:
                     self._send_slack_channels(
                         self.recipients.slack, self._get_slack_payload([customer])
-                    )
+                    )              
                 except SlackSendError as e:
                     self._send_exception_channels(e, customer)
 
@@ -92,35 +92,22 @@ class NotificationManager:
                     self._send_exception_channels(e, customer)
 
     def _send_global_notifications(self):
-        if self.recipients.slack:
-            try:
+        try:
+            if self.recipients.slack:
                 self._send_slack_channels(
                     self.recipients.slack, self._get_slack_payload(self.customers)
                 )
-            except Exception as e:
-                self._send_exception_channels(e)
-
-        if self.recipients.teams:
-            try:
+            if self.recipients.teams:
                 self._send_teams_channels(
                     self.recipients.teams, self._get_teams_sections(self.customers)
                 )
-            except Exception as e:
-                self._send_exception_channels(e)
-
-        if self.recipients.emails:
-            try:
-                if self.recipients.config:
-                    self._send_email_channels(
-                        self.recipients.emails,
-                        self._get_email_payload(self.customers),
-                        self.recipients.config.templateId,
-                    )
-                else:
-                    self._send_email_channels(
-                        self.recipients.emails, self._get_email_payload(self.customers),
-                    )
-            except Exception as e:
+            if self.recipients.emails:
+                self._send_email_channels(
+                    self.recipients.emails,
+                    self._get_email_payload(self.customers),
+                    self.recipients.config.templateId,
+                )
+        except Exception as e:
                 self._send_exception_channels(e)
 
     def _send_exception_channels(self, e: Exception, customer: HarvestCustomer = None):
@@ -131,19 +118,15 @@ class NotificationManager:
 
         if self.exception_config.teams:
             self._send_teams_channels(
-                self.exception_config.teams, self._get_teams_exception_sections(err)
+                self.exception_config.teams, 
+                self._get_teams_exception_sections(err)
             )
         if self.exception_config.emails:
-            if self.exception_config.config:
-                self._send_email_channels(
-                    self.exception_config.emails,
-                    err,
-                    template_id=self.exception_config.config.templateId,
-                )
-            else:
-                self._send_email_channels(
-                    self.exception_config.emails, err,
-                )
+            self._send_email_channels(
+                self.exception_config.emails,
+                err,
+                template_id=self.exception_config.config.templateId,
+            )
         if self.exception_config.slack:
             self._send_slack_channels(self.exception_config.slack, err)
 
@@ -167,7 +150,7 @@ class NotificationManager:
     def _send_teams_channels(self, channels: List[str], msg: List[dict]):
         for channel in channels:
             LOGGER.debug("Sending Teams notification")
-
+            print(pymsteams.__dict__)
             message = pymsteams.connectorcard(channel)
             message.payload = {
                 "title": "DevOps Time Reports",
@@ -189,16 +172,11 @@ class NotificationManager:
 
         LOGGER.debug("Sending email notifications")
 
-        if template_id:
-            email = SendGridSummaryEmail(
-                api_key=self.sendgrid_api_key,
-                from_email=self.from_email,
-                template_id=template_id,
-            )
-        else:
-            email = SendGridSummaryEmail(
-                api_key=self.sendgrid_api_key, from_email=self.from_email
-            )
+        email = SendGridSummaryEmail(
+            api_key=self.sendgrid_api_key,
+            from_email=self.from_email,
+            template_id=template_id,
+        )
 
         try:
             response = email.send(channels, msg)

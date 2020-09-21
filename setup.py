@@ -27,6 +27,7 @@ setup(
             "sphinx_rtd_theme"
         ],
         "tests": [
+            "pytest",
             "vcrpy",
             "vcrpy-unittest",
             "pytest-vcr"

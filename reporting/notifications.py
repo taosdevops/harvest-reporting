@@ -11,7 +11,7 @@ from taosdevopsutils.slack import Slack
 from harvestapi.customer import HarvestCustomer
 from sendgridapi.emails import SendGridSummaryEmail
 
-from .config import Recipients
+from reporting.config import Recipients
 
 LOGGER = logging.getLogger(__name__)
 

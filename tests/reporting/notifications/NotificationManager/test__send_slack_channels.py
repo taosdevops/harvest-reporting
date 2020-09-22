@@ -4,7 +4,7 @@ import reporting.notifications
 
 
 @pytest.mark.parametrize("num_of_channels", [0, 1, 2])
-def test_Given_numberOfChannelsANDsuccessfulResponse_When__send_slack_channelsIsCalled_Then_postSlackMessageToChannelCallCountIsEqualToNumberOfChannels(num_of_channels, mock_reporting_notifications_NotificationManager):
+def test_assert_call_count_post_slack_message_per_number_of_channels(num_of_channels, mock_reporting_notifications_NotificationManager):
     del mock_reporting_notifications_NotificationManager._send_slack_channels
     mock_reporting_notifications_NotificationManager.slack_client.post_slack_message.return_value = {"status_code": 200}
 
@@ -18,7 +18,7 @@ def test_Given_numberOfChannelsANDsuccessfulResponse_When__send_slack_channelsIs
 
 
 @pytest.mark.parametrize("returned_response", [302, 403, 500, Exception])
-def test_Given_badResponseORException_When__send_slack_channelsIsCalled_Then_postSlackMessageToChannelRaisesSlackSendError(returned_response, mock_reporting_notifications_NotificationManager):
+def test_raises_SlackSendError_on_bad_response_or_exception(returned_response, mock_reporting_notifications_NotificationManager):
     del mock_reporting_notifications_NotificationManager._send_slack_channels
     mock_reporting_notifications_NotificationManager.slack_client.post_slack_message.return_value = {"status_code": returned_response}
 

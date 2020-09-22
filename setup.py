@@ -15,7 +15,7 @@ setup(
     install_requires=[
         "dacite",
         "google-cloud-secret-manager",
-        "harvest",
+        "python-harvest-apiv2",
         "pymsteams",
         "PyYAML",
         "sendgrid",

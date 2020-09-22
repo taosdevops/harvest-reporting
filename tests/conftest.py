@@ -6,8 +6,6 @@ import pytest
 import reporting
 from harvestapi.customer import HarvestCustomer
 import taosdevopsutils
-import pymsteams
-
 
 def mock_all_obj_methods(instantiated_obj):
     for method in dir(instantiated_obj):
@@ -69,13 +67,6 @@ def mock_taosdevopsutils_slack_Slack():
     mock_slack_client = taosdevopsutils.slack.Slack
     mock_slack_client = MagicMock()
     return mock_slack_client
-
-
-@pytest.fixture(scope="function")
-def mock_pymsteams_connectorcard():
-    mock_pymsteams_connectorcard = pymsteams.connectorcard
-    mock_pymsteams_connectorcard = MagicMock()
-    return mock_pymsteams_connectorcard
 
 
 @pytest.fixture(scope="function")

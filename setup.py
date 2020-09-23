@@ -15,6 +15,7 @@ setup(
     install_requires=[
         "dacite",
         "google-cloud-secret-manager",
+        "google-cloud-storage",
         "python-harvest-apiv2",
         "pymsteams",
         "PyYAML",

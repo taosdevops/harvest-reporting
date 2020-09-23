@@ -3,8 +3,8 @@ customers:
     hours: 310
 recipients:
   emails:
-    - gshelbydormer@taos.com
+    - tester@example.com
 # Configuration on where to alert on error
 exceptions:
   emails:
-    - gshelbydormer@taos.com
+    - tester@example.com

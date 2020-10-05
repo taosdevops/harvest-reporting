@@ -1,0 +1,291 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Customer &mdash; Harvest Reporting 0.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Emails" href="sendgridapi.emails.html" />
+    <link rel="prev" title="Harvest Reporting Environment Config Variables" href="reporting.config.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> Harvest Reporting
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="client_config.html">Harvest Client Configuration File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cloudfunction.html">Harvest Messenger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reporting.config.html">Harvest Reporting Environment Config Variables</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Customer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sendgridapi.emails.html">Emails</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reporting.notifications.html">Notifications</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Harvest Reporting</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Customer</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/harvestapi.customer.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="customer">
+<h1>Customer<a class="headerlink" href="#customer" title="Permalink to this headline">¶</a></h1>
+<p>Client for interacting with the harvest api to retrieve
+usage statistics.</p>
+<span class="target" id="module-harvestapi.customer"></span><dl class="py class">
+<dt id="harvestapi.customer.HarvestCustomer">
+<em class="property">class </em><code class="sig-prename descclassname">harvestapi.customer.</code><code class="sig-name descname">HarvestCustomer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">client</span><span class="p">:</span> <span class="n">harvest.harvest.Harvest</span></em>, <em class="sig-param"><span class="n">config</span><span class="p">:</span> <span class="n"><a class="reference internal" href="reporting.config.html#reporting.config.Customer" title="reporting.config.Customer">reporting.config.Customer</a></span></em>, <em class="sig-param"><span class="n">recipients</span><span class="p">:</span> <span class="n"><a class="reference internal" href="reporting.config.html#reporting.config.Recipients" title="reporting.config.Recipients">reporting.config.Recipients</a></span></em>, <em class="sig-param"><span class="n">customer</span><span class="p">:</span> <span class="n">harvest.harvestdataclasses.Client</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/harvestapi/customer.html#HarvestCustomer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvestapi.customer.HarvestCustomer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="harvestapi.customer.HarvestCustomer.percentage_hours_used">
+<code class="sig-name descname">percentage_hours_used</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">month</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'10'</span></em>, <em class="sig-param"><span class="n">year</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'2020'</span></em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="_modules/harvestapi/customer.html#HarvestCustomer.percentage_hours_used"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvestapi.customer.HarvestCustomer.percentage_hours_used" title="Permalink to this definition">¶</a></dt>
+<dd><p>Percentage of a customer’s allotted hours utilized for the given month/year.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>month (str, optional): Month for which to calculate. Defaults to _get_current_month().
+year (str, optional): Year for which to calculate. Defaults to _get_current_year().</p>
+</dd>
+<dt>Returns:</dt><dd><p>float: Percentage of hours used rounded to the nearest tenth</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="harvestapi.customer.HarvestCustomer.time_entries">
+<em class="property">property </em><code class="sig-name descname">time_entries</code><a class="headerlink" href="#harvestapi.customer.HarvestCustomer.time_entries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class property that stores a customer’s time entries. Values are all
+lazy loaded.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>List[TimeEntry]: Time entry data as fetched from the Harvest API</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="harvestapi.customer.HarvestCustomer.time_remaining">
+<code class="sig-name descname">time_remaining</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">month</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'10'</span></em>, <em class="sig-param"><span class="n">year</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'2020'</span></em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="_modules/harvestapi/customer.html#HarvestCustomer.time_remaining"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvestapi.customer.HarvestCustomer.time_remaining" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates a customer’s remaining time for the specified month/year.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>month (str, optional): Month for which to calculate. Defaults to _get_current_month().
+year (str, optional): Year for which to calculate. Defaults to _get_current_year().</p>
+</dd>
+<dt>Returns:</dt><dd><p>float: Time remaining rounded to the nearest tenth</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="harvestapi.customer.HarvestCustomer.time_used">
+<code class="sig-name descname">time_used</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">month</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'10'</span></em>, <em class="sig-param"><span class="n">year</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'2020'</span></em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="_modules/harvestapi/customer.html#HarvestCustomer.time_used"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvestapi.customer.HarvestCustomer.time_used" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the amount of time used by a customer in the specified
+month/year.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>month (str, optional): Month number for which to calculate. Defaults to _get_current_month().
+year (str, optional): Year number for which to calculate. Defaults to _get_current_year().</p>
+</dd>
+<dt>Returns:</dt><dd><p>float: Total utilized time rounded to the nearest tenth</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="harvestapi.customer.get_recipients_from_config">
+<code class="sig-prename descclassname">harvestapi.customer.</code><code class="sig-name descname">get_recipients_from_config</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">customer</span><span class="p">:</span> <span class="n">harvest.harvestdataclasses.Client</span></em>, <em class="sig-param"><span class="n">config</span><span class="p">:</span> <span class="n"><a class="reference internal" href="reporting.config.html#reporting.config.ReporterConfig" title="reporting.config.ReporterConfig">reporting.config.ReporterConfig</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="reporting.config.html#reporting.config.Recipients" title="reporting.config.Recipients">reporting.config.Recipients</a><a class="reference internal" href="_modules/harvestapi/customer.html#get_recipients_from_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#harvestapi.customer.get_recipients_from_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function to match a customer to the recipients specified in the config.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>customer (Client): Customer to fetch recipients for
+config (ReporterConfig): Config specifying the customer-to-recipient mapping</p>
+</dd>
+<dt>Returns:</dt><dd><p>Recipients: Recipients object defining which channels and people things should be sent to.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="sendgridapi.emails.html" class="btn btn-neutral float-right" title="Emails" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="reporting.config.html" class="btn btn-neutral float-left" title="Harvest Reporting Environment Config Variables" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Taos LLC.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

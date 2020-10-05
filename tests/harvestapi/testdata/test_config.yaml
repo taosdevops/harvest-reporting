@@ -1,0 +1,10 @@
+customers:
+  - name: Testy McTest
+    hours: 310
+recipients:
+  emails:
+    - tester@example.com
+# Configuration on where to alert on error
+exceptions:
+  emails:
+    - tester@example.com

@@ -1,0 +1,624 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>reporting.config &mdash; Harvest Reporting 0.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> Harvest Reporting
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../client_config.html">Harvest Client Configuration File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cloudfunction.html">Harvest Messenger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reporting.config.html">Harvest Reporting Environment Config Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../harvestapi.customer.html">Customer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sendgridapi.emails.html">Emails</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reporting.notifications.html">Notifications</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Harvest Reporting</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>reporting.config</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for reporting.config</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">import</span> <span class="nn">yaml</span>
+<span class="kn">from</span> <span class="nn">dacite</span> <span class="kn">import</span> <span class="n">from_dict</span>
+<span class="kn">from</span> <span class="nn">google.cloud</span> <span class="kn">import</span> <span class="n">storage</span> <span class="k">as</span> <span class="n">storage</span>
+<span class="kn">from</span> <span class="nn">google.cloud.secretmanager</span> <span class="kn">import</span> <span class="n">SecretManagerServiceClient</span>
+
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">HARVEST_ACCOUNT_ID</span> <span class="o">=</span> <span class="s2">&quot;HARVEST_ACCOUNT_ID&quot;</span>
+<span class="n">BEARER_TOKEN</span> <span class="o">=</span> <span class="s2">&quot;BEARER_TOKEN&quot;</span>
+<span class="n">BEARER_TOKEN_SECRET</span> <span class="o">=</span> <span class="s2">&quot;BEARER_TOKEN_SECRET&quot;</span>
+<span class="n">BEARER_TOKEN_SECRET_VERSION</span> <span class="o">=</span> <span class="s2">&quot;BEARER_TOKEN_VERSION&quot;</span>
+<span class="n">ORIGIN_EMAIL_ADDRESS</span> <span class="o">=</span> <span class="s2">&quot;ORIGIN_EMAIL_ADDRESS&quot;</span>
+<span class="n">SENDGRID_API_KEY</span> <span class="o">=</span> <span class="s2">&quot;SENDGRID_API_KEY&quot;</span>
+<span class="n">SENDGRID_API_KEY_SECRET</span> <span class="o">=</span> <span class="s2">&quot;SENDGRID_API_KEY_SECRET&quot;</span>
+<span class="n">SENDGRID_API_KEY_SECRET_VERSION</span> <span class="o">=</span> <span class="s2">&quot;SENDGRID_API_KEY_SECRET_VERSION&quot;</span>
+<span class="n">BUCKET</span> <span class="o">=</span> <span class="s2">&quot;BUCKET&quot;</span>
+<span class="n">CONFIG_PATH</span> <span class="o">=</span> <span class="s2">&quot;CONFIG_PATH&quot;</span>
+<span class="n">GCP_PROJECT</span> <span class="o">=</span> <span class="s2">&quot;GCP_PROJECT&quot;</span>
+<span class="n">LOG_LEVEL</span> <span class="o">=</span> <span class="s2">&quot;LOG_LEVEL&quot;</span>
+
+
+<div class="viewcode-block" id="MissingEnvironmentVariable"><a class="viewcode-back" href="../../reporting.config.html#reporting.config.MissingEnvironmentVariable">[docs]</a><span class="k">class</span> <span class="nc">MissingEnvironmentVariable</span><span class="p">(</span><span class="ne">BaseException</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env_var</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">env_var</span> <span class="o">=</span> <span class="n">env_var</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Missing environment variable </span><span class="si">{</span><span class="n">env_var</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="EnvironmentConfiguration"><a class="viewcode-back" href="../../reporting.config.html#reporting.config.EnvironmentConfiguration">[docs]</a><span class="k">class</span> <span class="nc">EnvironmentConfiguration</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class used to fetch all environment variables used to configure the</span>
+<span class="sd">    reporter. All values are lazy-loaded.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_secrets_client</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log_level</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bearer_token</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_harvest_account</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_origin_email_address</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sendgrid_api_key</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bucket</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config_path</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_project_id</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">secrets_client</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Creates a new secrets client to be used when fetching secrets from</span>
+<span class="sd">        GCP&#39;s secrets manager.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            SecretManagerServiceClient: A secret manager client from Google&#39;s</span>
+<span class="sd">            Python SDK</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_secrets_client</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_secrets_client</span> <span class="o">=</span> <span class="n">SecretManagerServiceClient</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_secrets_client</span>
+
+    <span class="nd">@secrets_client</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">secrets_client</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Allows for manually setting a secrets client</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_secrets_client</span> <span class="o">=</span> <span class="n">client</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">log_level</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Fetch the configured log level. Defaults to `info`.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: String containing configured log level</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_level</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log_level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_log_level</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_level</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">bearer_token</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Fetch the configured Harvest API bearer token.</span>
+
+<span class="sd">        Requires either a `BEARER_TOKEN` environment variable to be set or the</span>
+<span class="sd">        `BEARER_TOKEN_SECRET` environment variable to be set. If the</span>
+<span class="sd">        `BEARER_TOKEN_SECRET` environment variable is set, the</span>
+<span class="sd">        `BEARER_TOKEN_SECRET_VERSION` can also be set to pull a specific secret</span>
+<span class="sd">        version.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            MissingEnvironmentVariable: Raised if no valid bearer token</span>
+<span class="sd">            configuration is present</span>
+
+<span class="sd">        Returns: str: The bearer token</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bearer_token</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_bearer_token</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_bearer_token</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bearer_token</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">harvest_account</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Fetch the Harvest account to query.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            MissingEnvironmentVariable: if the &quot;HARVEST_ACCOUNT_ID&quot; environment</span>
+<span class="sd">            variable is missing</span>
+
+<span class="sd">        Returns: str: Account ID string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_harvest_account</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_harvest_account</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_harvest_account</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_harvest_account</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">origin_email_address</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Fetch email address to use for `From` email header.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            MissingEnvironmentVariable: if `ORIGIN_EMAIL_ADDRESS` environment</span>
+<span class="sd">            variable is missing</span>
+
+<span class="sd">        Returns: str: Email address from which to send mail</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_origin_email_address</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_origin_email_address</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_origin_email_address</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_origin_email_address</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">sendgrid_api_key</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Fetches the Sendgrid API key.</span>
+
+<span class="sd">        The Sendgrid API key can either be passed in directly using the</span>
+<span class="sd">        `SENDGRID_API_KEY` environment variable or can be stored in Google&#39;s Secret</span>
+<span class="sd">        Manger using the `SENDGRID_API_KEY_SECRET` and</span>
+<span class="sd">        `SENDGRID_API_KEY_SECRET_VERSION` environment variables.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            MissingEnvironmentVariable: if one of the required environment</span>
+<span class="sd">            variables is missing</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: Sendgrid API key</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sendgrid_api_key</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sendgrid_api_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_sendgrid_api_key</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sendgrid_api_key</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">bucket</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Fetches bucket from environment if one is specified.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: bucket name if specified</span>
+<span class="sd">            None: if no bucket name specified</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bucket</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_bucket</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_bucket</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bucket</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">config_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Path on file system or in bucket of config file</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            MissingEnvironmentVariable: If no `CONFIG_PATH` environment varialbe</span>
+<span class="sd">            specified.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: Path to config</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config_path</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_config_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_config_path</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config_path</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">project_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Fetches the GCP project ID.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            MissingEnvironmentVariable: if GCP_PROJECT env var is missing</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: GCP project ID</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_project_id</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_project_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_project_id</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_project_id</span>
+
+    <span class="k">def</span> <span class="nf">_get_bearer_token</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Helper function containing logic to fetch Harvest API bearer token</span>
+<span class="sd">        using environment variables.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            MissingEnvironmentVariable: if needed env vars are not present</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: Harvest API bearer toekn</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="n">BEARER_TOKEN</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="n">BEARER_TOKEN</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Use the project ID function since self.project_id hasn&#39;t been</span>
+            <span class="c1"># instantiated yet</span>
+            <span class="n">bearer_token_secret</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="n">BEARER_TOKEN_SECRET</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">bearer_token_secret</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">MissingEnvironmentVariable</span><span class="p">(</span><span class="n">BEARER_TOKEN_SECRET</span><span class="p">)</span>
+
+            <span class="n">bearer_token_version</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="n">BEARER_TOKEN_SECRET_VERSION</span><span class="p">,</span> <span class="s2">&quot;latest&quot;</span><span class="p">)</span>
+
+            <span class="n">version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">secrets_client</span><span class="o">.</span><span class="n">secret_version_path</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_get_project_id</span><span class="p">(),</span> <span class="n">bearer_token_secret</span><span class="p">,</span> <span class="n">bearer_token_version</span>
+            <span class="p">)</span>
+
+            <span class="n">secret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">secrets_client</span><span class="o">.</span><span class="n">access_secret_version</span><span class="p">(</span><span class="n">version</span><span class="p">)</span>
+
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fetched bearer token secret version </span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">secret</span><span class="o">.</span><span class="n">payload</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;UTF-8&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_harvest_account</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Helper function containing logic to fetch Harvest account ID</span>
+<span class="sd">        using environment variables.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            MissingEnvironmentVariable: if HARVEST_ACCOUNT_ID env var is not present</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: Harvest API bearer token</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">harvest_account</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="n">HARVEST_ACCOUNT_ID</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">harvest_account</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MissingEnvironmentVariable</span><span class="p">(</span><span class="n">HARVEST_ACCOUNT_ID</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">harvest_account</span>
+
+    <span class="k">def</span> <span class="nf">_get_origin_email_address</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Helper function containing logic to fetch email address to send</span>
+<span class="sd">        email from using environment variables.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            MissingEnvironmentVariable: if ORIGIN_EMAIL_ADDRESS env var is not present</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: Email address to send mail from</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">email</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="n">ORIGIN_EMAIL_ADDRESS</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">email</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MissingEnvironmentVariable</span><span class="p">(</span><span class="n">ORIGIN_EMAIL_ADDRESS</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">email</span>
+
+    <span class="k">def</span> <span class="nf">_get_sendgrid_api_key</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Helper function containing logic to fetch Sendgrid API key</span>
+<span class="sd">        using environment variables.</span>
+
+<span class="sd">        Required environment variables are SENDGRID_API_KEY _or_</span>
+<span class="sd">        SENDGRID_API_KEY_SECRET with SENDGRID_API_KEY_VERSION.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            MissingEnvironmentVariable: if required env vars are not present</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: Sendgrid API key</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="n">SENDGRID_API_KEY</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="n">SENDGRID_API_KEY</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Use the project ID function since self.project_id hasn&#39;t been</span>
+            <span class="c1"># instantiated yet</span>
+            <span class="n">sendgrid_api_key_secret</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="n">SENDGRID_API_KEY_SECRET</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">sendgrid_api_key_secret</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">MissingEnvironmentVariable</span><span class="p">(</span><span class="n">SENDGRID_API_KEY_SECRET</span><span class="p">)</span>
+
+            <span class="n">sendgrid_api_key_version</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span>
+                <span class="n">SENDGRID_API_KEY_SECRET_VERSION</span><span class="p">,</span> <span class="s2">&quot;latest&quot;</span>
+            <span class="p">)</span>
+
+            <span class="n">version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">secrets_client</span><span class="o">.</span><span class="n">secret_version_path</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_get_project_id</span><span class="p">(),</span>
+                <span class="n">sendgrid_api_key_secret</span><span class="p">,</span>
+                <span class="n">sendgrid_api_key_version</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;fetching secret </span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="n">secret</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">secrets_client</span><span class="o">.</span><span class="n">access_secret_version</span><span class="p">(</span><span class="n">version</span><span class="p">)</span>
+
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fetched secret version </span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">secret</span><span class="o">.</span><span class="n">payload</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;UTF-8&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_bucket</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Helper function containing logic to fetch GCS bucket</span>
+<span class="sd">        using environment variables.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            MissingEnvironmentVariable: if BUCKET env var is not present</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: GCS bucket name</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="n">BUCKET</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_config_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Helper function containing logic to fetch config path</span>
+<span class="sd">        using environment variables.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            MissingEnvironmentVariable: if CONFIG_PATH env var is not present</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: Path to config in bucket</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="n">CONFIG_PATH</span><span class="p">,</span> <span class="s2">&quot;config/clients.yaml&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_project_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Helper function containing logic to fetch GCP project ID</span>
+<span class="sd">        using environment variables.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            MissingEnvironmentVariable: if GCP_PROJECT env var is not present</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: GCP project ID</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">project_id</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="n">GCP_PROJECT</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">project_id</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MissingEnvironmentVariable</span><span class="p">(</span><span class="n">GCP_PROJECT</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">project_id</span>
+
+    <span class="k">def</span> <span class="nf">_get_log_level</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Helper function containing logic to fetch log level</span>
+<span class="sd">        using environment variables.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            MissingEnvironmentVariable: if LOG_LEVEL env var is not present</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: log level, defaults to `info`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="n">LOG_LEVEL</span><span class="p">,</span> <span class="s2">&quot;info&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="VerificationConfig"><a class="viewcode-back" href="../../reporting.config.html#reporting.config.VerificationConfig">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">VerificationConfig</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">email</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">slack</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">teams</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="RecipientsConfig"><a class="viewcode-back" href="../../reporting.config.html#reporting.config.RecipientsConfig">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">RecipientsConfig</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">templateId</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">sendVerificationConfig</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">VerificationConfig</span><span class="p">]</span> <span class="o">=</span> <span class="n">VerificationConfig</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Recipients"><a class="viewcode-back" href="../../reporting.config.html#reporting.config.Recipients">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Recipients</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">RecipientsConfig</span><span class="p">]</span> <span class="o">=</span> <span class="n">RecipientsConfig</span><span class="p">()</span>
+    <span class="n">emails</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">slack</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">teams</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Customer"><a class="viewcode-back" href="../../reporting.config.html#reporting.config.Customer">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Customer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">hours</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">80</span>
+    <span class="n">recipients</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Recipients</span><span class="p">]</span> <span class="o">=</span> <span class="n">Recipients</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="ReporterConfig"><a class="viewcode-back" href="../../reporting.config.html#reporting.config.ReporterConfig">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">ReporterConfig</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">customers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Customer</span><span class="p">]</span>
+    <span class="n">recipients</span><span class="p">:</span> <span class="n">Recipients</span>
+    <span class="n">exceptions</span><span class="p">:</span> <span class="n">Recipients</span>
+    <span class="n">customer_filter</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="load"><a class="viewcode-back" href="../../reporting.config.html#reporting.config.load">[docs]</a><span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="n">fname</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">bucket</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">project</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ReporterConfig</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Function to load config from file system or a GCS bucket.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        fname (str): File to load</span>
+<span class="sd">        bucket (str, optional): Name of bucket to pull from. Defaults to None.</span>
+<span class="sd">        project (str, optional): GCP project the bucket lives in. Defaults to None.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        ReporterConfig: Loaded configuration</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">bucket</span><span class="p">:</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fetching config from Cloud Storage: bucket|</span><span class="si">{</span><span class="n">bucket</span><span class="si">}</span><span class="s2">, project|</span><span class="si">{</span><span class="n">project</span><span class="si">}</span><span class="s2">, file|</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">load_from_gcs</span><span class="p">(</span><span class="n">bucket</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">fname</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fetching config from file system: file|</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f_obj</span><span class="p">:</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="n">f_obj</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">from_dict</span><span class="p">(</span>
+        <span class="n">data_class</span><span class="o">=</span><span class="n">ReporterConfig</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">Loader</span><span class="o">=</span><span class="n">yaml</span><span class="o">.</span><span class="n">Loader</span><span class="p">)</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="load_from_gcs"><a class="viewcode-back" href="../../reporting.config.html#reporting.config.load_from_gcs">[docs]</a><span class="k">def</span> <span class="nf">load_from_gcs</span><span class="p">(</span><span class="n">bucket</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">project</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">fname</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Returns file contents from provided bucket and file names</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        bucket (str): Bucket to fetch file from</span>
+<span class="sd">        project (str): Project in which bucket lives</span>
+<span class="sd">        fname (str): File path in bucket to download</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: Full file downloaded from GCS</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">storage</span><span class="o">.</span><span class="n">Client</span><span class="p">(</span><span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">)</span>
+    <span class="n">bucket</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">bucket</span><span class="p">(</span><span class="n">bucket</span><span class="p">)</span>
+    <span class="n">blob</span> <span class="o">=</span> <span class="n">bucket</span><span class="o">.</span><span class="n">blob</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">blob</span><span class="o">.</span><span class="n">download_as_string</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">response</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Taos LLC.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,479 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>reporting.notifications &mdash; Harvest Reporting 0.1.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> Harvest Reporting
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../client_config.html">Harvest Client Configuration File</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../cloudfunction.html">Harvest Messenger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reporting.config.html">Harvest Reporting Environment Config Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../harvestapi.customer.html">Customer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sendgridapi.emails.html">Emails</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reporting.notifications.html">Notifications</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Harvest Reporting</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>reporting.notifications</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for reporting.notifications</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+
+<span class="kn">import</span> <span class="nn">pymsteams</span>
+<span class="kn">from</span> <span class="nn">harvest.harvestdataclasses</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span> <span class="nn">taosdevopsutils.slack</span> <span class="kn">import</span> <span class="n">Slack</span>
+
+<span class="kn">from</span> <span class="nn">harvestapi.customer</span> <span class="kn">import</span> <span class="n">HarvestCustomer</span>
+<span class="kn">from</span> <span class="nn">reporting.config</span> <span class="kn">import</span> <span class="n">Recipients</span>
+<span class="kn">from</span> <span class="nn">sendgridapi.emails</span> <span class="kn">import</span> <span class="n">SendGridSummaryEmail</span>
+
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="SlackSendError"><a class="viewcode-back" href="../../reporting.notifications.html#reporting.notifications.SlackSendError">[docs]</a><span class="k">class</span> <span class="nc">SlackSendError</span><span class="p">(</span><span class="ne">BaseException</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">channel</span> <span class="o">=</span> <span class="n">channel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Failed to send webhook to Slack channel </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TeamsSendError"><a class="viewcode-back" href="../../reporting.notifications.html#reporting.notifications.TeamsSendError">[docs]</a><span class="k">class</span> <span class="nc">TeamsSendError</span><span class="p">(</span><span class="ne">BaseException</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">channel</span> <span class="o">=</span> <span class="n">channel</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to send webhook to Teams channel </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="EmailSendError"><a class="viewcode-back" href="../../reporting.notifications.html#reporting.notifications.EmailSendError">[docs]</a><span class="k">class</span> <span class="nc">EmailSendError</span><span class="p">(</span><span class="ne">BaseException</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channels</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">channels</span> <span class="o">=</span> <span class="n">channels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Failed to send webhook to email addresses </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="NotificationManager"><a class="viewcode-back" href="../../reporting.notifications.html#reporting.notifications.NotificationManager">[docs]</a><span class="k">class</span> <span class="nc">NotificationManager</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">customers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">HarvestCustomer</span><span class="p">],</span>
+        <span class="n">global_recipients</span><span class="p">:</span> <span class="n">Recipients</span><span class="p">,</span>
+        <span class="n">exception_config</span><span class="p">:</span> <span class="n">Recipients</span><span class="p">,</span>
+        <span class="n">sendgrid_api_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">from_email</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slack_client</span> <span class="o">=</span> <span class="n">Slack</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sendgrid_api_key</span> <span class="o">=</span> <span class="n">sendgrid_api_key</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">customers</span> <span class="o">=</span> <span class="n">customers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recipients</span> <span class="o">=</span> <span class="n">global_recipients</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exception_config</span> <span class="o">=</span> <span class="n">exception_config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">from_email</span> <span class="o">=</span> <span class="n">from_email</span>
+
+<div class="viewcode-block" id="NotificationManager.send"><a class="viewcode-back" href="../../reporting.notifications.html#reporting.notifications.NotificationManager.send">[docs]</a>    <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">customer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">customers</span><span class="p">:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Starting to process notifications for </span><span class="si">{</span><span class="n">customer</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_send_customer_notifications</span><span class="p">(</span><span class="n">customer</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_send_global_notifications</span><span class="p">()</span></div>
+
+    <span class="c1"># Post to channel/workspace</span>
+    <span class="k">def</span> <span class="nf">_send_customer_notifications</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">customer</span><span class="p">:</span> <span class="n">HarvestCustomer</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">customer</span><span class="o">.</span><span class="n">recipients</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">customer</span><span class="o">.</span><span class="n">recipients</span><span class="o">.</span><span class="n">slack</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_send_slack_channels</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">recipients</span><span class="o">.</span><span class="n">slack</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_slack_payload</span><span class="p">([</span><span class="n">customer</span><span class="p">])</span>
+                    <span class="p">)</span>              
+                <span class="k">except</span> <span class="n">SlackSendError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_send_exception_channels</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">customer</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">customer</span><span class="o">.</span><span class="n">recipients</span><span class="o">.</span><span class="n">teams</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_send_teams_channels</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">recipients</span><span class="o">.</span><span class="n">teams</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_teams_sections</span><span class="p">([</span><span class="n">customer</span><span class="p">])</span>
+                    <span class="p">)</span>
+                <span class="k">except</span> <span class="n">TeamsSendError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_send_exception_channels</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">customer</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">customer</span><span class="o">.</span><span class="n">recipients</span><span class="o">.</span><span class="n">emails</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_send_email_channels</span><span class="p">(</span>
+                        <span class="n">customer</span><span class="o">.</span><span class="n">recipients</span><span class="o">.</span><span class="n">emails</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_email_payload</span><span class="p">([</span><span class="n">customer</span><span class="p">]),</span>
+                    <span class="p">)</span>
+                <span class="k">except</span> <span class="n">EmailSendError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_send_exception_channels</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">customer</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_send_global_notifications</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">recipients</span><span class="o">.</span><span class="n">slack</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_send_slack_channels</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">recipients</span><span class="o">.</span><span class="n">slack</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_slack_payload</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">customers</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">recipients</span><span class="o">.</span><span class="n">teams</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_send_teams_channels</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">recipients</span><span class="o">.</span><span class="n">teams</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_teams_sections</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">customers</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">recipients</span><span class="o">.</span><span class="n">emails</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_send_email_channels</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">recipients</span><span class="o">.</span><span class="n">emails</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_get_email_payload</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">customers</span><span class="p">),</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">recipients</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">templateId</span><span class="p">,</span>
+                <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_send_exception_channels</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_send_exception_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">customer</span><span class="p">:</span> <span class="n">HarvestCustomer</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">customer</span><span class="p">:</span>
+            <span class="n">err</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Error sending report for </span><span class="si">{</span><span class="n">customer</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">err</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exception_config</span><span class="o">.</span><span class="n">teams</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_send_teams_channels</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">exception_config</span><span class="o">.</span><span class="n">teams</span><span class="p">,</span> 
+                <span class="bp">self</span><span class="o">.</span><span class="n">_get_teams_exception_sections</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exception_config</span><span class="o">.</span><span class="n">emails</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_send_email_channels</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">exception_config</span><span class="o">.</span><span class="n">emails</span><span class="p">,</span>
+                <span class="n">err</span><span class="p">,</span>
+                <span class="n">template_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">exception_config</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">templateId</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exception_config</span><span class="o">.</span><span class="n">slack</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_send_slack_channels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exception_config</span><span class="o">.</span><span class="n">slack</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_send_slack_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channels</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Sending slack notification&quot;</span><span class="p">)</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">slack_client</span><span class="o">.</span><span class="n">post_slack_message</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">SlackSendError</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;status_code&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">SlackSendError</span><span class="p">(</span>
+                    <span class="n">channel</span><span class="p">,</span> <span class="s2">&quot;Status code: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;status_code&quot;</span><span class="p">])</span>
+                <span class="p">)</span>
+
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sent slack notification&quot;</span><span class="p">)</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Response: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_send_teams_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channels</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">msg</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">]):</span>
+        <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Sending Teams notification&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">pymsteams</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">)</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="n">pymsteams</span><span class="o">.</span><span class="n">connectorcard</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
+            <span class="n">message</span><span class="o">.</span><span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;DevOps Time Reports&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;summary&quot;</span><span class="p">:</span> <span class="s2">&quot;Accounting of currently used DevOps Now time&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;sections&quot;</span><span class="p">:</span> <span class="n">msg</span><span class="p">,</span>
+            <span class="p">}</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">message</span><span class="o">.</span><span class="n">send</span><span class="p">():</span>
+                    <span class="k">raise</span> <span class="n">TeamsSendError</span><span class="p">(</span><span class="n">channel</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">TeamsSendError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">channel</span><span class="si">}</span><span class="s2">. Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sent Teams notification to </span><span class="si">{</span><span class="n">channel</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_send_email_channels</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">channels</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">template_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Sending email notifications&quot;</span><span class="p">)</span>
+
+        <span class="n">email</span> <span class="o">=</span> <span class="n">SendGridSummaryEmail</span><span class="p">(</span>
+            <span class="n">api_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sendgrid_api_key</span><span class="p">,</span>
+            <span class="n">from_email</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">from_email</span><span class="p">,</span>
+            <span class="n">template_id</span><span class="o">=</span><span class="n">template_id</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">email</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">channels</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">EmailSendError</span><span class="p">(</span><span class="n">channels</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">&gt;</span> <span class="mi">299</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">EmailSendError</span><span class="p">(</span>
+                <span class="n">channels</span><span class="p">,</span> <span class="s2">&quot;Status code: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sent email notification to </span><span class="si">{</span><span class="n">channels</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_slack_payload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">customers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">HarvestCustomer</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Format JSON body for Slack channel posting&quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;attachments&quot;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_color_code_for_utilization</span><span class="p">(</span>
+                        <span class="n">customer</span><span class="o">.</span><span class="n">percentage_hours_used</span><span class="p">()</span>
+                    <span class="p">),</span>
+                    <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="n">customer</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                    <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">%d%%</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">customer</span><span class="o">.</span><span class="n">percentage_hours_used</span><span class="p">()),</span>
+                    <span class="s2">&quot;fields&quot;</span><span class="p">:</span> <span class="p">[</span>
+                        <span class="p">{</span>
+                            <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Hours Used&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">customer</span><span class="o">.</span><span class="n">time_used</span><span class="p">(),</span>
+                            <span class="s2">&quot;short&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">,</span>
+                        <span class="p">},</span>
+                        <span class="p">{</span>
+                            <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Hours Remaining&quot;</span><span class="p">,</span>
+                            <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">customer</span><span class="o">.</span><span class="n">time_remaining</span><span class="p">(),</span>
+                            <span class="s2">&quot;short&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">,</span>
+                        <span class="p">},</span>
+                    <span class="p">],</span>
+                <span class="p">}</span>
+                <span class="k">for</span> <span class="n">customer</span> <span class="ow">in</span> <span class="n">customers</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">_get_teams_sections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">customers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">HarvestCustomer</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
+        <span class="n">sections</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">customer</span> <span class="ow">in</span> <span class="n">customers</span><span class="p">:</span>
+            <span class="n">section</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;activityTitle&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">customer</span><span class="o">.</span><span class="n">percentage_hours_used</span><span class="p">()</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;Customer: </span><span class="si">{</span><span class="n">customer</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;facts&quot;</span><span class="p">:</span> <span class="p">[</span>
+                    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Hours Used&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">customer</span><span class="o">.</span><span class="n">time_used</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">},</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Hours Remaining&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">customer</span><span class="o">.</span><span class="n">time_remaining</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="p">},</span>
+                <span class="p">],</span>
+            <span class="p">}</span>
+            <span class="n">sections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">section</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">sections</span>
+
+    <span class="k">def</span> <span class="nf">_get_teams_exception_sections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
+        <span class="n">sections</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;activityTitle&quot;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;ERROR&quot;</span><span class="p">,</span> <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">err</span><span class="p">}]</span>
+
+        <span class="k">return</span> <span class="n">sections</span>
+
+    <span class="k">def</span> <span class="nf">_get_email_payload</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">customers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">HarvestCustomer</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="sa">f</span><span class="s2">&quot;&quot;&quot;Client:           </span><span class="si">{</span><span class="n">customer</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"></span>
+<span class="s2">Used Hours:       </span><span class="si">{</span><span class="n">customer</span><span class="o">.</span><span class="n">time_used</span><span class="p">()</span><span class="si">}</span><span class="s2"></span>
+<span class="s2">Remaining Hours:  </span><span class="si">{</span><span class="n">customer</span><span class="o">.</span><span class="n">time_remaining</span><span class="p">()</span><span class="si">}</span><span class="s2"></span>
+<span class="s2">Percent:          </span><span class="si">{</span><span class="n">customer</span><span class="o">.</span><span class="n">percentage_hours_used</span><span class="p">()</span><span class="si">}</span><span class="s2">%</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+                <span class="k">for</span> <span class="n">customer</span> <span class="ow">in</span> <span class="n">customers</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_color_code_for_utilization</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">percent</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">blue</span> <span class="o">=</span> <span class="s2">&quot;#0000ff&quot;</span>
+        <span class="n">green</span> <span class="o">=</span> <span class="s2">&quot;#33cc00&quot;</span>
+        <span class="n">yellow</span> <span class="o">=</span> <span class="s2">&quot;#ffcc00&quot;</span>
+        <span class="n">orange</span> <span class="o">=</span> <span class="s2">&quot;#ff6600&quot;</span>
+        <span class="n">red</span> <span class="o">=</span> <span class="s2">&quot;#ff0000&quot;</span>
+
+        <span class="k">if</span> <span class="n">percent</span> <span class="o">&lt;</span> <span class="mi">40</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">blue</span>
+
+        <span class="k">if</span> <span class="n">percent</span> <span class="o">&lt;</span> <span class="mi">65</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">green</span>
+
+        <span class="k">if</span> <span class="n">percent</span> <span class="o">&lt;</span> <span class="mi">87</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">yellow</span>
+
+        <span class="k">if</span> <span class="n">percent</span> <span class="o">&lt;</span> <span class="mi">95</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">orange</span>
+
+        <span class="k">return</span> <span class="n">red</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Taos LLC.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

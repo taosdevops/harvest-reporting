@@ -34,7 +34,6 @@ jobs:
 
       - name: Run tests and generate coverage
         run: |
-          pws
           ls -la
           python -m pytest --cov=./ --cov-report=xml --cov-config=.coveragerc
 

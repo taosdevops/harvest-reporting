@@ -94,13 +94,11 @@ Create virtual env
 
 `pipenv shell`
 
-Install Dev dependencies
+Install Testing + Doc dependencies
 
-`pipenv install --dev --skip-lock`
+`pipenv install -e .[tests,docs] --dev --skip-lock`
 
 #### Generate Docs
-
-Install the devrequirements to install sphinx and its dependencies then run
 
 `cd docsrc && make github`
 
@@ -110,8 +108,27 @@ Install the devrequirements to install sphinx and its dependencies then run
 
 This will host the docs [locally on 8000](http://localhost:8000)
 
-#### Testing
+#### Local Testing
 
 To test, you will need the following environment variables set:
+  "BEARER_TOKEN"          ##google harvest api token and get a developer token
+  "CONFIG_PATH"           ##configuration file to use, see ./examples/config.yml
+  "HARVEST_ACCOUNT_ID"    ##matches with the bearer token
+  "LOG_LEVEL": "debug"    ##logging level
+  "SENDGRID_API_KEY"      ##google sendgrid api token
+  "SLACK_API_KEY"         ##slack api key
+  "ORIGIN_EMAIL_ADDRESS"  ##must be valid email address should be self
+  "GCP_PROJECT"           ##doesn't have to be a real bucket name, could be FAKE
 
 
+#### End-to-end Testing
+
+To test, you will need the following environment variables set:
+  "BEARER_TOKEN_SECRET"          ##google harvest api token and get a developer token
+  "BUCKET"                       ##this is where the config files are pulled from
+  "HARVEST_ACCOUNT_ID"           ##matches with the bearer token
+  "LOG_LEVEL": "debug"           ##logging level
+  "SENDGRID_API_KEY_SECRET"      ##google sendgrid api token
+  "SLACK_API_KEY_SECRET"         ##slack api key
+  "ORIGIN_EMAIL_ADDRESS"         ##must be valid email address should be self
+  "GCP_PROJECT"                  ##doesn't have to be a real bucket name, could be FAKE

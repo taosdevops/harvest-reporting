@@ -1,4 +1,4 @@
 #!/bin/bash
 
 python --version
-sudo pip install -r devrequirements.txt --user
+sudo pip install -r requirements.txt --user

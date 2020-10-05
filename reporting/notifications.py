@@ -9,9 +9,8 @@ from harvest.harvestdataclasses import Client
 from taosdevopsutils.slack import Slack
 
 from harvestapi.customer import HarvestCustomer
-from sendgridapi.emails import SendGridSummaryEmail
-
 from reporting.config import Recipients
+from sendgridapi.emails import SendGridSummaryEmail
 
 LOGGER = logging.getLogger(__name__)
 

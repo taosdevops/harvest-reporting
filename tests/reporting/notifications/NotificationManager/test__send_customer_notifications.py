@@ -2,7 +2,6 @@ import pytest
 
 import reporting.notifications
 
-
 CUSTOM_EXCEPTION_PARAMS = {
     "SlackSendError": {"channel": "#test", "message": "uh-oh"},
     "TeamsSendError": {"channel": "#test"},

@@ -29,6 +29,7 @@ setup(
         ],
         "tests": [
             "pytest",
+            "pytest-cov",
             "vcrpy",
             "vcrpy-unittest",
             "pytest-vcr"

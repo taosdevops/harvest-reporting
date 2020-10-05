@@ -1,8 +1,7 @@
-
-Harvest Notification Module
+Notifications
 ---------------------------
 
-.. automodule:: hreporting.notifications
+.. automodule:: reporting.notifications
    :members:
    :undoc-members:
    :show-inheritance:

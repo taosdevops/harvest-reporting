@@ -1,5 +1,4 @@
-
-Harvest Reporting
+Reporting
 =================
 
 This project is to increase the integration of Harvest
@@ -9,14 +8,13 @@ as a time management solution with other applications.
    :maxdepth: 2
    :caption: Contents:
 
-   cli
-   client
+   getting_started
    client_config
    cloudfunction
-   config
-   emails
-   notifications
-   utils
+   reporting.config
+   harvestapi.customer
+   sendgridapi.emails
+   reporting.notifications
 
 
 Indices and tables

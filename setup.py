@@ -1,4 +1,6 @@
 from setuptools import find_packages, setup
+import pathlib
+import os
 
 setup(
     author="TAOS DevopsNow",
@@ -8,19 +10,31 @@ setup(
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     packages=find_packages(exclude=["contrib", "docs", "tests"]),
-    version="0.1.1",
+    version=open(os.path.join(".", "VERSION")).read().strip(),
     url="https://github.com/taosmountain/harvest-reporting",
     install_requires=[
-        "Click>=7.0",
-        "colorama>=0.4",
-        "PyYAML>=5.1",
-        "requests>=2.22",
-        "sendgrid>=6.2",
+        "dacite",
+        "google-cloud-secret-manager",
+        "google-cloud-storage",
+        "python-harvest-apiv2",
+        "pymsteams",
+        "PyYAML",
+        "sendgrid",
+        "taosdevopsutils"
     ],
-    entry_points="""
-        [console_scripts]
-        harvestcli=hreporting.cli:main
-    """,
+    extras_require={
+        "docs": [
+            "sphinx",
+            "sphinx_rtd_theme"
+        ],
+        "tests": [
+            "pytest",
+            "pytest-cov",
+            "vcrpy",
+            "vcrpy-unittest",
+            "pytest-vcr"
+        ]
+    },
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",

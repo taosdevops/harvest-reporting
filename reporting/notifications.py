@@ -69,7 +69,7 @@ class NotificationManager:
             if len(customer.recipients.slack) > 0:
                 try:
                     self._send_slack_channels(
-                        self.recipients.slack, self._get_slack_payload([customer])
+                        customer.recipients.slack, self._get_slack_payload([customer])
                     )              
                 except SlackSendError as e:
                     self._send_exception_channels(e, customer)
@@ -77,7 +77,7 @@ class NotificationManager:
             if len(customer.recipients.teams) > 0:
                 try:
                     self._send_teams_channels(
-                        self.recipients.teams, self._get_teams_sections([customer])
+                        customer.recipients.teams, self._get_teams_sections([customer])
                     )
                 except TeamsSendError as e:
                     self._send_exception_channels(e, customer)

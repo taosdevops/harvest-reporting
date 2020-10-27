@@ -224,7 +224,7 @@
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">customer</span><span class="o">.</span><span class="n">recipients</span><span class="o">.</span><span class="n">slack</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_send_slack_channels</span><span class="p">(</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">recipients</span><span class="o">.</span><span class="n">slack</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_slack_payload</span><span class="p">([</span><span class="n">customer</span><span class="p">])</span>
+                        <span class="n">customer</span><span class="o">.</span><span class="n">recipients</span><span class="o">.</span><span class="n">slack</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_slack_payload</span><span class="p">([</span><span class="n">customer</span><span class="p">])</span>
                     <span class="p">)</span>              
                 <span class="k">except</span> <span class="n">SlackSendError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_send_exception_channels</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">customer</span><span class="p">)</span>
@@ -232,7 +232,7 @@
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">customer</span><span class="o">.</span><span class="n">recipients</span><span class="o">.</span><span class="n">teams</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_send_teams_channels</span><span class="p">(</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">recipients</span><span class="o">.</span><span class="n">teams</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_teams_sections</span><span class="p">([</span><span class="n">customer</span><span class="p">])</span>
+                        <span class="n">customer</span><span class="o">.</span><span class="n">recipients</span><span class="o">.</span><span class="n">teams</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_teams_sections</span><span class="p">([</span><span class="n">customer</span><span class="p">])</span>
                     <span class="p">)</span>
                 <span class="k">except</span> <span class="n">TeamsSendError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_send_exception_channels</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">customer</span><span class="p">)</span>

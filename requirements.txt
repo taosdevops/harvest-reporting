@@ -1,5 +1,6 @@
 -e .
 
+google-cloud-pubsub>=2.1.0
 google-cloud-secret-manager==1.0.0
 google-cloud-storage>=1.19.1
 pymsteams==0.1.13

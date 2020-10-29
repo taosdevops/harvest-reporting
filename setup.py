@@ -16,6 +16,7 @@ setup(
         "dacite",
         "google-cloud-secret-manager",
         "google-cloud-storage",
+        "google-cloud-pubsub",
         "python-harvest-apiv2",
         "pymsteams",
         "PyYAML",

@@ -1,27 +1,20 @@
+import json
 import logging
+import os
 import re
 import sys
 import traceback
 from typing import List
 
 import pymsteams
+from google.cloud import pubsub_v1
 from harvest.harvestdataclasses import Client
-from taosdevopsutils.slack import Slack
 
 from harvestapi.customer import HarvestCustomer
 from reporting.config import Recipients
 from sendgridapi.emails import SendGridSummaryEmail
 
 LOGGER = logging.getLogger(__name__)
-
-
-class SlackSendError(BaseException):
-    def __init__(self, channel, message):
-        self.channel = channel
-        self.message = message
-        super().__init__(
-            f"Failed to send webhook to Slack channel {self.channel}. {self.message}"
-        )
 
 
 class TeamsSendError(BaseException):
@@ -39,6 +32,19 @@ class EmailSendError(BaseException):
         )
 
 
+def publish_to_pubsub(project_id: str, topic_id: str, payload: dict, attributes: dict):
+    publisher = pubsub_v1.PublisherClient()
+    try:
+        LOGGER.debug(f"Sending Pub/Sub Message to {topic_id}...")
+        topic_path = publisher.topic_path(project_id, topic_id)
+        LOGGER.debug(f"Payload: {payload}")
+        data = json.dumps(payload).encode("utf-8")
+        future = publisher.publish(topic_path, data, **attributes)
+        LOGGER.debug(f"Pub/Sub Message Published: {future.result()}")
+    except:
+        raise RuntimeError(f"Failed to send message to Pub/Sub: {project_id}, {topic_id}, {payload}, {attributes}")
+
+
 class NotificationManager:
     def __init__(
         self,
@@ -48,7 +54,6 @@ class NotificationManager:
         sendgrid_api_key: str,
         from_email: str,
     ):
-        self.slack_client = Slack()
         self.sendgrid_api_key = sendgrid_api_key
         self.customers = customers
         self.recipients = global_recipients
@@ -67,12 +72,9 @@ class NotificationManager:
     def _send_customer_notifications(self, customer: HarvestCustomer):
         if customer.recipients:
             if len(customer.recipients.slack) > 0:
-                try:
-                    self._send_slack_channels(
-                        customer.recipients.slack, self._get_slack_payload([customer])
-                    )              
-                except SlackSendError as e:
-                    self._send_exception_channels(e, customer)
+                self._send_slack_channels(
+                    customer.recipients.slack, self._get_slack_payload([customer])
+                )              
 
             if len(customer.recipients.teams) > 0:
                 try:
@@ -129,22 +131,15 @@ class NotificationManager:
         if self.exception_config.slack:
             self._send_slack_channels(self.exception_config.slack, err)
 
-    def _send_slack_channels(self, channels: List[str], msg: str):
+    def _send_slack_channels(self, channels: List[str], msg: dict):
+        project_id = os.getenv("GCP_PROJECT", "dev-ops-now")
         for channel in channels:
-            LOGGER.debug("Sending slack notification")
-
-            try:
-                response = self.slack_client.post_slack_message(channel, msg)
-            except Exception as e:
-                raise SlackSendError(channel, e)
-
-            if response["status_code"] != 200:
-                raise SlackSendError(
-                    channel, "Status code: {}".format(response["status_code"])
-                )
-
-            LOGGER.debug(f"Sent slack notification")
-            LOGGER.debug(f"Response: {response}")
+            if "hooks.slack.com" in channel:
+                attributes = {"incoming_webhook_url": channel}
+            else:
+                msg["channel"] = channel
+                attributes = {"slack_api_method": "chat.postMessage"}
+            publish_to_pubsub(project_id=project_id, topic_id="genericslackbot", payload=msg, attributes=attributes)
 
     def _send_teams_channels(self, channels: List[str], msg: List[dict]):
         for channel in channels:

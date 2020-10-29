@@ -1,61 +1,22 @@
 customers:
-  - name: That One Customer
-    hours: 160
-    # Determines who gets the update and via what mechanisms
+  - name: Acme Corp.
+    hours: 120
     recipients:
-      # By specifying a config for each recipient object, it will be possible to customize
-      # emails for each customer
-      config:
-        templateId: d-bfde72d1782448e@5cbf9918c799783
-        sendVerificationRecipients:
-          emails:
-            - emailee@example.net
-          slack:
-            - <slack_webhook_url>
-          teams:
-            - <teams_webhook_url>
-      # Using text parsing to figure out what type of hook we're dealing with is ugly.
-      # Let's just be explicit and avoid the bugs associated with it.
       emails:
-        - emailee@example.net
+        - <email address here>
       slack:
-        - <slack_webhook_url>
+        - <Slack webhook OR \#channel OR @user>
       teams:
-        - <teams_webhook_url>
-  - name: That Other Customer
-    hours: 160
-  - name: Maybe Another Customer
-
-# Only send notifications for the following clients
-customer_filter: []
-  # - That One Customer
-  # - Maybe Another Customer
-
-# Global recipient config. Anyone listed here will receive data on all clients.
+        - <Teams webhook here>
+        
+#Recipients for all clients below.
 recipients:
-  # In the case that clients[].recipients.config for a customer is empty, we'll
-  # use these values instead.
-  config:
-    templateId: d-bfde72d1782448e@5cbf9918c799783
-    sendVerificationRecipients:
-      emails:
-        - emailee@example.net
-      slack:
-        - <slack_webhook_url>
-      teams:
-        - <teams_webhook_url>
-  emails:
-    - test@example.com
   slack:
-    - <slack_webhook_url>
-  teams:
-    - <teams_webhook_url>
+    - <Slack webhook OR \#channel OR @user>
+  emails:
+    - <email address here>
 
 # Configuration on where to alert on error
 exceptions:
-  emails:
-    - test@example.com
   slack:
-    - <slack_webhook_url>
-  teams:
-    - <teams_webhook_url>
+    - <Slack webhook OR \#channel OR @user>

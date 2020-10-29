@@ -153,30 +153,23 @@
            <div itemprop="articleBody">
             
   <h1>Source code for reporting.notifications</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">traceback</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 
 <span class="kn">import</span> <span class="nn">pymsteams</span>
+<span class="kn">from</span> <span class="nn">google.cloud</span> <span class="kn">import</span> <span class="n">pubsub_v1</span>
 <span class="kn">from</span> <span class="nn">harvest.harvestdataclasses</span> <span class="kn">import</span> <span class="n">Client</span>
-<span class="kn">from</span> <span class="nn">taosdevopsutils.slack</span> <span class="kn">import</span> <span class="n">Slack</span>
 
 <span class="kn">from</span> <span class="nn">harvestapi.customer</span> <span class="kn">import</span> <span class="n">HarvestCustomer</span>
 <span class="kn">from</span> <span class="nn">reporting.config</span> <span class="kn">import</span> <span class="n">Recipients</span>
 <span class="kn">from</span> <span class="nn">sendgridapi.emails</span> <span class="kn">import</span> <span class="n">SendGridSummaryEmail</span>
 
 <span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-
-
-<div class="viewcode-block" id="SlackSendError"><a class="viewcode-back" href="../../reporting.notifications.html#reporting.notifications.SlackSendError">[docs]</a><span class="k">class</span> <span class="nc">SlackSendError</span><span class="p">(</span><span class="ne">BaseException</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">channel</span> <span class="o">=</span> <span class="n">channel</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Failed to send webhook to Slack channel </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="si">}</span><span class="s2">. </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TeamsSendError"><a class="viewcode-back" href="../../reporting.notifications.html#reporting.notifications.TeamsSendError">[docs]</a><span class="k">class</span> <span class="nc">TeamsSendError</span><span class="p">(</span><span class="ne">BaseException</span><span class="p">):</span>
@@ -194,6 +187,19 @@
         <span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="publish_to_pubsub"><a class="viewcode-back" href="../../reporting.notifications.html#reporting.notifications.publish_to_pubsub">[docs]</a><span class="k">def</span> <span class="nf">publish_to_pubsub</span><span class="p">(</span><span class="n">project_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">topic_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">payload</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">attributes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="n">publisher</span> <span class="o">=</span> <span class="n">pubsub_v1</span><span class="o">.</span><span class="n">PublisherClient</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sending Pub/Sub Message to </span><span class="si">{</span><span class="n">topic_id</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+        <span class="n">topic_path</span> <span class="o">=</span> <span class="n">publisher</span><span class="o">.</span><span class="n">topic_path</span><span class="p">(</span><span class="n">project_id</span><span class="p">,</span> <span class="n">topic_id</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Payload: </span><span class="si">{</span><span class="n">payload</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="n">future</span> <span class="o">=</span> <span class="n">publisher</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="n">topic_path</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="o">**</span><span class="n">attributes</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pub/Sub Message Published: </span><span class="si">{</span><span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to send message to Pub/Sub: </span><span class="si">{</span><span class="n">project_id</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">topic_id</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">payload</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">attributes</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="NotificationManager"><a class="viewcode-back" href="../../reporting.notifications.html#reporting.notifications.NotificationManager">[docs]</a><span class="k">class</span> <span class="nc">NotificationManager</span><span class="p">:</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -203,7 +209,6 @@
         <span class="n">sendgrid_api_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">from_email</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">slack_client</span> <span class="o">=</span> <span class="n">Slack</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sendgrid_api_key</span> <span class="o">=</span> <span class="n">sendgrid_api_key</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">customers</span> <span class="o">=</span> <span class="n">customers</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">recipients</span> <span class="o">=</span> <span class="n">global_recipients</span>
@@ -222,12 +227,9 @@
     <span class="k">def</span> <span class="nf">_send_customer_notifications</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">customer</span><span class="p">:</span> <span class="n">HarvestCustomer</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">customer</span><span class="o">.</span><span class="n">recipients</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">customer</span><span class="o">.</span><span class="n">recipients</span><span class="o">.</span><span class="n">slack</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_send_slack_channels</span><span class="p">(</span>
-                        <span class="n">customer</span><span class="o">.</span><span class="n">recipients</span><span class="o">.</span><span class="n">slack</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_slack_payload</span><span class="p">([</span><span class="n">customer</span><span class="p">])</span>
-                    <span class="p">)</span>              
-                <span class="k">except</span> <span class="n">SlackSendError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_send_exception_channels</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">customer</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_send_slack_channels</span><span class="p">(</span>
+                    <span class="n">customer</span><span class="o">.</span><span class="n">recipients</span><span class="o">.</span><span class="n">slack</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_slack_payload</span><span class="p">([</span><span class="n">customer</span><span class="p">])</span>
+                <span class="p">)</span>              
 
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">customer</span><span class="o">.</span><span class="n">recipients</span><span class="o">.</span><span class="n">teams</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
@@ -284,22 +286,15 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">exception_config</span><span class="o">.</span><span class="n">slack</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_send_slack_channels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exception_config</span><span class="o">.</span><span class="n">slack</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_send_slack_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channels</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_send_slack_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channels</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">msg</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">project_id</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;GCP_PROJECT&quot;</span><span class="p">,</span> <span class="s2">&quot;dev-ops-now&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">:</span>
-            <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Sending slack notification&quot;</span><span class="p">)</span>
-
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">slack_client</span><span class="o">.</span><span class="n">post_slack_message</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">SlackSendError</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
-
-            <span class="k">if</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;status_code&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">SlackSendError</span><span class="p">(</span>
-                    <span class="n">channel</span><span class="p">,</span> <span class="s2">&quot;Status code: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="s2">&quot;status_code&quot;</span><span class="p">])</span>
-                <span class="p">)</span>
-
-            <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sent slack notification&quot;</span><span class="p">)</span>
-            <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Response: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s2">&quot;hooks.slack.com&quot;</span> <span class="ow">in</span> <span class="n">channel</span><span class="p">:</span>
+                <span class="n">attributes</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;incoming_webhook_url&quot;</span><span class="p">:</span> <span class="n">channel</span><span class="p">}</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">msg</span><span class="p">[</span><span class="s2">&quot;channel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">channel</span>
+                <span class="n">attributes</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;slack_api_method&quot;</span><span class="p">:</span> <span class="s2">&quot;chat.postMessage&quot;</span><span class="p">}</span>
+            <span class="n">publish_to_pubsub</span><span class="p">(</span><span class="n">project_id</span><span class="o">=</span><span class="n">project_id</span><span class="p">,</span> <span class="n">topic_id</span><span class="o">=</span><span class="s2">&quot;genericslackbot&quot;</span><span class="p">,</span> <span class="n">payload</span><span class="o">=</span><span class="n">msg</span><span class="p">,</span> <span class="n">attributes</span><span class="o">=</span><span class="n">attributes</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_send_teams_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channels</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">msg</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">]):</span>
         <span class="k">for</span> <span class="n">channel</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">:</span>

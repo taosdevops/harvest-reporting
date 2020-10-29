@@ -21,8 +21,7 @@ def test_assert_method_call_count(num_of_recipients, expected_calls, method_to_a
     assert getattr(mock_reporting_notifications_NotificationManager, method_to_assert).call_count == expected_calls
 
 
-@pytest.mark.parametrize("method_to_raise_at,exception_to_raise,recipient_type", [
-    ("_send_slack_channels", "SlackSendError", "slack"), 
+@pytest.mark.parametrize("method_to_raise_at,exception_to_raise,recipient_type", [ 
     ("_send_teams_channels","TeamsSendError", "teams"), 
     ("_send_email_channels","EmailSendError", "emails")
     ])

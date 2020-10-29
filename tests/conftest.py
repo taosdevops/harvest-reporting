@@ -1,11 +1,14 @@
 import logging
 import os
 from unittest.mock import MagicMock
+
 import pytest
+import taosdevopsutils
+from google.cloud import pubsub_v1
 
 import reporting
 from harvestapi.customer import HarvestCustomer
-import taosdevopsutils
+
 
 def mock_all_obj_methods(instantiated_obj):
     for method in dir(instantiated_obj):
@@ -62,11 +65,11 @@ def mock_reporting_config_Customer(mock_reporting_config_Recipients_without_conf
     return mock_Customer
 
 
-@pytest.fixture(scope="function")
-def mock_taosdevopsutils_slack_Slack():
-    mock_slack_client = taosdevopsutils.slack.Slack
-    mock_slack_client = MagicMock()
-    return mock_slack_client
+# @pytest.fixture(scope="function")
+# def mock_google_cloud_pubsub():
+#     mock_google_cloud_pubsub = pubsub_v1.PublisherClient
+#     mock_google_cloud_pubsub = MagicMock()
+#     return mock_google_cloud_pubsub
 
 
 @pytest.fixture(scope="function")
@@ -80,7 +83,8 @@ def mock_harvestapi_customer_HarvestCustomer(mock_reporting_config_Customer, moc
 
 
 @pytest.fixture(scope="function")
-def mock_reporting_notifications_NotificationManager(mock_taosdevopsutils_slack_Slack, mock_reporting_config_Recipients_without_config_factory):
+# def mock_reporting_notifications_NotificationManager(mock_google_cloud_pubsub, mock_reporting_config_Recipients_without_config_factory):
+def mock_reporting_notifications_NotificationManager(mock_reporting_config_Recipients_without_config_factory):
     mock_nm = reporting.notifications.NotificationManager(
         customers = list(),
         global_recipients = mock_reporting_config_Recipients_without_config_factory.generate(),
@@ -88,8 +92,8 @@ def mock_reporting_notifications_NotificationManager(mock_taosdevopsutils_slack_
         sendgrid_api_key = "testsendgridapikey",
         from_email = "test@testymctestface.com"
     )
-    mock_nm.slack_client = mock_taosdevopsutils_slack_Slack
-    assert isinstance(mock_nm.slack_client, MagicMock)
+    # mock_nm.publisher = mock_google_cloud_pubsub
+    # assert isinstance(mock_nm.publisher, MagicMock)
     assert mock_nm.recipients.config
     assert mock_nm.exception_config.config
     mock_nm = mock_all_obj_methods(mock_nm)

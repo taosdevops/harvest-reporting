@@ -19,19 +19,13 @@ jobs:
         service_account_email: ${{ secrets.DEPLOYER_SERVICE_ACCOUNT_EMAIL }}
         service_account_key: ${{ secrets.DEPLOYER_SERVICE_ACCOUNT_JSON_CREDENTIALS }}
 
-
-    - name: Show github event
-      shell: bash
-      run: echo "${{ github.event }}"
-      id: github_event
-
     - name: Delete Cloud Function
       run: |-
-        gcloud functions delete harvest-reports-${{ github.event.ref }}
+        gcloud functions delete --project dev-ops-now harvest-reports-${{ github.event.ref }}
 
     - name: Delete Pub/Sub
       run: |-
-        gcloud pubsub topics delete harvest-reports-${{ github.event.ref }}
+        gcloud pubsub topics delete --project dev-ops-now harvest-reports-${{ github.event.ref }}
 
     - name: Delete Object in Bucket
       run: |-

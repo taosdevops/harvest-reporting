@@ -29,4 +29,4 @@ jobs:
 
     - name: Delete Object in Bucket
       run: |-
-        gsutil rm gs://${{ secrets.bucket }}/harvest-reports-${{ github.event.ref }}.yml
+        gsutil rm gs://${{ secrets.bucket }}/harvest-reports-${{ github.event.ref }}.yaml

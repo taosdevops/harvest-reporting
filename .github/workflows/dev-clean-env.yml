@@ -12,11 +12,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Extract branch name
-      shell: bash
-      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-      id: extract_branch
-
     - name: Setup gcloud environment
       uses: GoogleCloudPlatform/github-actions/setup-gcloud@0.1.2
       with:
@@ -24,14 +19,20 @@ jobs:
         service_account_email: ${{ secrets.DEPLOYER_SERVICE_ACCOUNT_EMAIL }}
         service_account_key: ${{ secrets.DEPLOYER_SERVICE_ACCOUNT_JSON_CREDENTIALS }}
 
+
+    - name: Show github event
+      shell: bash
+      run: echo "${{ github.event }}"
+      id: github_event
+
     - name: Delete Cloud Function
       run: |-
-        gcloud functions delete harvest-reports-${{ steps.extract_branch.outputs.branch }}
+        gcloud functions delete harvest-reports-${{ github.event.ref }}
 
     - name: Delete Pub/Sub
       run: |-
-        gcloud pubsub topics delete harvest-reports-${{ steps.extract_branch.outputs.branch }}
+        gcloud pubsub topics delete harvest-reports-${{ github.event.ref }}
 
     - name: Delete Object in Bucket
       run: |-
-        gsutil rm gs://${{ secrets.bucket }}/harvest-reports-${{ steps.extract_branch.outputs.branch }}
+        gsutil rm gs://${{ secrets.bucket }}/harvest-reports-${{ github.event.ref }}.yml

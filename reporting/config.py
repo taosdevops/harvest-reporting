@@ -10,11 +10,11 @@ from google.cloud import secretmanager, storage
 LOGGER = logging.getLogger(__name__)
 
 # Environment Variables
-## Required, these must be set
-HARVEST_ACCOUNT_ID = os.environ["HARVEST_ACCOUNT_ID"]
-ORIGIN_EMAIL_ADDRESS = os.environ["ORIGIN_EMAIL_ADDRESS"]
-BUCKET = os.environ["BUCKET"]
-GCP_PROJECT = os.environ["GCP_PROJECT"]
+## Required, these must be set or they will return None
+HARVEST_ACCOUNT_ID = os.getenv("HARVEST_ACCOUNT_ID")
+ORIGIN_EMAIL_ADDRESS = os.getenv("ORIGIN_EMAIL_ADDRESS")
+BUCKET = os.getenv("BUCKET")
+GCP_PROJECT = os.getenv("GCP_PROJECT")
 ## Optional, these have a default value if they're not set
 CONFIG_PATH = os.getenv("CONFIG_PATH", "config/clients.yaml") # default to "config/clients.yaml"
 LOG_LEVEL = os.getenv("LOG_LEVEL", "info") # default to "info"

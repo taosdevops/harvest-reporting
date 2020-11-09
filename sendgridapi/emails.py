@@ -7,7 +7,6 @@ from sendgrid.helpers.mail import (Content, Email, Header, Mail, Subject,
                                    Substitution, TemplateId, To)
 
 from harvestapi.customer import HarvestCustomer
-from reporting.config import EnvironmentConfiguration
 
 LOGGER = logging.getLogger(__name__)
 

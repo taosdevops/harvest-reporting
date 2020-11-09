@@ -6,7 +6,7 @@ import pytest
 import taosdevopsutils
 from google.cloud import pubsub_v1
 
-import reporting
+from reporting.config import VerificationConfig, RecipientsConfig, Recipients, Customer
 from harvestapi.customer import HarvestCustomer
 
 
@@ -21,7 +21,7 @@ def mock_all_obj_methods(instantiated_obj):
 
 @pytest.fixture(scope="function")
 def mock_reporting_config_VerificationConfig():
-    mock_VerificationConfig = reporting.config.VerificationConfig(
+    mock_VerificationConfig = VerificationConfig(
         email=list(),
         slack=list(),
         teams=list()
@@ -31,33 +31,33 @@ def mock_reporting_config_VerificationConfig():
 
 @pytest.fixture(scope="function")
 def mock_reporting_config_RecipientsConfig(mock_reporting_config_VerificationConfig):
-    mock_RecipientsConfig = reporting.config.RecipientsConfig(sendVerificationConfig=mock_reporting_config_VerificationConfig)
+    mock_RecipientsConfig = RecipientsConfig(sendVerificationConfig=mock_reporting_config_VerificationConfig)
     return mock_RecipientsConfig
 
 
 @pytest.fixture(scope="function")
 def mock_reporting_config_Recipients_with_config(mock_reporting_config_RecipientsConfig):
-    mock_Recipients = reporting.config.Recipients(config=mock_reporting_config_RecipientsConfig)
+    mock_Recipients = Recipients(config=mock_reporting_config_RecipientsConfig)
     return mock_Recipients
 
 
 @pytest.fixture(scope="function")
 def mock_reporting_config_Recipients_without_config():
-    mock_Recipients = reporting.config.Recipients()
+    mock_Recipients = Recipients()
     return mock_Recipients
 
 
 @pytest.fixture(scope="function")
 def mock_reporting_config_Recipients_without_config_factory():
-    class RecipientsFactory(reporting.config.Recipients):
+    class RecipientsFactory(Recipients):
         def generate(self):
-            return reporting.config.Recipients()
+            return Recipients()
     return RecipientsFactory()
 
 
 @pytest.fixture(scope="function")
 def mock_reporting_config_Customer(mock_reporting_config_Recipients_without_config):
-    mock_Customer = reporting.config.Customer(
+    mock_Customer = Customer(
         name="Mock Customer",
         hours=80,
         recipients=mock_reporting_config_Recipients_without_config

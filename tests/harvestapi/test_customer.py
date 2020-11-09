@@ -29,7 +29,7 @@ class TestHarvestCustomer(VCRTestCase):
                 client=Harvest(
                     HARVEST_ENDPOINT,
                     PersonalAccessToken(
-                        reporting.config.HARVEST_ACCOUNT_ID, reporting.config.BEARER_TOKEN
+                        os.environ["HARVEST_ACCOUNT_ID"], os.environ["BEARER_TOKEN"]
                     ),
                 ),
                 config=reporting.config.Customer(name="Testy McTest", hours=80, recipients=reporting.config.Recipients()),

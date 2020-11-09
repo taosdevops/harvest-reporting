@@ -30,7 +30,7 @@ def get_env_var_or_fetch_from_secret_manager(name:str):
     if environment_variable:
         return environment_variable
     elif not environment_variable:
-        secret_name = f"harvest-reports-{name.lower().replace("_", "-")}" # eg env var name is BEARER_TOKEN, secret name is 'harvest-reports-bearer-token'
+        secret_name = f"harvest-reports-{name.lower().replace('_', '-')}" # eg env var name is BEARER_TOKEN, secret name is 'harvest-reports-bearer-token'
         return get_from_secret_manager(project_id=GCP_PROJECT, secret_name=secret_name)
 
 

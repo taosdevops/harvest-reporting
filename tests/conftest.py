@@ -7,6 +7,7 @@ import taosdevopsutils
 from google.cloud import pubsub_v1
 
 from reporting.config import VerificationConfig, RecipientsConfig, Recipients, Customer
+from reporting import notifications
 from harvestapi.customer import HarvestCustomer
 
 
@@ -85,7 +86,7 @@ def mock_harvestapi_customer_HarvestCustomer(mock_reporting_config_Customer, moc
 @pytest.fixture(scope="function")
 # def mock_reporting_notifications_NotificationManager(mock_google_cloud_pubsub, mock_reporting_config_Recipients_without_config_factory):
 def mock_reporting_notifications_NotificationManager(mock_reporting_config_Recipients_without_config_factory):
-    mock_nm = reporting.notifications.NotificationManager(
+    mock_nm = notifications.NotificationManager(
         customers = list(),
         global_recipients = mock_reporting_config_Recipients_without_config_factory.generate(),
         exception_config = mock_reporting_config_Recipients_without_config_factory.generate(),

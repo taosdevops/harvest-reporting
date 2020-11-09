@@ -25,13 +25,11 @@ class TestHarvestCustomer(VCRTestCase):
         os.environ["HARVEST_ACCOUNT_ID"] = "dummy_account"
         os.environ["BEARER_TOKEN"] = "dummy_token"
 
-        ENV_CONFIG = reporting.config.EnvironmentConfiguration()
-
         self.customer = customer.HarvestCustomer(
                 client=Harvest(
                     HARVEST_ENDPOINT,
                     PersonalAccessToken(
-                        ENV_CONFIG.harvest_account, ENV_CONFIG.bearer_token
+                        reporting.config.HARVEST_ACCOUNT_ID, reporting.config.BEARER_TOKEN
                     ),
                 ),
                 config=reporting.config.Customer(name="Testy McTest", hours=80, recipients=reporting.config.Recipients()),

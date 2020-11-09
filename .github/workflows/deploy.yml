@@ -29,6 +29,6 @@ jobs:
           --region us-central1 \
           --entry-point harvest_reports \
           --trigger-topic harvest-reports-${{ steps.extract_branch.outputs.branch }} \
-          --set-env-vars BEARER_TOKEN_SECRET=${{ secrets.BEARER_TOKEN_SECRET }},HARVEST_ACCOUNT_ID=${{ secrets.HARVEST_ACCOUNT_ID }},BUCKET=${{ secrets.BUCKET }},CONFIG_PATH=harvest-reports-${{ steps.extract_branch.outputs.branch }}.yaml,SENDGRID_API_KEY_SECRET=${{ secrets.SENDGRID_API_KEY_SECRET }},LOG_LEVEL=debug,ORIGIN_EMAIL_ADDRESS=${{ secrets.ORIGIN_EMAIL_ADDRESS }} \
+          --set-env-vars HARVEST_ACCOUNT_ID=${{ secrets.HARVEST_ACCOUNT_ID }},BUCKET=${{ secrets.BUCKET }},CONFIG_PATH=harvest-reports-${{ steps.extract_branch.outputs.branch }}.yaml,LOG_LEVEL=debug,ORIGIN_EMAIL_ADDRESS=${{ secrets.ORIGIN_EMAIL_ADDRESS }} \
           --service-account ${{ secrets.RUNNER_SERVICE_ACCOUNT_EMAIL }} \
           --timeout 500

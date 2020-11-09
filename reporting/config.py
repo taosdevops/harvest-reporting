@@ -9,20 +9,6 @@ from google.cloud import secretmanager, storage
 
 LOGGER = logging.getLogger(__name__)
 
-# Environment Variables
-## Required or fetched from Secret Manager
-### If the name is changed, be sure to update the associated secret's name in GCP Secret Manager!
-BEARER_TOKEN = get_env_var_or_fetch_from_secret_manager("BEARER_TOKEN")
-SENDGRID_API_KEY = get_env_var_or_fetch_from_secret_manager("SENDGRID_API_KEY")
-## Required, these must be set
-HARVEST_ACCOUNT_ID = os.environ["HARVEST_ACCOUNT_ID"]
-ORIGIN_EMAIL_ADDRESS = os.environ["ORIGIN_EMAIL_ADDRESS"]
-BUCKET = os.environ["BUCKET"]
-GCP_PROJECT = os.environ["GCP_PROJECT"]
-## Optional, these have a default value if they're not set
-CONFIG_PATH = os.getenv("CONFIG_PATH", "config/clients.yaml") # default to "config/clients.yaml"
-LOG_LEVEL = os.getenv("LOG_LEVEL", "info") # default to "info"
-
 
 def get_env_var_or_fetch_from_secret_manager(name:str):
     """Gets an environment variable if available, else gets a secret value from GCP Secret Manager."""
@@ -41,6 +27,21 @@ def get_from_secret_manager(project_id:str, secret_name:str):
     response = client.access_secret_version(request)
     secret_string = response.payload.data.decode("UTF-8")
     return secret_string
+
+
+# Environment Variables
+## Required or fetched from Secret Manager
+### If the name is changed, be sure to update the associated secret's name in GCP Secret Manager!
+BEARER_TOKEN = get_env_var_or_fetch_from_secret_manager("BEARER_TOKEN")
+SENDGRID_API_KEY = get_env_var_or_fetch_from_secret_manager("SENDGRID_API_KEY")
+## Required, these must be set
+HARVEST_ACCOUNT_ID = os.environ["HARVEST_ACCOUNT_ID"]
+ORIGIN_EMAIL_ADDRESS = os.environ["ORIGIN_EMAIL_ADDRESS"]
+BUCKET = os.environ["BUCKET"]
+GCP_PROJECT = os.environ["GCP_PROJECT"]
+## Optional, these have a default value if they're not set
+CONFIG_PATH = os.getenv("CONFIG_PATH", "config/clients.yaml") # default to "config/clients.yaml"
+LOG_LEVEL = os.getenv("LOG_LEVEL", "info") # default to "info"
 
 
 @dataclass

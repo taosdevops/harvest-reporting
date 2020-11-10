@@ -6,8 +6,8 @@ import pytest
 import taosdevopsutils
 from google.cloud import pubsub_v1
 
-from reporting.config import VerificationConfig, RecipientsConfig, Recipients, Customer
-from reporting import notifications
+import reporting.config
+import reporting.notifications
 from harvestapi.customer import HarvestCustomer
 
 
@@ -22,7 +22,7 @@ def mock_all_obj_methods(instantiated_obj):
 
 @pytest.fixture(scope="function")
 def mock_reporting_config_VerificationConfig():
-    mock_VerificationConfig = VerificationConfig(
+    mock_VerificationConfig = reporting.config.VerificationConfig(
         email=list(),
         slack=list(),
         teams=list()
@@ -32,33 +32,33 @@ def mock_reporting_config_VerificationConfig():
 
 @pytest.fixture(scope="function")
 def mock_reporting_config_RecipientsConfig(mock_reporting_config_VerificationConfig):
-    mock_RecipientsConfig = RecipientsConfig(sendVerificationConfig=mock_reporting_config_VerificationConfig)
+    mock_RecipientsConfig = reporting.config.RecipientsConfig(sendVerificationConfig=mock_reporting_config_VerificationConfig)
     return mock_RecipientsConfig
 
 
 @pytest.fixture(scope="function")
 def mock_reporting_config_Recipients_with_config(mock_reporting_config_RecipientsConfig):
-    mock_Recipients = Recipients(config=mock_reporting_config_RecipientsConfig)
+    mock_Recipients = reporting.config.Recipients(config=mock_reporting_config_RecipientsConfig)
     return mock_Recipients
 
 
 @pytest.fixture(scope="function")
 def mock_reporting_config_Recipients_without_config():
-    mock_Recipients = Recipients()
+    mock_Recipients = reporting.config.Recipients()
     return mock_Recipients
 
 
 @pytest.fixture(scope="function")
 def mock_reporting_config_Recipients_without_config_factory():
-    class RecipientsFactory(Recipients):
+    class RecipientsFactory(reporting.config.Recipients):
         def generate(self):
-            return Recipients()
+            return reporting.config.Recipients()
     return RecipientsFactory()
 
 
 @pytest.fixture(scope="function")
 def mock_reporting_config_Customer(mock_reporting_config_Recipients_without_config):
-    mock_Customer = Customer(
+    mock_Customer = reporting.config.Customer(
         name="Mock Customer",
         hours=80,
         recipients=mock_reporting_config_Recipients_without_config
@@ -86,7 +86,7 @@ def mock_harvestapi_customer_HarvestCustomer(mock_reporting_config_Customer, moc
 @pytest.fixture(scope="function")
 # def mock_reporting_notifications_NotificationManager(mock_google_cloud_pubsub, mock_reporting_config_Recipients_without_config_factory):
 def mock_reporting_notifications_NotificationManager(mock_reporting_config_Recipients_without_config_factory):
-    mock_nm = notifications.NotificationManager(
+    mock_nm = reporting.notifications.NotificationManager(
         customers = list(),
         global_recipients = mock_reporting_config_Recipients_without_config_factory.generate(),
         exception_config = mock_reporting_config_Recipients_without_config_factory.generate(),

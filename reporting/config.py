@@ -23,7 +23,7 @@ def get_env_var_or_fetch_from_secret_manager(name:str):
             return harvestreporting.utils.gcp.secretmanager.get_from_secret_manager(project_id=GCP_PROJECT, secret_name=secret_name)
         except:
             # Implemented so that tests can still run
-            LOGGER.debug(f"Failed to authenticate with GCP Secret Manager. You're either testing or an environment variable doesn't have the right value: {os.environ}")
+            LOGGER.debug(f"Failed to authenticate with GCP Secret Manager. You're either testing or an environment variable doesn't have the right value: {os.environ}", exc_info=True)
             return "NOT_SET"
 
 

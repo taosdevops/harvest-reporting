@@ -17,7 +17,7 @@ LOGGER = logging.getLogger()
 
 def get_harvest_client():
     personal_access_token = PersonalAccessToken(reporting.config.HARVEST_ACCOUNT_ID, reporting.config.BEARER_TOKEN)
-    client = harvest.Harvest("https://api.harvestapp.com/api/v2", personal_access_token)
+    client = Harvest("https://api.harvestapp.com/api/v2", personal_access_token)
     return client
 
 

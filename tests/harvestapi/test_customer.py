@@ -96,11 +96,3 @@ class TestHarvestCustomer(VCRTestCase):
 
         assert customer.get_recipients_from_config(test_client, config) == reporting.config.Recipients()
 
-class TestConfig(unittest.TestCase):
-    def test_load(self):
-        # Test open regular file
-        f = from_dict(
-            data_class=reporting.config.ReporterConfig, data=yaml.load(open('tests/harvestapi/testdata/test_config.yaml', 'r').read(), Loader=yaml.Loader)
-        )
-
-        assert reporting.config.load('tests/harvestapi/testdata/test_config.yaml') == f

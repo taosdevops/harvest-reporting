@@ -1,2 +1,2 @@
 [run]
-omit = tests/*, setup.py, harvestreporting/utils/gcp/*
+omit = tests/*, setup.py, harvestreporting/utils/gcp/*, main.py

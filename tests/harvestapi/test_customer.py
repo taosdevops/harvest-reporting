@@ -25,13 +25,11 @@ class TestHarvestCustomer(VCRTestCase):
         os.environ["HARVEST_ACCOUNT_ID"] = "dummy_account"
         os.environ["BEARER_TOKEN"] = "dummy_token"
 
-        ENV_CONFIG = reporting.config.EnvironmentConfiguration()
-
         self.customer = customer.HarvestCustomer(
                 client=Harvest(
                     HARVEST_ENDPOINT,
                     PersonalAccessToken(
-                        ENV_CONFIG.harvest_account, ENV_CONFIG.bearer_token
+                        reporting.config.HARVEST_ACCOUNT_ID, reporting.config.BEARER_TOKEN
                     ),
                 ),
                 config=reporting.config.Customer(name="Testy McTest", hours=80, recipients=reporting.config.Recipients()),
@@ -98,34 +96,3 @@ class TestHarvestCustomer(VCRTestCase):
 
         assert customer.get_recipients_from_config(test_client, config) == reporting.config.Recipients()
 
-class TestConfig(unittest.TestCase):
-    def test_load(self):
-        # Test open regular file
-        f = from_dict(
-            data_class=reporting.config.ReporterConfig, data=yaml.load(open('tests/harvestapi/testdata/test_config.yaml', 'r').read(), Loader=yaml.Loader)
-        )
-
-        assert reporting.config.load('tests/harvestapi/testdata/test_config.yaml') == f
-
-        with unittest.mock.patch('reporting.config.load_from_gcs') as mock_load_from_gcs:
-            mock_load_from_gcs.return_value = open('tests/harvestapi/testdata/test_config.yaml', 'r').read()
-            value_gcs = reporting.config.load('test_path.yaml', bucket='test_bucket', project='test_project')
-            assert value_gcs == f
-
-    def test_load_from_gcs(self):
-        with unittest.mock.patch('reporting.config.storage') as mock_storage:
-            test_str = "One string, two string, red string, blue string"
-
-            mock_blob = unittest.mock.MagicMock()
-            mock_blob.download_as_string.return_value = test_str
-            mock_bucket = unittest.mock.MagicMock()
-            mock_bucket.blob.return_value = mock_blob
-            mock_client = unittest.mock.MagicMock()
-            mock_client.bucket.return_value = mock_bucket
-            mock_storage.Client.return_value = mock_client
-
-            final_str = reporting.config.load_from_gcs("imma-pale-not-a-bucket", "whats-up-doc", "dr-seuss")
-            assert test_str == final_str
-            mock_storage.Client.assert_called_with(project="whats-up-doc")
-            mock_client.bucket.assert_called_with("imma-pale-not-a-bucket")
-            mock_bucket.blob.assert_called_with("dr-seuss")

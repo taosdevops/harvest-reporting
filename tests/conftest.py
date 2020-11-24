@@ -6,7 +6,8 @@ import pytest
 import taosdevopsutils
 from google.cloud import pubsub_v1
 
-import reporting
+import reporting.config
+import reporting.notifications
 from harvestapi.customer import HarvestCustomer
 
 

@@ -164,134 +164,6 @@
 <dd></dd></dl>
 
 <dl class="py class">
-<dt id="reporting.config.EnvironmentConfiguration">
-<em class="property">class </em><code class="sig-prename descclassname">reporting.config.</code><code class="sig-name descname">EnvironmentConfiguration</code><a class="reference internal" href="_modules/reporting/config.html#EnvironmentConfiguration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#reporting.config.EnvironmentConfiguration" title="Permalink to this definition">¶</a></dt>
-<dd><p>Class used to fetch all environment variables used to configure the
-reporter. All values are lazy-loaded.</p>
-<dl class="py method">
-<dt id="reporting.config.EnvironmentConfiguration.bearer_token">
-<em class="property">property </em><code class="sig-name descname">bearer_token</code><a class="headerlink" href="#reporting.config.EnvironmentConfiguration.bearer_token" title="Permalink to this definition">¶</a></dt>
-<dd><p>Fetch the configured Harvest API bearer token.</p>
-<p>Requires either a <cite>BEARER_TOKEN</cite> environment variable to be set or the
-<cite>BEARER_TOKEN_SECRET</cite> environment variable to be set. If the
-<cite>BEARER_TOKEN_SECRET</cite> environment variable is set, the
-<cite>BEARER_TOKEN_SECRET_VERSION</cite> can also be set to pull a specific secret
-version.</p>
-<dl class="simple">
-<dt>Raises:</dt><dd><p>MissingEnvironmentVariable: Raised if no valid bearer token
-configuration is present</p>
-</dd>
-</dl>
-<p>Returns: str: The bearer token</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="reporting.config.EnvironmentConfiguration.bucket">
-<em class="property">property </em><code class="sig-name descname">bucket</code><a class="headerlink" href="#reporting.config.EnvironmentConfiguration.bucket" title="Permalink to this definition">¶</a></dt>
-<dd><p>Fetches bucket from environment if one is specified.</p>
-<dl class="simple">
-<dt>Returns:</dt><dd><p>str: bucket name if specified
-None: if no bucket name specified</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="reporting.config.EnvironmentConfiguration.config_path">
-<em class="property">property </em><code class="sig-name descname">config_path</code><a class="headerlink" href="#reporting.config.EnvironmentConfiguration.config_path" title="Permalink to this definition">¶</a></dt>
-<dd><p>Path on file system or in bucket of config file</p>
-<dl class="simple">
-<dt>Raises:</dt><dd><p>MissingEnvironmentVariable: If no <cite>CONFIG_PATH</cite> environment varialbe
-specified.</p>
-</dd>
-<dt>Returns:</dt><dd><p>str: Path to config</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="reporting.config.EnvironmentConfiguration.harvest_account">
-<em class="property">property </em><code class="sig-name descname">harvest_account</code><a class="headerlink" href="#reporting.config.EnvironmentConfiguration.harvest_account" title="Permalink to this definition">¶</a></dt>
-<dd><p>Fetch the Harvest account to query.</p>
-<dl class="simple">
-<dt>Raises:</dt><dd><p>MissingEnvironmentVariable: if the “HARVEST_ACCOUNT_ID” environment
-variable is missing</p>
-</dd>
-</dl>
-<p>Returns: str: Account ID string</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="reporting.config.EnvironmentConfiguration.log_level">
-<em class="property">property </em><code class="sig-name descname">log_level</code><a class="headerlink" href="#reporting.config.EnvironmentConfiguration.log_level" title="Permalink to this definition">¶</a></dt>
-<dd><p>Fetch the configured log level. Defaults to <cite>info</cite>.</p>
-<dl class="simple">
-<dt>Returns:</dt><dd><p>str: String containing configured log level</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="reporting.config.EnvironmentConfiguration.origin_email_address">
-<em class="property">property </em><code class="sig-name descname">origin_email_address</code><a class="headerlink" href="#reporting.config.EnvironmentConfiguration.origin_email_address" title="Permalink to this definition">¶</a></dt>
-<dd><p>Fetch email address to use for <cite>From</cite> email header.</p>
-<dl class="simple">
-<dt>Raises:</dt><dd><p>MissingEnvironmentVariable: if <cite>ORIGIN_EMAIL_ADDRESS</cite> environment
-variable is missing</p>
-</dd>
-</dl>
-<p>Returns: str: Email address from which to send mail</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="reporting.config.EnvironmentConfiguration.project_id">
-<em class="property">property </em><code class="sig-name descname">project_id</code><a class="headerlink" href="#reporting.config.EnvironmentConfiguration.project_id" title="Permalink to this definition">¶</a></dt>
-<dd><p>Fetches the GCP project ID.</p>
-<dl class="simple">
-<dt>Raises:</dt><dd><p>MissingEnvironmentVariable: if GCP_PROJECT env var is missing</p>
-</dd>
-<dt>Returns:</dt><dd><p>str: GCP project ID</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="reporting.config.EnvironmentConfiguration.secrets_client">
-<em class="property">property </em><code class="sig-name descname">secrets_client</code><a class="headerlink" href="#reporting.config.EnvironmentConfiguration.secrets_client" title="Permalink to this definition">¶</a></dt>
-<dd><p>Creates a new secrets client to be used when fetching secrets from
-GCP’s secrets manager.</p>
-<dl class="simple">
-<dt>Returns:</dt><dd><p>SecretManagerServiceClient: A secret manager client from Google’s
-Python SDK</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="reporting.config.EnvironmentConfiguration.sendgrid_api_key">
-<em class="property">property </em><code class="sig-name descname">sendgrid_api_key</code><a class="headerlink" href="#reporting.config.EnvironmentConfiguration.sendgrid_api_key" title="Permalink to this definition">¶</a></dt>
-<dd><p>Fetches the Sendgrid API key.</p>
-<p>The Sendgrid API key can either be passed in directly using the
-<cite>SENDGRID_API_KEY</cite> environment variable or can be stored in Google’s Secret
-Manger using the <cite>SENDGRID_API_KEY_SECRET</cite> and
-<cite>SENDGRID_API_KEY_SECRET_VERSION</cite> environment variables.</p>
-<dl class="simple">
-<dt>Raises:</dt><dd><p>MissingEnvironmentVariable: if one of the required environment
-variables is missing</p>
-</dd>
-<dt>Returns:</dt><dd><p>str: Sendgrid API key</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py exception">
-<dt id="reporting.config.MissingEnvironmentVariable">
-<em class="property">exception </em><code class="sig-prename descclassname">reporting.config.</code><code class="sig-name descname">MissingEnvironmentVariable</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">env_var</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/reporting/config.html#MissingEnvironmentVariable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#reporting.config.MissingEnvironmentVariable" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py class">
 <dt id="reporting.config.Recipients">
 <em class="property">class </em><code class="sig-prename descclassname">reporting.config.</code><code class="sig-name descname">Recipients</code><span class="sig-paren">(</span><em class="sig-param">config: Union[reporting.config.RecipientsConfig, NoneType] = RecipientsConfig(templateId='', sendVerificationConfig=VerificationConfig(email=[], slack='', teams='')), emails: Union[List[str], NoneType] = &lt;factory&gt;, slack: Union[List[str], NoneType] = &lt;factory&gt;, teams: Union[List[str], NoneType] = &lt;factory&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/reporting/config.html#Recipients"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#reporting.config.Recipients" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -312,6 +184,12 @@ variables is missing</p>
 <dd></dd></dl>
 
 <dl class="py function">
+<dt id="reporting.config.get_env_var_or_fetch_from_secret_manager">
+<code class="sig-prename descclassname">reporting.config.</code><code class="sig-name descname">get_env_var_or_fetch_from_secret_manager</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/reporting/config.html#get_env_var_or_fetch_from_secret_manager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#reporting.config.get_env_var_or_fetch_from_secret_manager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets an environment variable if available, else gets a secret value from GCP Secret Manager.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt id="reporting.config.load">
 <code class="sig-prename descclassname">reporting.config.</code><code class="sig-name descname">load</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fname</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">bucket</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">project</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#reporting.config.ReporterConfig" title="reporting.config.ReporterConfig">reporting.config.ReporterConfig</a><a class="reference internal" href="_modules/reporting/config.html#load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#reporting.config.load" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function to load config from file system or a GCS bucket.</p>
@@ -321,20 +199,6 @@ bucket (str, optional): Name of bucket to pull from. Defaults to None.
 project (str, optional): GCP project the bucket lives in. Defaults to None.</p>
 </dd>
 <dt>Returns:</dt><dd><p>ReporterConfig: Loaded configuration</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="reporting.config.load_from_gcs">
-<code class="sig-prename descclassname">reporting.config.</code><code class="sig-name descname">load_from_gcs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bucket</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">project</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">fname</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; str<a class="reference internal" href="_modules/reporting/config.html#load_from_gcs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#reporting.config.load_from_gcs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns file contents from provided bucket and file names</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>bucket (str): Bucket to fetch file from
-project (str): Project in which bucket lives
-fname (str): File path in bucket to download</p>
-</dd>
-<dt>Returns:</dt><dd><p>str: Full file downloaded from GCS</p>
 </dd>
 </dl>
 </dd></dl>

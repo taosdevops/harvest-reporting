@@ -2,27 +2,27 @@ customers:
   - name: Taos Internal
     hours: 120
     recipients:
-      #emails:
-        #- email address here
-      slack:
-        - "#harvest-reporting" # Channel in the development workspace
-      #teams:
-        #- Teams webhook here
+      # emails:
+      #   - email address here
+      # slack:
+      #   - "#harvest-reporting" # Channel in the development workspace
+      # teams:
+      #   - Teams webhook here
         
 #Recipients for all clients below.
 recipients:
   slack:
     - "#harvest-reporting" # Channel in the development workspace
-  #emails:
-    #- email address here
-  #teams:
-    #- Teams webhook here
+  # emails:
+  #   - email address here
+  # teams:
+  #   - Teams webhook here
 
 # Configuration on where to alert on error
 exceptions:
   slack:
     - "#harvest-reporting" # Channel in the development workspace
-  #emails:
-    #- email address here
-  #teams:
-    #- Teams webhook here
+  # emails:
+  #   - email address here
+  # teams:
+  #   - Teams webhook here

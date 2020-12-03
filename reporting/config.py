@@ -24,7 +24,7 @@ def get_env_var_or_fetch_from_secret_manager(name:str):
         except:
             # Implemented so that tests can still run
             LOGGER.debug(f"Failed to authenticate with GCP Secret Manager. You're either testing or something is wrong with your environment variables: {os.environ}", exc_info=True)
-            return "NOT_SET"
+            return "ERR_FETCHING_SECRET"
 
 
 # Environment Variables

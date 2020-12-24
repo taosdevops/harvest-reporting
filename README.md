@@ -1,3 +1,7 @@
+# Deprecation Notice
+
+This repo was migrated to https://github.com/Taos-DevOps-NOW/harvest-reporting
+
 # harvest-reporting
 
 Harvest Time tracking and reporting API implementation
